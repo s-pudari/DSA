@@ -1,0 +1,81 @@
+//https://www.interviewbit.com/problems/repeat-and-missing-number-array/
+
+//Approach 1 brute force T.C-->O(N^2)  S.C-->O(1)
+
+public class Solution {
+    // DO NOT MODIFY THE LIST. IT IS READ ONLY
+    public ArrayList<Integer> repeatedNumber(final List<Integer> A) {
+       
+        int n=A.size();
+        ArrayList<Integer> ans=new ArrayList<>();
+        
+        int repeating=-1;
+        int missing=-1;
+        
+        for(int i=1;i<=n;i++){
+            int count=0;
+            for(int j=0;j<n;j++){
+                if(A.get(j)==i){
+                    count++;
+                }
+            }
+            if(count==2){
+                repeating=i;
+            }
+            else if(count==0){
+                missing=i;
+            }
+        }
+        ans.add(repeating);
+        ans.add(missing);
+        return ans;
+  
+    }
+}
+//Approach 2 T.C-->O(N)  S.C-->O(1)
+public class Solution {
+    // DO NOT MODIFY THE LIST. IT IS READ ONLY
+    public ArrayList<Integer> repeatedNumber(final List<Integer> A) {
+       
+        long n = A.size();  // Size of the list A
+        ArrayList<Integer> ans = new ArrayList<>();  // ArrayList to store the result
+        
+        // Calculate the sum of first n natural numbers (SN)
+        long SN = (n * (n + 1)) / 2;  
+        
+        // Calculate the sum of squares of first n natural numbers (S2N)
+        long S2N = (n * (n + 1) * (2 * n + 1)) / 6;  
+        
+        // Initialize variables to calculate sum and sum of squares for the given list A
+        long S = 0, S2 = 0;
+        
+        // Loop through the list to calculate S (sum of elements) and S2 (sum of squares of elements)
+        for (int i : A) {
+            S += i;  // Sum of elements
+            S2 += (long) i * (long) i;  // Sum of squares of elements
+        }
+        
+        // val1 = X - Y (difference between the number that repeats and the missing number)
+        long val1 = S - SN; 
+        
+        // val2 = X + Y (difference between the sum of squares in the list and expected sum of squares)
+        long val2 = S2 - S2N;
+        
+        // val2 = (X + Y) => Dividing by val1 to find the sum (X + Y)
+        val2 = val2 / val1;
+        
+        // Calculate X (the repeated number)
+        long x = ((val1 + val2) / 2);
+        
+        // Calculate Y (the missing number)
+        long y = x - val1;
+        
+        // Add the results (repeated number and missing number) to the answer list
+        ans.add((int) x);
+        ans.add((int) y);
+        
+        // Return the answer list containing repeated and missing numbers
+        return ans;
+    }
+}
+
