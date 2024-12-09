@@ -1,0 +1,37 @@
+https://leetcode.com/problems/powx-n/submissions/1474465756/
+
+//Approach 2 squaring T.C --> O(log N)
+ public static double myPow(double x, int n) {
+    double ans = 1.0;
+    long nn = n;
+    if (nn < 0) nn = -1 * nn;
+    while (nn > 0) {
+      if (nn % 2 == 1) {
+        ans = ans * x;
+        nn = nn - 1;
+      } else {
+        x = x * x;
+        nn = nn / 2;
+      }
+    }
+    if (n < 0) ans = (double)(1.0) / (double)(ans);
+    return ans;
+  }
+
+
+//Approach 1 Brute force T.C --> O(N)
+class Solution {
+    public double myPow(double x, int n) {
+        double ans = 1.0;
+        //double ans1 = 1.0;
+        long a=Math.abs((long)n);
+        
+        for(long i=0;i<a;i++){
+            
+            ans = ans * x;
+            
+            
+        }
+        return n>0 ? ans : 1/ans;
+    }
+}
