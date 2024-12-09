@@ -1,0 +1,60 @@
+https://leetcode.com/problems/majority-element/submissions/1474546622/
+
+//Approach 3 Using Moore's voting algo T.C -->O(N)+O(N) S.C --> O(1)
+int n=nums.length;
+int ele=0,cnt=0;
+
+for(int i=0;i<n;i++){
+    if(cnt==0){
+        cnt++;
+        ele=nums[i];
+    }
+    else if(ele==nums[i]){
+        cnt++;
+    }
+    else{
+        cnt--;
+    }
+}
+
+int cnt1=0;
+for(int i=0;i<n;i++){
+    if(nums[i]==ele){
+        cnt1++;
+    }
+}
+
+return cnt1>n/2 ? ele : -1;
+
+//Approach 2 Using HashMap T.C --> O(N*log N)+O(N) S.C --> O(N)
+int n=nums.length;
+int max=0,ans=0;
+HashMap<Integer,Integer> hm=new HashMap<>();
+
+for(int i=0;i<n;i++){
+    int num=nums[i];
+    hm.put(ch,getOrDefault(ch,0)+1);
+}
+
+for(int num : hm.keySet()){
+    int temp=hm.get(i);
+    if(temp>max){
+        max=temp;
+        ans=i;
+    }
+}
+return ans;
+
+
+//Approach 1 Brute Force T.C-->O(N^2) S.C --> O(1)
+int n=nums.length;
+for(int i=0;i<n-1;i++){
+    int count=0;
+    for(int j=i+1;j<n;j++){
+        if(nums[i]==nums[j]){
+            count++;
+        }
+    }
+    if(count>n/2) return nums[i];
+}
+return -1;
