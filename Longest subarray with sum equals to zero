@@ -12,7 +12,7 @@ int maxLen=0;
 while(right<n){
     while(left<=right && sum>k){
        sum-=arr[left];
-       left--;
+       left++;
       }
   if(sum==k){
      maxLen=Math.max(maxLen,right-left+1);
