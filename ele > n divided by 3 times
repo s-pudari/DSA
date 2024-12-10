@@ -1,0 +1,124 @@
+https://leetcode.com/problems/majority-element-ii/description/
+
+//Approach 3 --> Optimised using Moore's Algo T.C--> O(n) S.C-->O(1)
+class Solution {
+    public List<Integer> majorityElement(int[] nums) {
+        int n = nums.length; // Size of the array
+        List<Integer> li = new ArrayList<>(); // List to store the majority elements
+        int min = (int) (n / 3) + 1; // Minimum occurrences needed for a majority element (n/3 + 1)
+        int ele1 = 0, ele2 = 0; // Variables to store two potential majority elements
+        int cnt1 = 0, cnt2 = 0; // Counters to track frequencies of potential majority elements
+
+        // First pass: Identifying the two potential majority elements
+        for (int i = 0; i < n; i++) {
+            if (cnt1 == 0 && nums[i] != ele2) { 
+                // If count of the first candidate is zero and the current number is not the second candidate
+                cnt1++; // Increment count for the first candidate
+                ele1 = nums[i]; // Update the first candidate
+            } else if (cnt2 == 0 && nums[i] != ele1) { 
+                // If count of the second candidate is zero and the current number is not the first candidate
+                cnt2++; // Increment count for the second candidate
+                ele2 = nums[i]; // Update the second candidate
+            } else if (nums[i] == ele1) {
+                // If the current number matches the first candidate
+                cnt1++; // Increment the count for the first candidate
+            } else if (nums[i] == ele2) {
+                // If the current number matches the second candidate
+                cnt2++; // Increment the count for the second candidate
+            } else {
+                // If the current number matches neither candidate, decrement both counts
+                cnt1--;
+                cnt2--;
+            }
+        }
+
+        // Reset counters for the second pass
+        cnt1 = 0;
+        cnt2 = 0;
+
+        // Second pass: Count the actual frequencies of the two potential candidates
+        for (int i = 0; i < n; i++) {
+            if (nums[i] == ele1) {
+                // Increment count for the first candidate
+                cnt1++;
+            } else if (nums[i] == ele2) {
+                // Increment count for the second candidate
+                cnt2++;
+            }
+        }
+
+        // Check if the two candidates satisfy the majority condition
+        if (cnt1 > n / 3) li.add(ele1); // Add the first candidate if it appears more than n/3 times
+        if (cnt2 > n / 3) li.add(ele2); // Add the second candidate if it appears more than n/3 times
+
+        return li; // Return the list of majority elements
+    }
+}
+
+
+//Approach 2 Using HashMap T.C --> O(n) S.C --> O(n)
+class Solution {
+    public List<Integer> majorityElement(int[] nums) {
+        // Initialize a list to store the elements that occur more than n/3 times
+        List<Integer> li = new ArrayList<>();
+
+        // HashMap to store the frequency of each element in the array
+        HashMap<Integer, Integer> hm = new HashMap<>();
+
+        // Calculate the minimum frequency required to be a majority element
+        int min = (int) (nums.length / 3) + 1;
+
+        // Iterate over the array
+        for (int i = 0; i < nums.length; i++) {
+            // Update the frequency of the current element in the HashMap
+            hm.put(nums[i], hm.getOrDefault(nums[i], 0) + 1);
+
+            // Check if the frequency of the current element equals the minimum
+            if (hm.get(nums[i]) == min) {
+                // Add the element to the result list
+                li.add(nums[i]);
+            }
+
+            // If the list already has two elements, stop further processing
+            if (li.size() == 2) break;
+        }
+
+        // Return the list of elements that are majority elements
+        return li;
+    }
+}
+
+
+//Approach 1 Brute Force T.C --> O(n^2) S.C --> O(1) 
+class Solution {
+    public List<Integer> majorityElement(int[] nums) {
+        // Initialize a list to store the elements that occur more than n/3 times
+        List<Integer> li = new ArrayList<>();
+        int n = nums.length; // Get the length of the input array
+        
+        // Iterate over each element in the array
+        for (int i = 0; i < n; i++) {
+            // Check if the list is empty or the current element is not already in the list
+            if (li.size() == 0 || li.get(0) != nums[i]) {
+                int cnt = 0; // Counter to track the frequency of the current element
+                
+                // Count occurrences of the current element in the array
+                for (int j = 0; j < n; j++) {
+                    if (nums[i] == nums[j]) {
+                        cnt++;
+                    }
+                }
+                
+                // If the current element occurs more than n/3 times, add it to the list
+                if (cnt > n / 3) {
+                    li.add(nums[i]);
+                }
+                
+                // If the list already has two elements, stop further processing
+                if (li.size() == 2) break;
+            }
+        }
+        // Return the list of elements that are majority elements
+        return li;
+    }
+}
