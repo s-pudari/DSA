@@ -1,0 +1,32 @@
+https://leetcode.com/problems/copy-list-with-random-pointer/
+
+//Approach 1 T.C --> O(2n)  S.C --> O(n)+O(n)
+class Solution {
+    public Node copyRandomList(Node head) {
+        Node temp=head;
+
+        HashMap<Node,Node> hs = new HashMap<>();
+
+        while(temp!=null){
+
+            Node newNode= new Node(temp.val);
+
+            hs.put(temp,newNode);
+
+            temp=temp.next;
+        }
+        
+        temp=head;
+
+        while(temp!=null){
+            Node copyNode = hs.get(temp);
+
+            copyNode.next=hs.get(temp.next);
+
+            copyNode.random=hs.get(temp.random);
+
+            temp=temp.next;
+        }
+        return head;
+    }
+}
