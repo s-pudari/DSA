@@ -1,0 +1,20 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/sorting-gfg-160/problem/find-h-index--165609
+T.C--> O(nlogn) S.C--> O(n)
+class Solution {
+    // Function to find hIndex
+    public int hIndex(int[] citations) {
+        // code here
+        int n=citations.length;
+        
+        Integer[] sortedCitations = Arrays.stream(citations).boxed().toArray(Integer[]::new);
+        Arrays.sort(sortedCitations, Collections.reverseOrder());
+        
+       int idx=0;
+       while(idx<n && sortedCitations[idx]>idx){
+           idx++;
+       }
+       return idx;
+        
+        
+    }
+}
