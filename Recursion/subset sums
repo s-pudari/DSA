@@ -1,0 +1,28 @@
+https://www.geeksforgeeks.org/problems/subset-sums2234/1
+//T.C & S.C --> O(2^N + 2^N log(2^N))
+
+class Solution {
+    public ArrayList<Integer> subsetSums(int[] arr) {
+        // code here
+        int n=arr.length;
+        
+        ArrayList<Integer> li = new ArrayList<>();
+        
+        allSubsets(arr,0,0,li,n);
+        
+        return li;
+    }
+    
+    public static void allSubsets(int[] arr,int idx,int sum,ArrayList<Integer> li,int N){
+        if(idx==N){
+            li.add(sum);
+            return;
+        }
+        //pick the element
+        allSubsets(arr,idx+1,sum+arr[idx],li,N);
+        
+        
+        // do not pick the element
+        allSubsets(arr,idx+1,sum,li,N);
+    }
+}
