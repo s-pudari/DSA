@@ -1,0 +1,32 @@
+https://leetcode.com/problems/trapping-rain-water/description/
+
+// T.C --> O(n) S.C-->O(1)
+
+class Solution {
+    public int trap(int[] arr) {
+        int lmax=0,rmax=0,total=0,l=0,r=arr.length-1;
+
+        while(l<r){
+            if(arr[l]<=arr[r]){
+                if(arr[l]>lmax){
+                    lmax=arr[l];
+                }
+                else{
+                    total+=lmax-arr[l];
+                }
+                l++;
+            }
+            else{
+                if(arr[r]>rmax){
+                    rmax=arr[r];
+                }
+                else{
+                    total+=rmax-arr[r];
+                }
+                r--;
+            }
+        }
+        return total;
+        
+    }
+}
