@@ -1,0 +1,26 @@
+https://leetcode.com/problems/subsets-ii/description/
+//T.C --> O(n * 2^n) + O(n log n)      S.C --> O(2^n * n) + O(n)
+
+class Solution {
+    public List<List<Integer>> subsetsWithDup(int[] nums) {
+        List<List<Integer>> ansList  = new ArrayList<>();
+
+        Arrays.sort(nums);
+
+        findSubsets(0,ansList,new ArrayList<>(),nums);
+        return ansList;
+        
+    }
+    public static void findSubsets(int idx,List<List<Integer>> ansList,ArrayList<Integer> ds,int[] arr){
+        ansList.add(new ArrayList<>(ds));
+        for(int i=idx;i<arr.length;i++){
+            if(i>idx && arr[i]==arr[i-1]) continue;
+            
+            ds.add(arr[i]);
+            findSubsets(i+1,ansList,ds,arr);
+
+            ds.remove(ds.size()-1);
+
+        }
+    }
+}
