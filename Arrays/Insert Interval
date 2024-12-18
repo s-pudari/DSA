@@ -1,0 +1,31 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/sorting-gfg-160/problem/insert-interval-1666733333
+T.C --> O(N log N) S.C --> O(N)
+class Solution {
+    static ArrayList<int[]> insertInterval(int[][] intervals, int[] newInterval) {
+        // code here
+        List<int[]> list = new ArrayList<>(Arrays.asList(intervals));
+        
+        list.add(newInterval);
+        
+        return mergeOverlap(list.toArray(new int[list.size()][]));
+    }
+    static ArrayList<int[]> mergeOverlap(int[][] intervals){
+        Arrays.sort(intervals, (a,b) -> Integer.compare(a[0],b[0]));
+        
+        ArrayList<int[]> list = new ArrayList<>();
+        list.add(intervals[0]);
+        
+        for(int i=1;i<intervals.length;i++){
+            int[]  curr=intervals[i];
+            int[] last=list.get(list.size()-1);
+            
+            if(curr[0]<=last[1]){
+                last[1]=Math.max(curr[1],last[1]);
+            }
+            else {
+                list.add(curr);
+            }
+        }
+        return list;
+    }
+}
