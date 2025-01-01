@@ -1,0 +1,36 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/matrix-gfg-160/problem/search-in-a-row-wise-sorted-matrix
+//Approch 2 using  binary Search T.C --> O(n * log m) S.C--> O(1)
+class Solution {
+    // Function to search a given number in row-column sorted matrix.
+    public boolean searchRowMatrix(int[][] mat, int x) {
+        // code here
+        int n=mat.length;
+        int m=mat[0].length;
+        
+        for(int i=0;i<n;i++){
+            if(search(mat[i],x)) return true;
+        }
+        
+        return false;
+    }
+    
+    public boolean search(int[] arr,int x){
+        int low=0,high=arr.length-1;
+        
+        while(low<=high){
+            int mid=low+(high-low)/2;
+            
+            if(arr[mid]==x) return true;
+            
+            else if(arr[mid]>x) high=mid-1;
+            
+            else{
+                low=mid+1;
+            }
+        }
+        return false;
+    }
+}
+
+//Approach 1 using brute force T.C--> O(n*m) S.C --> O(1)
+1.Run two for loops for n & m then check equality
