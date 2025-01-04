@@ -1,0 +1,54 @@
+//Approach 3 using Hashing T.C & S.C --> O(n)
+class Solution {
+    boolean twoSum(int arr[], int target) {
+        // code here
+        int n=arr.length;
+        if(n<2) return false;
+        
+       HashSet<Integer> hs = new HashSet<Integer>();
+       
+       for(int i=0;i<n;i++){
+           int complement = target-arr[i];
+           
+           if(hs.contains(complement)) return true;
+           hs.add(arr[i]);
+       }
+       return false;
+    }
+}
+//Approach 2 using Two pointers T.C --> O(n log n) S.C -->O(1)
+class Solution {
+    boolean twoSum(int arr[], int target) {
+        // code here
+        int n=arr.length;
+        if(n<2) return false;
+        
+       Arrays.sort(arr);
+       
+       int l=0,r=n-1;
+       while(l<r){
+           int sum=arr[l]+arr[r];
+           
+           if(sum==target) return true;
+           else if(sum<target) l++;
+           else r--;
+       }
+        return false;
+    }
+}
+
+//Approach 1 using Brute Force T.C --> O(n*n) S.C --> O(1)
+class Solution {
+    boolean twoSum(int arr[], int target) {
+        // code here
+        int n=arr.length;
+        if(n<2) return false;
+        
+        for(int i=0;i<n-1;i++){
+            for(int j=i+1;j<n;j++){
+                if(arr[i]+arr[j]==target) return true;
+            }
+        }
+        return false;
+    }
+}
