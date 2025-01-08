@@ -1,0 +1,18 @@
+class Solution {
+    public static int findUnion(int a[], int b[]) {
+        // code here
+        int n=a.length;
+        int m=b.length;
+        
+        HashSet<Integer> hs1 = new HashSet<>();
+        for(int num : a){
+            hs1.add(num);
+        }
+        
+        for(int num : b){
+            hs1.add(num);
+        }
+        
+        return hs1.size();
+    }
+}
