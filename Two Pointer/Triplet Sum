@@ -1,0 +1,56 @@
+
+//Approach  2 using Two Pointers Approach  T.C --> O(n^2) S.C --> O(1)
+import java.util.Arrays;
+
+class Solution {
+    // Should return true if there is a triplet with sum equal to x in arr[], otherwise false
+    public static boolean hasTripletSum(int arr[], int target) {
+        int n = arr.length;
+        
+        // Sort the array
+        Arrays.sort(arr);
+        
+        // Iterate through the array
+        for (int i = 0; i < n - 2; i++) {
+            int l = i + 1, r = n - 1;
+            int reqSum = target - arr[i];
+            
+            // Two-pointer logic
+            while (l < r) {
+                if (arr[l] + arr[r] == reqSum) {
+                    return true;
+                } else if (arr[l] + arr[r] > reqSum) {
+                    r--;
+                } else {
+                    l++;
+                }
+            }
+        }
+        return false;
+    }
+}
+
+//Approach 1 using Brute Force T.C --> O(n*3) S.C --> O(1)
+class Solution {
+    // Should return true if there is a triplet with sum equal
+    // to x in arr[], otherwise false
+    public static boolean hasTripletSum(int arr[], int target) {
+        int n = arr.length;
+
+        // Early exit for arrays with fewer than 3 elements
+        if (n < 3) return false;
+
+        // Iterate over all triplets
+        for (int i = 0; i < n - 2; i++) { // Outer loop
+            for (int j = i + 1; j < n - 1; j++) { // Middle loop
+                for (int k = j + 1; k < n; k++) { // Inner loop
+                    // Check if the sum of the triplet equals the target
+                    if (arr[i] + arr[j] + arr[k] == target) {
+                        return true; // Triplet found
+                    }
+                }
+            }
+        }
+        return false; // No triplet found
+    }
+}
