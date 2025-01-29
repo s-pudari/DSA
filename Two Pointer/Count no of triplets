@@ -1,0 +1,24 @@
+//Approach 1 using Brute Force T.C --> O(n*3) S.C --> O(1)
+class Solution {
+    // Should return true if there is a triplet with sum equal
+    // to x in arr[], otherwise false
+    public static boolean hasTripletSum(int arr[], int target) {
+        int n = arr.length;
+        int count=0;
+        // Early exit for arrays with fewer than 3 elements
+        if (n < 3) return count;
+
+        // Iterate over all triplets
+        for (int i = 0; i < n - 2; i++) { // Outer loop
+            for (int j = i + 1; j < n - 1; j++) { // Middle loop
+                for (int k = j + 1; k < n; k++) { // Inner loop
+                    // Check if the sum of the triplet equals the target
+                    if (arr[i] + arr[j] + arr[k] == target) {
+                        count++; // Triplet found
+                    }
+                }
+            }
+        }
+        return count; // No triplet found
+    }
+}
