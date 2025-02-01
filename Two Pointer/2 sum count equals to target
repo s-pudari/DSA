@@ -1,0 +1,43 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/two-pointer-technique-gfg-160/problem/pair-with-given-sum-in-a-sorted-array4940
+//T.C --> O(n) S.C --> O(1)
+class Solution {
+
+    int countPairs(int arr[], int target) {
+     
+        // Complete the function
+        int l=0,r=arr.length-1;
+        int cnt=0;
+        
+        while(l<r){
+            int sum=arr[l]+arr[r];
+            
+            if(sum>target){
+                r--;
+            }
+            else if(sum<target){
+                l++;
+            }
+            else{
+                int c1=0,c2=0;
+                int ele1=arr[l],ele2=arr[r];
+                while(l<=r && arr[l]==ele1){
+                    l++;
+                    c1++;
+                }
+                
+                while(l<=r && arr[r]==ele2){
+                    r--;
+                    c2++;
+                }
+                
+                if(ele1==ele2){
+                    cnt+=(c1*(c1-1))/2;
+                }
+                else{
+                    cnt+=c1*c2;
+                }
+            }
+        }
+        return cnt;
+    }
+}
