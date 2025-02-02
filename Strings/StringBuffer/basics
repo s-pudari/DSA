@@ -1,0 +1,51 @@
+import java.util.Arrays;
+class SBuffer{
+    public static void main(String[] args) {
+        
+        //Constructor1
+        StringBuffer sb1=new StringBuffer();
+        System.out.println("Default capacity/size : "+sb1.capacity());
+        sb1.append("Shiva");
+
+        //Constructor2
+        StringBuffer sb2=new StringBuffer("Kumar");
+        System.out.println("sb2 : "+sb2);
+
+        //Constructor 3
+        StringBuffer sb3=new StringBuffer(30);
+        System.out.println("Assigned capacity/size : "+sb3.capacity());
+
+        System.out.println("Before append(sb1) : "+sb1);
+        sb1.append(" Pudari ");
+        System.out.println("After append(sb1) : "+sb1);
+
+        System.out.println("Before replace(sb2) : "+sb2);
+        sb2.replace(0,3,"Nim");
+        System.out.println("After replace(sb2) : "+sb2);
+
+        String str=sb1.toString();
+        System.out.println("Converted to string : "+str);
+
+        System.out.println("Before insert(sb1) : "+sb1);
+        sb1.insert(5,"kumar");
+        System.out.println("After insert(sb1) : "+sb1);
+
+        System.out.println("Before delete(sb2) : "+sb2);
+        sb2.delete(0,3);
+        System.out.println("After delete(sb2) : "+sb2);
+
+        String s = "Hi Shiva Kumar Pudari How are you";
+        System.out.println(s);
+
+        System.out.println("Spaces Removed : "+s.replaceAll("\\s",""));
+
+        String t = "Shiva Kumar Pudari";
+        System.out.println("Before split : "+t);
+        String[] name = t.split(" ");
+        System.out.println("After split : "+Arrays.toString(name));
+
+
+        
+
+    }
+}
