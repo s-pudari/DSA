@@ -1,0 +1,44 @@
+import java.math.BigInteger;
+public class IntegerBig {
+    public static void main(String[] args) {
+        int a=5;
+        int b=6;
+
+        BigInteger A = BigInteger.valueOf(20);//should be in 
+        BigInteger B = BigInteger.valueOf(30);//range of integers
+        int c = B.intValue();//Convert BI to int
+
+        BigInteger C = new BigInteger("235672876543234567323457");//if large we can use it as String
+
+        //constants
+        BigInteger D = BigInteger.ONE;
+        System.out.println("D : "+D);
+
+        //Add
+        BigInteger E = A.add(B);//method add because A and B are objects
+        System.out.println("A+B : "+E);
+
+        BigInteger F = A.add(C);//***** Similarly with subtract,divide,multiply,remainder */
+        System.out.println("A+C : "+E);
+        //We can do the similar stuff with BigDecimal https://replit.com/@KunalsReplit/LargeNumbers
+       
+
+        //Comparison
+        if(A.compareTo(B)>0){
+            System.out.println("Is A>B : "+"Yes");
+        }
+        else {
+            System.out.println("A>B : NO");
+        }
+
+        System.out.println("Factorial of 50 : "+fact(50));
+    } 
+    public static BigInteger fact(int num){
+        BigInteger ans = new BigInteger("1");//using as a string to handle large values
+
+        for(int i=3;i<=num;i++){
+            ans = ans.multiply(BigInteger.valueOf(i));
+        }
+        return ans;
+    }
+}
