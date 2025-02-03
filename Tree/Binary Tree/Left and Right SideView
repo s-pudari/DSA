@@ -36,8 +36,9 @@ class Solution {
             ans.add(root.data);
         }
         
-        leftSideView(root.left,ans,level+1);
-        leftSideView(root.right,ans,level+1);
+        leftSideView(root.left,ans,level+1);//leftSideView(root.right,ans,level+1);--
+                                                                                     |-- Commented one works for Right side view
+        leftSideView(root.right,ans,level+1);//leftSideView(root.left,ans,level+1);--
         
     }
 }
