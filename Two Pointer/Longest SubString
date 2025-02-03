@@ -1,0 +1,23 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/two-pointer-technique-gfg-160/problem/longest-distinct-characters-in-string5848
+T.C --> O(n) S.C --> O(maxlength)
+class Solution {
+    public int longestUniqueSubstr(String s) {
+        // code here
+        int maxlength=0,l=0;
+        
+        HashSet<Character> hs = new HashSet<>();
+        
+        for(int r=0;r<s.length();r++){
+            while(hs.contains(s.charAt(r))){
+                hs.remove(s.charAt(l));
+                l++;
+            }
+            
+            hs.add(s.charAt(r));
+            maxlength=Math.max(maxlength,r-l+1);
+            
+        }
+        return maxlength;
+        
+    }
+}
