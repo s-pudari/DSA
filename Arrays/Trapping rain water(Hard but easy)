@@ -31,8 +31,8 @@ class Solution {
     }
 }
 
-
-//Approach 2 using two pointers T.C --> O(n) S.C-->O(1)
+//Approach 2 reducing the prefixMax array T.C & S.C --> O(n)
+//Approach 3 (optimised) using two pointers T.C --> O(n) S.C-->O(1)
 
 class Solution {
     public int trap(int[] arr) {
