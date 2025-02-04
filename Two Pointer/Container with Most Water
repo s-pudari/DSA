@@ -1,0 +1,43 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/two-pointer-technique-gfg-160/problem/container-with-most-water0535
+//Approach 1 using Brute Force T.C --> O(n^2) S.C --> O(1)
+class Solution {
+
+    public int maxWater(int arr[]) {
+        
+        int maxWater = 0;
+        for(int i=0;i<arr.length-1;i++){
+            for(int j=i+1;j<arr.length;j++){
+                maxWater=Math.max(maxWater,Math.min(arr[i],arr[j])*(j-i));
+            }
+        }
+        return maxWater;
+    }
+}
+//Approach 2 using two pointer T.C --> O(n) S.C--> O(1)
+class Solution {
+    public int maxWater(int arr[]) {
+        // code here
+        int n=arr.length;
+        int totalWater=0;
+        
+      
+        int[] suffixMax=new int[n];
+        
+       
+        
+        suffixMax[n-1]=arr[n-1];
+        for(int i=n-2;i>=0;i--){
+            suffixMax[i]=Math.max(suffixMax[i+1],arr[i]);
+        }
+        int leftMax=0;
+        for(int i=0;i<n;i++){
+            leftMax=Math.max(leftMax,arr[i]);
+            int rightMax=suffixMax[i];
+            if(arr[i]<leftMax && arr[i]<rightMax){
+                totalWater+=Math.min(leftMax,rightMax)-arr[i];
+            }
+     
+        }
+        return totalWater;
+    }
+}
