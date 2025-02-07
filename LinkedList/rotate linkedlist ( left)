@@ -1,0 +1,58 @@
+//Approach 2 T.C --> O(n) S.C --> O(1)
+class Solution {
+    public Node rotate(Node head, int k) {
+        // Edge cases
+        if (head == null || head.next == null || k == 0) return head;
+        
+        // Find the length of the linked list
+        Node curr = head;
+        int length = 1;
+        while (curr.next != null) {
+            length++;
+            curr = curr.next;
+        }
+        
+        // Update k to avoid unnecessary rotations
+        k = k % length;
+        if (k == 0) return head;  // No rotation needed
+
+        // Make the list circular
+        curr.next = head;
+        
+        // Find the new tail (length - k - 1)th node
+        for (int i = 0; i < k; i++) {
+            curr = curr.next;
+        }
+
+        // The new head is the next node
+        head = curr.next;
+        curr.next = null; // Break the circular link
+
+        return head;
+    }
+}
+//Approach 1 T.C -->  O(n * k) S.C -->O(1)
+class Solution {
+    public Node rotate(Node head, int k) {
+        // Edge cases
+        if (head == null || head.next == null || k == 0) return head;
+
+        for (int i = 0; i < k; i++) {
+            Node curr = head;
+            
+            // Traverse to second-last node
+            while (curr.next.next != null) {
+                curr = curr.next;
+            }
+
+            // Last node (tail)
+            Node tail = curr.next;
+            
+            // Update links
+            curr.next = null;  // Remove last node
+            tail.next = head;   // Move tail to front
+            head = tail;        // Update head
+        }
+        return head;
+    }
+}
