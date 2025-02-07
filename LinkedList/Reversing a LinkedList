@@ -97,15 +97,25 @@ public class ReverseLinkedListUsingStack {
 
 //Approach 1 T.C --> O(n) S.C -->O(1)
 class Solution {
-    public ListNode reverseList(ListNode head) {
-        ListNode dummy = null;
-        while(head!=null){
-            ListNode next=head.next;
-            head.next=dummy;
-            dummy=head;
-            head=next;
+    Node reverseList(Node head) {
+        // code here
+        Node curr=head;
+        Node prev=null;
+        
+        while(curr!=null){
+            Node next=curr.next;
+            curr.next=prev;
+            
+            prev=curr;
+            curr=next;
+            
         }
-        return dummy;
+        
+        head=prev;
+        
+        return head;
+        
         
     }
 }
+
