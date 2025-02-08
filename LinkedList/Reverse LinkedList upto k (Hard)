@@ -1,32 +1,32 @@
-https://leetcode.com/problems/reverse-linked-list/
-class Solution {
-    public ListNode reverseKGroup(ListNode head, int k) {
-        if(head==null || k==1){
-            return head;
-        }
-
-        ListNode dummy=new ListNode(0);
-        dummy.next=head;
-
-        ListNode curr=dummy,pre=dummy,next=dummy;
+//https://www.naukri.com/code360/problems/reverse-list-in-k-groups_983644
+public class Solution {
+    public static Node kReverse(Node head, int k) {
+        // Write your code here.
+        Node temp=head;
         int count=0;
-        while(curr.next!=null){
-           curr=curr.next;
-            count++;
-        } 
-        while(count>=k){
-            curr=pre.next;
-            next=curr.next;
-            for(int i=1;i<k;i++){
-                curr.next=next.next;
-                next.next=pre.next;
-                pre.next=next;
-                next=curr.next;
-            }
-            pre=curr;
-            count-=k;
-        }
-        return dummy.next;
 
+        while(temp!=null && count<k){
+            count++;
+            temp=temp.next;
+        }
+
+        if(count==k){
+            Node prev=null,curr=head,next=null;
+            int c=0;
+
+            while(curr!=null && c<k){
+                next=curr.next;
+                curr.next=prev;
+                prev=curr;
+                curr=next;
+                c++;
+                
+            }
+            if(next != null){
+                head.next=kReverse(next,k);
+            }
+          return prev;
+        }
+        return head;
     }
 }
