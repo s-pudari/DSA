@@ -1,0 +1,25 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/linked-list-gfg-160/problem/reverse-a-linked-list-in-groups-of-given-size
+1.Same as reversing a linkedlist
+2.recursive call
+class Solution {
+    public static Node reverseKGroup(Node head, int k) {
+        // code here
+        int c=0;
+        
+        Node prev=null;
+        Node next=null;
+        Node curr=head;
+        while(curr!=null && c<k){
+            next=curr.next;
+            curr.next=prev;
+            prev=curr;
+            curr=next;
+            c++;
+            
+        }
+        if(next!=null){
+              head.next=reverseKGroup(next,k);
+        }
+        return prev;
+    }
+}
