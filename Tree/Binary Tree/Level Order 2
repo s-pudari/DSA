@@ -1,0 +1,29 @@
+https://leetcode.com/problems/binary-tree-level-order-traversal-ii/
+just add a zero index
+class Solution {
+    public List<List<Integer>> levelOrderBottom(TreeNode root) {
+        List<List<Integer>> ans = new ArrayList<>();
+        if(root == null) return ans;
+
+        Queue<TreeNode> que=new LinkedList<>();
+
+        que.offer(root);
+        while(!que.isEmpty()){
+            int levelSize = que.size();
+            List<Integer> levelList = new ArrayList<>();
+
+            for(int i=0;i<levelSize;i++){
+            TreeNode curr = que.poll();
+            levelList.add(curr.val);
+                if(curr.left!=null){
+                    que.add(curr.left);
+                }
+                if(curr.right != null){
+                    que.add(curr.right);
+                }
+            }
+            ans.add(0,levelList);
+        }
+        return ans;
+    }
+}
