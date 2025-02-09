@@ -1,0 +1,23 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/height-of-binary-tree
+class Solution {
+    // Function to find the height of a binary tree.
+    int height(Node node) {
+        // code here
+        int ans = heightBT(node);
+    
+    return ans;
+    }
+    
+    int heightBT(Node root){
+        if(root == null){
+            return -1;
+        }
+        
+        int leftHeight = heightBT(root.left);
+        int rightHeight = heightBT(root.right);
+        
+        int maxHeight = Math.max(leftHeight,rightHeight);
+        
+        return maxHeight+1;
+    }
+}
