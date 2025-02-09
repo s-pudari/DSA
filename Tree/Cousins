@@ -1,0 +1,48 @@
+//https://leetcode.com/problems/cousins-in-binary-tree/
+class Solution {
+    public boolean isCousins(TreeNode root, int x, int y) {
+        TreeNode xx = findNode(root,x);
+        TreeNode yy = findNode(root,y);
+
+        return (level(root,xx,0) == level(root,yy,0) && (!isSiblings(root,xx,yy)));
+    }
+
+    TreeNode findNode(TreeNode root,int ele){
+        if(root == null){
+            return null;
+        }
+
+        if(root.val == ele){ 
+            return root;
+        }
+        TreeNode node = findNode(root.left,ele);
+        if(node != null){
+            return node;
+        }
+
+        return findNode(root.right,ele);
+    }
+
+    int level(TreeNode root, TreeNode node, int level){
+        if(root == null){
+            return 0;
+        }
+
+        if(root  == node){
+            return level;
+        }
+
+        int l = level(root.left,node,level+1);
+        if(l != 0){
+            return l;
+        }
+        return level(root.right,node,level+1);
+    }
+    boolean isSiblings(TreeNode root,TreeNode x, TreeNode y){
+        if(root == null){
+            return false;
+        }
+
+        return ((root.left==x && root.right==y) || (root.left==y && root.right==x) || isSiblings(root.left,x,y) || isSiblings(root.right,x,y));
+    }
+}
