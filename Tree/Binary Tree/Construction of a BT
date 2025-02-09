@@ -1,0 +1,30 @@
+class Solution {
+    public static void createTree(Node root, ArrayList<Integer> v) {
+        if (v == null || v.size() == 0) return;
+
+        Queue<Node> queue = new LinkedList<>();
+        queue.offer(root);
+
+        int i = 1; // Start from index 1 as root is already given
+
+        while (!queue.isEmpty() && i < v.size()) {
+            Node current = queue.poll();
+
+            // Create left child if exists
+            if (i < v.size() && v.get(i) != -1) { // Assuming -1 means NULL
+                current.left = new Node(v.get(i));
+                queue.offer(current.left);
+            }
+            i++;
+
+            // Create right child if exists
+            if (i < v.size() && v.get(i) != -1) {
+                current.right = new Node(v.get(i));
+                queue.offer(current.right);
+            }
+            i++;
+        }
+    }
+
+    
+}
