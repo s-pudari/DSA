@@ -1,0 +1,39 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/mirror-tree
+class Solution {
+    // Function to convert a binary tree into its mirror tree.
+    void mirror(Node node) {
+        // Your code here
+        if(node == null){
+            return;
+        }
+        
+        mirror(node.left);
+        mirror(node.right);
+        
+        Node left=node.left;
+        Node right=node.right;
+        
+        node.left=right;
+        node.right=left;
+    
+    }
+}
+https://leetcode.com/problems/invert-binary-tree/description/
+class Solution {
+    public TreeNode invertTree(TreeNode root) {
+        if(root==null){
+            return null;
+        }
+
+        invertTree(root.left);
+        invertTree(root.right);
+
+        TreeNode left=root.left;
+        TreeNode right = root.right;
+
+        root.left=right;
+        root.right=left;
+        
+        return root;
+    }
+}
