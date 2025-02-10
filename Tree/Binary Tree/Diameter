@@ -1,4 +1,28 @@
 https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/diameter-of-binary-tree
+//Approach 2 T.C --> O(n) S.C --> O(n)
+class Solution {
+    int diameter(Node root) {
+        // Your code here
+        int[] maxDiam = new int[1];
+        height(root,maxDiam);
+    
+        return maxDiam[0];
+    }
+    
+    int height(Node root,int[] diam){
+        if(root==null){
+            return -1;
+        }
+        
+        int leftHeight = height(root.left,diam);
+        int rightHeight = height(root.right,diam);
+        
+        diam[0] = Math.max(diam[0],leftHeight+rightHeight+2);
+        
+        return Math.max(leftHeight,rightHeight)+1;
+    }
+}
+//Approach 1 T.C --> O(n^2) S.C-->O(1)
 class Solution {
     public int diameterOfBinaryTree(TreeNode root) {
         int ans = diameter(root);
