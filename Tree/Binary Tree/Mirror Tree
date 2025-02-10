@@ -1,0 +1,20 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/mirror-tree
+class Solution {
+    // Function to convert a binary tree into its mirror tree.
+    void mirror(Node node) {
+        // Your code here
+        if(node == null){
+            return;
+        }
+        
+        mirror(node.left);
+        mirror(node.right);
+        
+        Node left=node.right;
+        Node right=node.left;
+        
+        node.left=left;
+        node.right=right;
+    
+    }
+}
