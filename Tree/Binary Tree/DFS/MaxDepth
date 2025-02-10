@@ -1,0 +1,22 @@
+https://leetcode.com/problems/maximum-depth-of-binary-tree/
+class Solution {
+    public int maxDepth(TreeNode root) {
+        int ans = mDepth(root);
+
+        return ans;
+    }
+
+    public int mDepth(TreeNode root){
+        if(root==null){
+            return 0;
+
+        }
+
+        int leftHeight = mDepth(root.left);
+        int rightHeight = mDepth(root.right);
+
+        int maxDepth=Math.max(leftHeight,rightHeight)+1;
+
+        return maxDepth;
+    }
+}
