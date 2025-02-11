@@ -1,3 +1,8 @@
+1.Use hashmap and global variable preIndex
+2.put all inorder ele into hashmap with their indices
+3.inIndex=get(root.data)
+4.left --> start=same , end=inIndex-1
+5.right -->start=inIndex+1 , end=same
 class Solution {
     static int preIndex=0;
     public static Node buildTree(int inorder[], int preorder[]) {
