@@ -1,3 +1,5 @@
+https://leetcode.com/problems/construct-binary-tree-from-preorder-and-inorder-traversal/
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/construct-tree-1
 1.Use hashmap and global variable preIndex
 2.put all inorder ele into hashmap with their indices
 3.inIndex=get(root.data)
