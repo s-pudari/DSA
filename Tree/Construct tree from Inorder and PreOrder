@@ -1,0 +1,33 @@
+class Solution {
+    static int preIndex=0;
+    public static Node buildTree(int inorder[], int preorder[]) {
+        // code here
+        HashMap<Integer,Integer> inMap = new HashMap<>();
+        preIndex=0;
+        
+        for(int i=0;i<inorder.length;i++){
+            inMap.put(inorder[i],i);
+        }
+        
+        return constructTree(preorder,0,inorder.length-1,inMap);
+        
+       
+       
+    }
+    
+    public static Node constructTree(int[] preorder,int inStart,int inEnd,HashMap<Integer,Integer> inMap){
+        if(inStart>inEnd) return null;
+        
+        Node root = new Node(preorder[preIndex++]);
+        
+        
+        if(inStart == inEnd) return root;
+        
+        int inIndex=inMap.get(root.data);
+        
+        root.left=constructTree(preorder,inStart,inIndex-1,inMap);
+        root.right=constructTree(preorder,inIndex+1,inEnd,inMap);
+        
+        return root;
+    }
+}
