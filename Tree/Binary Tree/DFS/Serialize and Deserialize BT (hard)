@@ -1,0 +1,47 @@
+//https://leetcode.com/problems/serialize-and-deserialize-binary-tree/
+T.C & S.C -->O(n)
+Approach : 
+ 1.Create a method dfsSerialize to Convert BT to a string using stringbuilder in which values are seperated by space and N represents null (DFS)
+ 2.Now to deSerialize put the converted string values into queue by ignoring spaces [Arrays.asList(res.split(" "))] .
+ 3. Using dfsDeserilaize poll each character from queue and build BT using N for null
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public String serialize(TreeNode root) {
+        StringBuilder res = new StringBuilder();
+        dfsSerialize(root,res);
+
+        return res.toString();
+    }
+
+    public void dfsSerialize(TreeNode node,StringBuilder res){
+        if(node == null){
+            res.append("N").append(" ");
+            return;
+        }
+
+        res.append(node.val).append(" ");
+        dfsSerialize(node.left,res);
+        dfsSerialize(node.right,res);
+    }
+
+    
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(String res) {
+        Queue<String> str = new LinkedList<>(Arrays.asList(res.split(" ")));
+        return dfsDeserialize(str);
+
+    }
+
+    public TreeNode dfsDeserialize(Queue<String> str){
+        String s = str.poll();
+        if(s.equals("N")){
+            return null;
+        }
+        TreeNode node = new TreeNode(Integer.parseInt(s));
+        node.left=dfsDeserialize(str);
+        node.right=dfsDeserialize(str);
+        return node;
+    }
+}
