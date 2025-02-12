@@ -1,0 +1,58 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/k-sum-paths
+//Approach 2 using prefixSum T.C --> O(n) S.C --> O(h)
+1.Perform a DFS traversal on the tree.
+2.Maintain a HashMap (prefixSumMap) that stores:
+  -Key: The prefix sum encountered at any node.
+  -Value: The number of times this prefix sum has been seen.
+3.For each node:
+  -Compute the current prefix sum.
+  -Check how many times (current prefix sum - k) has been seen before.
+  -Recursively traverse the left and right subtrees.
+  -Backtrack by decrementing the count in the map after returning from recursion.
+class Solution {
+    
+    public int sumK(Node root, int k) {
+        // code here
+       HashMap<Integer,Integer> hm = new HashMap<>();
+       
+       hm.put(0,1);
+       
+       return dfs(root,0,k,hm);
+    }
+    public int dfs(Node node,int currSum,int k , HashMap<Integer,Integer> hm){
+        if(node == null) return 0;
+        
+        currSum += node.data;
+        
+        int count = hm.getOrDefault(currSum-k,0);
+        
+        hm.put(currSum,hm.getOrDefault(currSum,0)+1);
+        
+        count+=dfs(node.left,currSum,k,hm);
+        count+=dfs(node.right,currSum,k,hm);
+        
+        hm.put(currSum,hm.get(currSum)-1);
+        
+        return count;
+    }
+
+}
+//Approach 1 T.C --> O(n^2) S.C -->O(H)
+class Solution {
+    
+    public int sumK(Node root, int k) {
+        // code here
+        if(root==null) return 0;
+        
+        return countFromNode(root,k)+sumK(root.left,k)+sumK(root.right,k);
+    }
+    
+    public int countFromNode(Node root,int k){
+        if(root == null) return 0;
+        
+        k-=root.data;
+        
+        return (k==0 ? 1 : 0)+countFromNode(root.left,k)+countFromNode(root.right,k);
+    }
+
+}
