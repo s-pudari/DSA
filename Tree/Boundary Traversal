@@ -1,0 +1,61 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/boundary-traversal-of-binary-tree
+1.Add leftBoundary
+2.Add leaves
+3.Add rightBoundary in reverse order
+class Solution {
+    public ArrayList<Integer> boundaryTraversal(Node root) {
+        ArrayList<Integer> result = new ArrayList<>();
+        if (root == null) return result;
+
+        // Step 1: Add root node (if it's not a leaf)
+        if (!isLeaf(root)) result.add(root.data);
+
+        // Step 2: Add left boundary (excluding leaves)
+        addLeftBoundary(root.left, result);
+
+        // Step 3: Add all leaf nodes (from both left and right subtrees)
+        addLeafNodes(root, result);
+
+        // Step 4: Add right boundary (excluding leaves), in reverse order
+        addRightBoundary(root.right, result);
+
+        return result;
+    }
+
+    // Function to check if a node is a leaf
+    private boolean isLeaf(Node node) {
+        return (node.left == null && node.right == null);
+    }
+
+    // Function to add left boundary (excluding leaves)
+    private void addLeftBoundary(Node node, ArrayList<Integer> result) {
+        while (node != null) {
+            if (!isLeaf(node)) result.add(node.data);  // Add only if not a leaf
+            if (node.left != null) node = node.left;   // Prefer left child
+            else node = node.right;  // If left is absent, move to right child
+        }
+    }
+
+    // Function to add all leaf nodes using inorder traversal
+    private void addLeafNodes(Node node, ArrayList<Integer> result) {
+        if (node == null) return;
+        if (isLeaf(node)) {
+            result.add(node.data);
+            return;
+        }
+        addLeafNodes(node.left, result);
+        addLeafNodes(node.right, result);
+    }
+void addRightBoundary(Node root,ArrayList<Integer> ans){
+        Node curr=root.right;
+        ArrayList<Integer> res = new ArrayList<>();
+        while(curr != null){
+        if(!isLeaf(curr)) res.add(curr.data);
+        if(curr.right != null) curr=curr.right;
+        else curr=curr.left;
+        }
+        
+        for(int i=res.size()-1;i>=0;i--){
+            ans.add(res.get(i));
+        }
+    }
