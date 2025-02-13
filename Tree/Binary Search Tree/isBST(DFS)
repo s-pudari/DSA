@@ -1,0 +1,18 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/check-for-bst
+class Solution {
+    // Function to check whether a Binary Tree is BST or not.
+    boolean isBST(Node root) {
+        return isBSTUtil(root, Long.MIN_VALUE, Long.MAX_VALUE);
+    }
+    
+    // Utility function to check BST with range [min, max]
+    boolean isBSTUtil(Node node, long min, long max) {
+        if (node == null) return true; // Base case: Empty tree is a BST
+        
+        // Node's value must be within (min, max) range
+        if (node.data <= min || node.data >= max) return false;
+        
+        // Recursively check left and right subtrees with updated constraints
+        return isBSTUtil(node.left, min, node.data) && isBSTUtil(node.right, node.data, max);
+    }
+}
