@@ -1,0 +1,52 @@
+//Approach 2 optimal T.C & S.C --> O(h)
+class Solution {
+    int count = 0, result = -1;
+
+    public int kthSmallest(Node root, int k) {
+        inOrder(root, k);
+        return result;
+    }
+
+    private void inOrder(Node root, int k) {
+        if (root == null) return;
+
+        // Left subtree
+        inOrder(root.left, k);
+
+        // Process current node
+        count++;
+        if (count == k) {
+            result = root.data;
+            return;
+        }
+
+        // Right subtree
+        inOrder(root.right, k);
+    }
+}
+
+//Approach 1 using inorder and list T.C & S.C --> O(n)
+class Solution {
+    // Return the Kth smallest element in the given BST
+    public int kthSmallest(Node root, int k) {
+        // Write your code here
+        ArrayList<Integer> list = new ArrayList<>();
+        inOrder(root,list);
+        //System.out.println(list);
+        if(k>list.size()){
+            return -1;
+        }
+        
+        return list.get(k-1);
+    }
+    
+    void inOrder(Node root,ArrayList<Integer> list){
+        if(root == null){
+            return ;
+        }
+        
+        inOrder(root.left,list);
+        list.add(root.data);
+         inOrder(root.right,list);
+    }
+}
