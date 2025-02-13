@@ -1,0 +1,58 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/find-a-pair-with-given-target-in-bst
+T.C & S.C --> O(n) same for both approaches
+1.class Solution {
+    boolean findTarget(Node root, int target) {
+         Write your code here
+      HashSet<Integer> hs = new HashSet<>();
+      
+      helper(root,hs);
+      
+     for(int num : hs){
+          int required=target-num;
+          
+          if(hs.contains(required) && required != num){
+              return true;
+          }
+      }
+      return false;
+    }
+    
+    void helper(Node root, HashSet<Integer> hs){
+        if(root == null){
+            return;
+        }
+        
+        hs.add(root.data);
+        helper(root.left,hs);
+        helper(root.right,hs);
+        
+    }
+    
+    
+}
+2.class Solution {
+    boolean findTarget(Node root, int target) {
+        // Create a HashSet to store node values
+        HashSet<Integer> hs = new HashSet<>();
+        
+        // Traverse the tree and check for pairs
+        return helper(root, hs, target);
+    }
+
+    boolean helper(Node root, HashSet<Integer> hs, int target) {
+        if (root == null) {
+            return false;
+        }
+        
+        // Check if the complement exists before adding the current node
+        if (hs.contains(target - root.data)) {
+            return true;
+        }
+        
+        // Add current node value to HashSet
+        hs.add(root.data);
+
+        // Recursively check left and right subtrees
+        return helper(root.left, hs, target) || helper(root.right, hs, target);
+    }
+}
