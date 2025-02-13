@@ -1,5 +1,24 @@
 https://leetcode.com/problems/validate-binary-search-tree/description/
-public boolean isValidBST(TreeNode root) {
+1.class Solution {
+    public boolean isValidBST(TreeNode root) {
+        return helper(root,Long.MIN_VALUE,Long.MAX_VALUE);
+    }
+
+    public boolean helper(TreeNode node,Long min,Long max){
+        if(node == null){
+            return true;
+        }
+
+       // Node's value must be within (min, max) range
+        if(node.val <= min || node.val >= max){
+            return false;
+        }
+
+        return helper(node.left,min,(long)node.val) && helper(node.right,(long)node.val,max);
+    }
+}
+
+2.public boolean isValidBST(TreeNode root) {
         return helper(root,null,null);
     }
 
