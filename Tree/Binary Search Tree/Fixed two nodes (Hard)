@@ -1,0 +1,30 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/tree-gfg-160/problem/fixed-two-nodes-of-a-bst
+class Solution {
+    Node first, second, prev;
+
+    public void correctBST(Node root) {
+        inorder(root);  // Step 1: Identify swapped nodes
+        if (first != null && second != null) {  // Step 2: Swap values
+            int temp = first.data;
+            first.data = second.data;
+            second.data = temp;
+        }
+    }
+
+    private void inorder(Node root) {
+        if (root == null) return;  // Base case: If node is null, return
+
+        inorder(root.left);  // Step 1: Traverse Left Subtree
+
+        // Step 2: Check for swapped nodes
+        if (prev != null && prev.data > root.data) {  
+            if (first == null) {
+                first = prev; // First swapped node detected
+            }
+            second = root;  // Second swapped node detected
+        }
+        prev = root;  // Update prev to current node
+
+        inorder(root.right);  // Step 3: Traverse Right Subtree
+    }
+}
