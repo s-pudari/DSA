@@ -1,6 +1,74 @@
-https://leetcode.com/problems/copy-list-with-random-pointer/
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/linked-list-gfg-160/problem/clone-a-linked-list-with-next-and-random-pointer
+//Approach 2 --Optimised T.C -->O(n) S.C-->O(1)
+class Solution {
+    public Node cloneLinkedList(Node head) {
+        // Handle empty list case
+        if (head == null) return null;
 
-//Approach 1 T.C --> O(2n)  S.C --> O(n)+O(n)
+        Node curr = head;
+        Node next = null;
+
+        // ========== Part 1: Create interleaved list with copied nodes ==========
+        // For each original node, create a copy node and insert it right after the original
+        // Original: A -> B -> C becomes A -> A' -> B -> B' -> C -> C'
+        while (curr != null) {
+            // Save next original node before modifying pointers
+            next = curr.next;
+            
+            // Create copy node with same data
+            Node temp = new Node(curr.data);
+            
+            // Insert copy node between current and next original node
+            curr.next = temp;
+            temp.next = next;
+            
+            // Move to next original node (skip the copy we just created)
+            curr = next;
+        }
+
+        // ========== Part 2: Assign random pointers for copy nodes ==========
+        curr = head;  // Reset to head of interleaved list
+        while (curr != null) {
+            // Only process if current node has a random pointer
+            if (curr.random != null) {
+                // Copy node's random = original node's random's next
+                // (which is the corresponding copy node)
+                curr.next.random = curr.random.next;
+            }
+            
+            // Move to next original node (skip the copy node)
+            curr = curr.next.next;
+        }
+
+        // ========== Part 3: Separate interleaved lists ==========
+        curr = head;  // Reset to head of interleaved list
+        Node dummy = curr.next;  // Head of cloned list (first copy node)
+        Node copyCurr = dummy;   // Pointer for building cloned list
+
+        while (curr != null) {
+            // Restore original list's next pointer
+            curr.next = curr.next.next;
+            
+            // Set cloned list's next pointer (if next original exists)
+            if (curr.next != null) {
+                copyCurr.next = curr.next.next;
+            } else {
+                copyCurr.next = null;
+            }
+            
+            // Move pointers forward
+            copyCurr = copyCurr.next;
+            curr = curr.next;
+        }
+
+        return dummy;
+    }
+}
+
+//Approach 1 T.C --> O(n)  S.C --> O(n)+O(n)
+  --Create copy of each node and store the original node and copy node addresses in a hashmap
+  --now create new copy LL by using hashmap
+https://leetcode.com/problems/copy-list-with-random-pointer/
 class Solution {
     public Node copyRandomList(Node head) {
         Node temp=head;
@@ -27,6 +95,39 @@ class Solution {
 
             temp=temp.next;
         }
-        return head;
+        return hm.get(head);
+    }
+}
+gfg
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/linked-list-gfg-160/problem/clone-a-linked-list-with-next-and-random-pointer
+class Solution {
+    public Node cloneLinkedList(Node head) {
+        // code here
+        
+        HashMap<Node,Node> hm = new HashMap<>();
+        
+        Node temp=head;
+        
+       while(temp != null){
+           Node newNode =  new Node(temp.data);
+           
+           hm.put(temp,newNode);
+           
+           temp=temp.next;
+       }
+       
+       temp=head;
+       
+       while(temp != null){
+           Node copyNode = hm.get(temp);
+           
+           copyNode.next=hm.get(temp.next);
+           
+           copyNode.random=hm.get(temp.random);
+           
+           temp=temp.next;
+           
+       }
+       return hm.get(head);
     }
 }
