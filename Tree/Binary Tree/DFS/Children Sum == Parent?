@@ -1,0 +1,27 @@
+https://www.geeksforgeeks.org/problems/children-sum-parent/1
+
+T.C--> O(n) & S.C --> O(h)
+class Solution {
+    int isSumProperty(Node root) {
+        // Base Case: Empty tree satisfies the property
+        if (root == null) return 1;
+
+        // Base Case: Leaf node satisfies the property
+        if (root.left == null && root.right == null) return 1;
+
+        // Get the values of left and right child (0 if null)
+        int leftValue = (root.left != null) ? root.left.data : 0;
+        int rightValue = (root.right != null) ? root.right.data : 0;
+
+        // Check if current node satisfies the sum property
+        if (root.data == leftValue + rightValue) {
+            // Recursively check left and right subtrees
+            int leftCheck = isSumProperty(root.left);
+            int rightCheck = isSumProperty(root.right);
+            return (leftCheck == 1 && rightCheck == 1) ? 1 : 0;
+        }
+
+        // If current node violates the sum property
+        return 0;
+    }
+}
