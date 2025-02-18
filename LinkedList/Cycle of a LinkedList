@@ -1,25 +1,32 @@
 https://leetcode.com/problems/linked-list-cycle/
 //Approach Using a slow and fast pointer usually known as Tortoise and Hare Algo 
 T.C --> O(n) and S.C--> O(1)
-public class Solution {
-    public boolean hasCycle(ListNode head) {
-         if(head==null || head.next==null){
-              return false;
-          }
-        ListNode slow=head;
-        ListNode fast=head;
-
-        while(fast!=null && fast.next!=null){
-            slow=slow.next;
-            fast=fast.next.next;
-
-            if(slow==fast){
+class Solution {
+    // Function to check if the linked list has a loop using Floyd's Cycle-Finding Algorithm
+    public static boolean detectLoop(Node head) {
+        // Edge case: Empty list or single node cannot have a loop
+        if (head == null || head.next == null) {
+            return false;
+        }
+        
+        // Initialize two pointers - slow moves 1 step, fast moves 2 steps
+        Node slow = head;  // Tortoise pointer
+        Node fast = head;  // Hare pointer
+        
+        // Traverse the list until fast reaches end (null) or fast's next is null
+        while (fast != null && fast.next != null) {
+            // Move slow pointer by one node
+            slow = slow.next;
+            // Move fast pointer by two nodes
+            fast = fast.next.next;
+            
+            // If slow and fast meet at same node, loop exists
+            if (slow == fast) {
                 return true;
             }
         }
         
-       
-        
+        // If fast reached null - no loop in the list
         return false;
     }
 }
