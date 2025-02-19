@@ -1,0 +1,40 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/linked-list-gfg-160/problem/find-the-first-node-of-loop-in-linked-list--170645
+T.C --> O(n) & S.C -->O(1)
+class Solution {
+    public static Node findFirstNode(Node head) {
+        // Edge case: List is empty or has only one node (no cycle possible)
+        if (head == null || head.next == null) {
+            return null;
+        }
+
+        // Initialize two pointers for Floyd's Cycle Detection Algorithm
+        Node slow = head;  // Moves 1 node at a time (tortoise)
+        Node fast = head;  // Moves 2 nodes at a time (hare)
+
+        // Phase 1: Detect if cycle exists using fast/slow pointers
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+
+            // Cycle detected when pointers meet
+            if (slow == fast) {
+                // Phase 2: Find cycle entry point using mathematical proof:
+                // - Reset slow to head
+                // - Advance both pointers at same speed (1 node/step)
+                // - Meeting point = cycle entry node
+                slow = head;
+                
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                
+                // Return the first node of the cycle
+                return slow;
+            }
+        }
+
+        // If loop exits, fast reached null => no cycle exists
+        return null;
+    }
+}
