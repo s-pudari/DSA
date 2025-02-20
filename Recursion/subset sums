@@ -1,28 +1,36 @@
 https://www.geeksforgeeks.org/problems/subset-sums2234/1
 //T.C & S.C --> O(2^N + 2^N log(2^N))
 
+import java.util.*;
+
 class Solution {
     public ArrayList<Integer> subsetSums(int[] arr) {
-        // code here
-        int n=arr.length;
+        // Get the size of the input array
+        int n = arr.length;
         
-        ArrayList<Integer> li = new ArrayList<>();
+        // List to store all subset sums
+        ArrayList<Integer> result = new ArrayList<>();
         
-        allSubsets(arr,0,0,li,n);
+        // Call the recursive function to generate all subset sums
+        allSubsets(arr, 0, 0, result, n);
         
-        return li;
+        // Return the list of subset sums
+        return result;
     }
     
-    public static void allSubsets(int[] arr,int idx,int sum,ArrayList<Integer> li,int N){
-        if(idx==N){
-            li.add(sum);
+    public static void allSubsets(int[] arr, int idx, int sum, ArrayList<Integer> result, int N) {
+        // Base Case: When we reach the end of the array, store the sum in result
+        if (idx == N) {
+            result.add(sum);
             return;
         }
-        //pick the element
-        allSubsets(arr,idx+1,sum+arr[idx],li,N);
         
+        // **Tree Recursion:**
+        // **1. Include the current element in the subset (add it to the sum)**
+        allSubsets(arr, idx + 1, sum + arr[idx], result, N);
         
-        // do not pick the element
-        allSubsets(arr,idx+1,sum,li,N);
+        // **2. Exclude the current element from the subset (keep the sum unchanged)**
+        allSubsets(arr, idx + 1, sum, result, N);
     }
 }
+
