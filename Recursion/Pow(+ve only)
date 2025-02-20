@@ -1,0 +1,21 @@
+class Solution {
+    double power(double b, int e) {
+        // code here
+        
+        if(e==0){
+            return 1;
+            
+        }
+        
+        if(b==0){
+            return 0;
+            
+        }
+        
+        double bPow1=power(b,e-1);
+        
+        double bPow2=b*bPow1;
+        
+        return bPow2;
+    }
+}
