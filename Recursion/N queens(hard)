@@ -42,3 +42,57 @@ class Solution {
         }
     }
 }
+https://leetcode.com/problems/n-queens/
+import java.util.*;
+
+class Solution {
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> result = new ArrayList<>(); // Stores the final list of all valid board configurations
+        List<String> board = new ArrayList<>(); // Represents the chessboard with '.' and 'Q'
+
+        // Arrays to track attacks: 
+        boolean[] rows = new boolean[n];      // Tracks occupied rows
+        boolean[] d1 = new boolean[2 * n];    // Tracks occupied diagonals (top-left to bottom-right)
+        boolean[] d2 = new boolean[2 * n];    // Tracks occupied diagonals (top-right to bottom-left)
+        
+        // Initialize the board with empty rows
+        for (int i = 0; i < n; i++) {
+            board.add(".".repeat(n)); // Each row starts as "....." (n dots)
+        }
+
+        // Start solving from column 0 (Fixing the incorrect indexing in original code)
+        queensUtil(0, n, rows, d1, d2, board, result);
+
+        return result;
+    }
+
+    public void queensUtil(int col, int n, boolean[] rows, boolean[] d1, boolean[] d2, List<String> board, List<List<String>> result) {
+        // If all queens are placed successfully, add the board to result
+        if (col == n) {
+            result.add(new ArrayList<>(board)); // Store a copy of the current board
+            return;
+        }
+
+        // Try placing a queen in each row of the current column
+        for (int row = 0; row < n; row++) {
+            // Check if placing queen at (row, col) is safe
+            if (!rows[row] && !d1[row - col + n] && !d2[row + col]) {
+                // Mark row and diagonals as occupied
+                rows[row] = d1[row - col + n] = d2[row + col] = true;
+
+                // Place the queen at (row, col)
+                StringBuilder sb = new StringBuilder(board.get(row)); 
+                sb.setCharAt(col, 'Q'); 
+                board.set(row, sb.toString());
+
+                // Recur to place queens in the next column
+                queensUtil(col + 1, n, rows, d1, d2, board, result);
+
+                // Backtracking: Remove the queen and reset row and diagonals
+                sb.setCharAt(col, '.'); // Reset only the modified column
+                board.set(row, sb.toString());
+                rows[row] = d1[row - col + n] = d2[row + col] = false;
+            }
+        }
+    }
+}
