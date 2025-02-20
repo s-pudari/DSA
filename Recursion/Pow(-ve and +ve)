@@ -1,0 +1,31 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/powx-n
+class Solution {
+    double power(double base, int exponent) { //pow(b,e)
+        // Base Case 1: Any number raised to power 0 is 1
+        if (exponent == 0) {
+            return 1;
+        }
+        
+        // Base Case 2: If base is 0, return 0 (except 0^0 which is undefined)
+        if (base == 0) {
+            return 0;
+        }
+        
+        // Handle negative exponents by taking reciprocal
+        if (exponent < 0) {
+            return 1 / power(base, -exponent);
+        }
+
+        // Divide & Conquer: Reduce exponent by half
+        double halfPower = power(base, exponent / 2);
+
+        // If exponent is even: (b^e = (b^(e/2)) * (b^(e/2)))
+        if (exponent % 2 == 0) {
+            return halfPower * halfPower;
+        }
+        // If exponent is odd: (b^e = b * (b^(e/2)) * (b^(e/2)))
+        else {
+            return base * halfPower * halfPower;
+        }
+    }
+}
