@@ -1,0 +1,57 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/permutations-of-a-given-string2041
+T.C & S.C --> O(n! * n)
+
+class Solution {
+    public ArrayList<String> findPermutation(String s) {
+        // Create a list to store the unique permutations
+        ArrayList<String> result = new ArrayList<>();
+        
+        // Convert the string into a character array for easier manipulation
+        char[] ch = s.toCharArray();
+        
+        // Sort the character array to handle duplicate characters efficiently
+        Arrays.sort(ch);
+        
+        // Boolean array to keep track of used characters in the current permutation
+        boolean[] used = new boolean[ch.length];
+        
+        // Call the recursive backtracking function to generate permutations
+        backTrack(ch, used, new StringBuilder(), result);
+        
+        // Return the list of unique permutations
+        return result;
+    }
+    
+    public void backTrack(char[] ch, boolean[] used, StringBuilder sb, ArrayList<String> result) {
+        // Base case: If the current permutation length matches the input length, add it to the result
+        if (sb.length() == ch.length) {
+            result.add(sb.toString());  // Add the formed string to the result list
+            return;
+        }
+        
+        // Iterate over each character in the sorted character array
+        for (int i = 0; i < ch.length; i++) {
+            // Skip this character if it is already used in the current permutation
+            if (used[i]) continue;
+            
+            // Skip duplicate characters to avoid redundant permutations
+            // This ensures that we do not pick the same character multiple times from the same position
+            if (i > 0 && ch[i] == ch[i - 1] && !used[i - 1]) continue;
+            
+            // Mark the current character as used
+            used[i] = true;
+            
+            // Append the current character to the temporary string builder
+            sb.append(ch[i]);
+            
+            // Recursively call backtracking for the next position
+            backTrack(ch, used, sb, result);
+            
+            // Backtrack: Remove the last added character to explore other possibilities
+            sb.deleteCharAt(sb.length() - 1);
+            
+            // Unmark the current character as used for the next iterations
+            used[i] = false;
+        }
+    }
+}
