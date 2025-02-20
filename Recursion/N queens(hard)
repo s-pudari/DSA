@@ -1,0 +1,44 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/n-queen-problem0315
+T.C & S.C --> O(N!)
+class Solution {
+    public ArrayList<ArrayList<Integer>> nQueen(int n) {
+        // Boolean arrays to track occupied rows and diagonals
+        boolean rows[] = new boolean[n + 1]; // Tracks occupied rows
+        boolean diag1[] = new boolean[2 * n + 1]; // Tracks left-to-right diagonal (\)
+        boolean diag2[] = new boolean[2 * n + 1]; // Tracks right-to-left diagonal (/)
+
+        ArrayList<Integer> board = new ArrayList<>(); // Stores current queen positions
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>(); // Stores all valid solutions
+
+        // Start placing queens from the first column
+        nQueenUtil(1, n, rows, diag1, diag2, board, result);
+
+        return result;
+    }
+
+    public void nQueenUtil(int col, int n, boolean[] rows, boolean[] diag1, boolean[] diag2, 
+                           ArrayList<Integer> board, ArrayList<ArrayList<Integer>> result) {
+        // Base case: If all queens are placed, store the current board configuration
+        if (col > n) {
+            result.add(new ArrayList<>(board)); // Add deep copy of board
+            return;
+        }
+
+        // Try placing a queen in each row of the current column
+        for (int row = 1; row <= n; row++) {
+            // Check if it's safe to place a queen at (row, col)
+            if (!rows[row] && !diag1[row - col + n] && !diag2[row + col]) {
+                // Mark the row and diagonals as occupied
+                rows[row] = diag1[row - col + n] = diag2[row + col] = true;
+                board.add(row); // Store queen's row position for this column
+
+                // Recursively try placing a queen in the next column
+                nQueenUtil(col + 1, n, rows, diag1, diag2, board, result);
+
+                // Backtrack: Unmark the row and diagonals and remove last queen
+                rows[row] = diag1[row - col + n] = diag2[row + col] = false;
+                board.remove(board.size() - 1);
+            }
+        }
+    }
+}
