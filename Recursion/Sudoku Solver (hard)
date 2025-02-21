@@ -1,0 +1,67 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/solve-the-sudoku-1587115621
+class Solution {
+    /*
+    Approach:
+    1. Backtracking Algorithm: Systematically try numbers 1-9 in each empty cell.
+    2. Validity Check: For each number, ensure it's not present in the same row, column, or 3x3 subgrid.
+    3. Recursive Solving: Place a valid number, recurse to solve the next cell. Backtrack if a dead end is reached.
+    4. Termination: When all cells are filled, the Sudoku is solved.
+
+    Dry Run Example:
+    Sample Input (Row 0): [5, 3, 0, 0, 7, 0, 0, 0, 0]
+    - First empty cell at (0,2). Try numbers 1-9:
+      - 1: Invalid (present in row 0 via 5,3,7? No. But check subgrid. Subgrid (0-2 rows, 0-2 cols) has 5,3,9,8 → 1 is valid.
+      - Assume 4 is placed. Now proceed to next empty cell.
+    - Repeat until all cells are valid or backtrack to try alternative numbers.
+    */
+
+    // Main method to initiate Sudoku solving
+    static void solveSudoku(int[][] mat) {
+        solve(mat);
+    }
+
+    // Backtracking solver: Returns true if Sudoku is solvable from current state
+    static boolean solve(int[][] board) {
+        // Traverse each cell in the board
+        for (int row = 0; row < 9; row++) {
+            for (int col = 0; col < 9; col++) {
+                // Find empty cell (0 represents empty)
+                if (board[row][col] == 0) {
+                    // Try numbers 1-9 in the empty cell
+                    for (int num = 1; num <= 9; num++) {
+                        if (isValid(row, col, board, num)) {
+                            board[row][col] = num; // Place the number
+                            if (solve(board)) {     // Recurse to solve next cell
+                                return true;        // Solution found
+                            }
+                            board[row][col] = 0;    // Backtrack (reset cell)
+                        }
+                    }
+                    return false; // No valid number found for this cell
+                }
+            }
+        }
+        return true; // All cells filled (base case)
+    }
+
+    // Checks if 'num' can be placed at (row, col) without conflicts
+    static boolean isValid(int row, int col, int[][] board, int num) {
+        // Check row and column for duplicates
+        for (int i = 0; i < 9; i++) {
+            if (board[row][i] == num || board[i][col] == num) {
+                return false;
+            }
+        }
+        // Check 3x3 subgrid
+        int startRow = row - row % 3; // Subgrid start row (0, 3, 6)
+        int startCol = col - col % 3; // Subgrid start column (0, 3, 6)
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[startRow + i][startCol + j] == num) {
+                    return false;
+                }
+            }
+        }
+        return true; // No conflicts found
+    }
+}
