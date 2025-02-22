@@ -1,0 +1,56 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-bonus-problem/problem/possible-words-from-phone-digits-1587115620
+/*
+Approach:
+1. Recursive Backtracking: Generate all possible combinations by recursively appending each character corresponding to the current digit.
+2. Keypad Mapping: Use a predefined array where each index represents a digit and holds its corresponding letters (e.g., 2 -> "abc").
+3. Base Case: When the current index reaches the input array length, add the accumulated string to the result.
+4. Character Iteration: For each digit, iterate through all its possible letters and recursively process the next digit.
+
+Dry Run Example:
+Input: arr = [2, 3]
+Keypad Mapping: 2 -> "abc", 3 -> "def"
+
+Steps:
+1. Start with idx=0, current=""
+2. Process digit 2: iterate 'a', 'b', 'c'
+   - For 'a' (current="a"), process next digit (3):
+     - Iterate 'd', 'e', 'f' → add "ad", "ae", "af"
+   - For 'b' (current="b"), process next digit (3):
+     - Iterate 'd', 'e', 'f' → add "bd", "be", "bf"
+   - For 'c' (current="c"), process next digit (3):
+     - Iterate 'd', 'e', 'f' → add "cd", "ce", "cf"
+Final Result: [ad, ae, af, bd, be, bf, cd, ce, cf]
+*/
+
+class Solution {
+    public ArrayList<String> possibleWords(int[] arr) {
+        ArrayList<String> result = new ArrayList<>();
+        // Keypad mapping: index 2 has "abc", 3 has "def", etc.
+        String[] keypad = {"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+        
+        // Handle empty input case
+        if (arr == null || arr.length == 0) {
+            return result;
+        }
+        
+        // Start recursive generation from index 0 with empty string
+        generateAll(arr, keypad, "", 0, result);
+        return result;
+    }
+    
+    private void generateAll(int[] arr, String[] keypad, String current, int idx, ArrayList<String> result) {
+        // Base case: when all digits are processed, add current string to result
+        if (idx == arr.length) {
+            result.add(current);
+            return;
+        }
+        
+        // Get letters corresponding to the current digit (e.g., arr[2] -> "abc")
+        String letters = keypad[arr[idx]];
+        
+        // Append each letter and recurse for next digit
+        for (char ch : letters.toCharArray()) {
+            generateAll(arr, keypad, current + ch, idx + 1, result);
+        }
+    }
+}
