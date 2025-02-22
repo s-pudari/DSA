@@ -1,0 +1,67 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/word-search
+/*
+Approach:
+1. DFS with Backtracking: Explore all paths starting from each cell matching the first character of the word.
+2. Matrix Traversal: For each cell, if it matches the first character, initiate DFS to check subsequent characters.
+3. Boundary & Validity Checks: Ensure DFS stays within matrix bounds and cells are not revisited in the current path.
+4. Temporary Marking: Mark cells as visited during current DFS by changing their value, revert after exploration (backtracking).
+5. Direction Exploration: Recursively check all four possible directions (up, down, left, right) for the next character.
+
+Dry Run Example:
+Matrix:
+[ ['A','B','C'],
+  ['S','F','D'] ]
+Word: "ABFD"
+
+1. Start at (0,0) 'A' (matches first char).
+2. Mark (0,0) as '#'. Check index 1.
+3. Move right to (0,1) 'B' (matches index 1). Mark as '#', index 2.
+4. Move down to (1,1) 'F' (matches index 2). Mark as '#', index 3.
+5. Move right to (1,2) 'D' (matches index 3). All characters matched. Return true.
+*/
+
+class Solution {
+    static public boolean isWordExist(char[][] mat, String word) {
+        int rows = mat.length;
+        int cols = mat[0].length;
+        
+        // Traverse each cell to find starting character
+        for (int row = 0; row < rows; row++) {
+            for (int col = 0; col < cols; col++) {
+                // Initiate DFS if first character matches
+                if (mat[row][col] == word.charAt(0) && dfs(mat, row, col, word, 0)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
+    private static boolean dfs(char[][] mat, int row, int col, String word, int index) {
+        // All characters in the word are found
+        if (index == word.length()) {
+            return true;
+        }
+        
+        // Check if current cell is out of bounds or does not match
+        if (row < 0 || row >= mat.length || col < 0 || col >= mat[0].length 
+            || mat[row][col] != word.charAt(index)) {
+            return false;
+        }
+        
+        // Mark current cell as visited temporarily
+        char temp = mat[row][col];
+        mat[row][col] = '#';
+        
+        // Explore all four possible directions
+        boolean found = dfs(mat, row + 1, col, word, index + 1)  // Down
+                     || dfs(mat, row - 1, col, word, index + 1)  // Up
+                     || dfs(mat, row, col + 1, word, index + 1)   // Right
+                     || dfs(mat, row, col - 1, word, index + 1);  // Left
+        
+        // Restore original value for backtracking
+        mat[row][col] = temp;
+        
+        return found;
+    }
+}
