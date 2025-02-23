@@ -1,23 +1,65 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-bonus-problem/problem/combination-sum-1587115620
 https://leetcode.com/problems/combination-sum/description/
-class Solution {
-    public List<List<Integer>> combinationSum(int[] candidates, int target) {
-        List<List<Integer>> ansList = new ArrayList<>();
-        findCombinations(0,candidates,target,ansList,new ArrayList<>());
-        return ansList;
-    }
-    public static void findCombinations(int idx,int[] arr,int target,List<List<Integer>> ansList,ArrayList<Integer> ds){
-        if(idx==arr.length){
-            if(target==0){
-                ansList.add(new ArrayList<>(ds));
-            }
-                return;
-        }
+/**
+ * Approach:
+ * 1. Use **Backtracking** to explore all possible combinations.
+ * 2. Start from the first element and either **pick** or **not pick** it:
+ *    - If we pick, reduce the target and continue with the same index (as repetition is allowed).
+ *    - If we don’t pick, move to the next index.
+ * 3. If the target becomes 0, store the current combination.
+ * 4. If we reach the end of the array and the target is not 0, discard the combination.
+ *
+ * Dry Run:
+ * Input: arr = [2, 3, 6, 7], target = 7
+ * 
+ * Step 1: Start from index 0 (arr[0] = 2), remaining target = 7
+ * - Pick 2 → Remaining = 5 → Pick 2 → Remaining = 3 → Pick 2 → Remaining = 1 (Invalid)
+ * - Backtrack → Pick 3 → Remaining = 0 → Store [2,2,3]
+ * - Backtrack → Pick 6 → Remaining = 1 (Invalid)
+ * - Pick 7 → Remaining = 0 → Store [7]
+ * 
+ * Output: [[2,2,3], [7]]
+ */
 
-        if(arr[idx]<=target){
-            ds.add(arr[idx]);
-            findCombinations(idx,arr,target-arr[idx],ansList,ds);
-            ds.remove(ds.size()-1);
+import java.util.*;
+
+class Solution {
+    // Function to find all combinations of elements in arr that sum to target.
+    static ArrayList<ArrayList<Integer>> combinationSum(int[] arr, int target) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        
+        // Edge case: If the array is empty, return an empty result.
+        if (arr.length == 0 || arr == null) {
+            return result;
         }
-        findCombinations(idx+1,arr,target,ansList,ds);
+        
+        // Start the recursive backtracking process.
+        allCombinations(0, target, arr, result, new ArrayList<>());
+        
+        return result;
+    }
+    
+    // Helper function to find all combinations using backtracking.
+    private static void allCombinations(int idx, int target, int[] arr, 
+                                        ArrayList<ArrayList<Integer>> result, ArrayList<Integer> ans) {
+        // Base case: If we have checked all elements.
+        if (idx == arr.length) {
+            // If the target is exactly 0, add the combination to the result.
+            if (target == 0) {
+                result.add(new ArrayList<>(ans));
+            }
+            return;
+        }
+        
+        // If the current element can be included (i.e., it does not exceed the target).
+        if (arr[idx] <= target) {
+            // Pick the element
+            ans.add(arr[idx]);
+            allCombinations(idx, target - arr[idx], arr, result, ans); // Stay at the same index (repetition allowed)
+            ans.remove(ans.size() - 1); // Backtrack: Remove last added element
+        }
+        
+        // Skip the element and move to the next index
+        allCombinations(idx + 1, target, arr, result, ans);
     }
 }
