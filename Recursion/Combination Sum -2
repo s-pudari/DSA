@@ -1,25 +1,82 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-bonus-problem/problem/combination-sum-ii-1664263832
 https://leetcode.com/problems/combination-sum-ii/description/
-class Solution {
-    public List<List<Integer>> combinationSum2(int[] candidates, int target) {
-        List<List<Integer>> ans = new ArrayList<>();
-        Arrays.sort(candidates);
-        findCombinations(0,candidates,target,ans,new ArrayList<>());
-        return ans;
-    }
-    private void findCombinations(int idx,int[] arr,int target, List<List<Integer>> ans,List<Integer> ds){
-        
-            if(target==0){
-                ans.add(new ArrayList<>(ds));
-            return;
-            }
-        
-        for(int i=idx;i<arr.length;i++){
-            if(i>idx && arr[i]==arr[i-1]) continue;
-            if(arr[i]>target) break;
+import java.util.*;
 
-            ds.add(arr[i]);
-            findCombinations(i+1,arr,target-arr[i],ans,ds);
-            ds.remove(ds.size()-1);
+class Solution {
+    /*
+    -------------------- APPROACH --------------------
+    1. **Sorting the Array**: First, we sort `arr[]` to easily handle duplicate elements.
+    2. **Backtracking with Recursion**:
+        - We iterate through the array and try including each element in our current combination.
+        - If an element is included, we recursively call the function with `i + 1` (to avoid reusing elements).
+        - If the `target` becomes `0`, we add the current combination to the `result` list.
+        - If an element is greater than `target`, we break early to avoid unnecessary computations.
+    3. **Skipping Duplicates**: 
+        - If the current element is the same as the previous one (`arr[i] == arr[i-1]`), we skip it to ensure unique combinations.
+    
+    -------------------- DRY RUN --------------------
+    **Input:** arr = [2, 4, 6, 8], target = 8
+    
+    **Sorted Array:** [2, 4, 6, 8]
+
+    **Recursive Calls:**
+    - Start with an empty list `[]`
+    - Try adding `2` → `[2]`
+        - Try adding `2` again (invalid because we move to next index)
+        - Try adding `4` → `[2, 4]`
+        - Try adding `6` → `[2, 6]` (valid)
+        - Try adding `8` → `[2, 8]` (exceeds target)
+    - Try adding `4` → `[4]`
+        - Try adding `4` again (invalid)
+        - Try adding `6` → `[4, 6]` (exceeds target)
+        - Try adding `8` → `[4, 8]` (valid)
+    - Try adding `6` → `[6]`
+        - Try adding `8` → `[6, 8]` (valid)
+    - Try adding `8` → `[8]` (valid)
+
+    **Final Output:**
+    ```
+    [[2, 6], [4, 4], [8]]
+    ```
+    */
+
+    // Function to find all unique combinations that sum to target.
+    static ArrayList<ArrayList<Integer>> uniqueCombinations(int[] arr, int target) {
+        ArrayList<ArrayList<Integer>> result = new ArrayList<>();
+        if (arr.length == 0) {
+            return result;
+        }
+        
+        Arrays.sort(arr); // Sorting helps in handling duplicates and optimizing search
+        
+        allCombinations(0, target, arr, result, new ArrayList<>());
+        
+        return result;
+    }
+
+    private static void allCombinations(int idx, int target, int[] arr, ArrayList<ArrayList<Integer>> result, ArrayList<Integer> ans) {
+        // Base Case: If target becomes 0, we found a valid combination
+        if (target == 0) {
+            result.add(new ArrayList<>(ans));
+            return;
+        }
+
+        // Loop through elements starting from index 'idx'
+        for (int i = idx; i < arr.length; i++) {
+            // Skip duplicate elements to ensure unique combinations
+            if (i > idx && arr[i] == arr[i - 1]) continue;
+
+            // If the element is greater than the target, break (early stopping)
+            if (arr[i] > target) break;
+
+            // Include current element in the combination
+            ans.add(arr[i]);
+
+            // Recursively call for next index (i+1 to avoid reusing elements)
+            allCombinations(i + 1, target - arr[i], arr, result, ans);
+
+            // Backtrack: Remove last added element to try other possibilities
+            ans.remove(ans.size() - 1);
         }
     }
 }
