@@ -1,0 +1,64 @@
+https://leetcode.com/problems/permutations/
+Approach 1
+import java.util.*;
+
+class Solution {
+    /*
+     * Approach:
+     * - Use backtracking to generate all permutations.
+     * - A boolean array "freq" keeps track of elements already used.
+     * - If all elements are used (ans.size() == nums.length), store the permutation.
+     * - Backtrack by removing the last added element and marking it unused.
+     *
+     * Time Complexity: O(N!) -> N! permutations, each taking O(N) time to generate.
+     */
+
+    public List<List<Integer>> permute(int[] nums) {
+        List<List<Integer>> result = new ArrayList<>();
+        List<Integer> ans = new ArrayList<>();
+
+        // Edge case: If the array is empty, return an empty list
+        if (nums.length == 0) {
+            return result;
+        }
+
+        // Boolean array to track used elements
+        boolean[] freq = new boolean[nums.length];
+
+        // Call the recursive function to generate permutations
+        permuteAll(nums, freq, result, ans);
+
+        return result;
+    }
+
+    // Recursive function to generate all permutations
+    private void permuteAll(int[] nums, boolean[] freq, List<List<Integer>> result, List<Integer> ans) {
+        // Base condition: If ans contains all elements, add it to result
+        if (ans.size() == nums.length) {
+            result.add(new ArrayList<>(ans)); // Store a copy of ans
+            return;
+        }
+
+        // Iterate over all elements
+        for (int i = 0; i < nums.length; i++) {
+            if (!freq[i]) { // If not already used
+                freq[i] = true; // Mark as used
+                ans.add(nums[i]); // Include the element
+
+                // Recursive call to generate further permutations
+                permuteAll(nums, freq, result, ans);
+
+                // Backtracking: Undo the choice and move to the next possibility
+                freq[i] = false; 
+                ans.remove(ans.size() - 1);
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        Solution obj = new Solution();
+        int[] nums = {1, 2, 3};
+        List<List<Integer>> result = obj.permute(nums);
+        System.out.println(result);
+    }
+}
