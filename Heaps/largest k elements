@@ -1,0 +1,96 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-gfg-160/problem/k-largest-elements4206
+//Approach 2 using Heap T.C-->O(n log k) S.C --> O(n)
+import java.util.*;
+
+class Solution {
+    /**
+     * Function to find k largest elements in decreasing order.
+     * @param arr - The input array of positive integers.
+     * @param k - The number of largest elements to return.
+     * @return A list containing k largest elements in descending order.
+     */
+    public static ArrayList<Integer> kLargest(int[] arr, int k) {
+        // Min Heap (Priority Queue) to store the top 'k' largest elements
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+
+        // Step 1: Maintain a min heap of size 'k'
+        for (int num : arr) {
+            minHeap.add(num);  // Add current element to the heap
+            if (minHeap.size() > k) {
+                minHeap.poll();  // Remove the smallest element if heap exceeds size 'k'
+            }
+        }
+
+        // Step 2: Extract elements from min heap (currently in ascending order)
+        ArrayList<Integer> result = new ArrayList<>();
+        while (!minHeap.isEmpty()) {
+            result.add(minHeap.poll());
+        }
+
+        // Step 3: Reverse the result list to get descending order
+        Collections.reverse(result);
+
+        return result;
+    }
+
+    // Driver Code
+    public static void main(String[] args) {
+        int[] arr = {12, 5, 787, 1, 23, 56, 9};
+        int k = 3;
+
+        // Get k largest elements
+        ArrayList<Integer> result = kLargest(arr, k);
+
+        // Print the result
+        System.out.println("K largest elements in descending order: " + result);
+        // Expected Output: [787, 56, 23]
+    }
+}
+
+//Approach 1 using sorting T.C --> O(n log n + k) S.C --> O(n)
+import java.util.*;
+
+class Solution {
+    /**
+     * Function to return k largest elements in decreasing order.
+     * @param arr - Input array of integers
+     * @param k - Number of largest elements required
+     * @return ArrayList of k largest elements in decreasing order
+     */
+    public static ArrayList<Integer> kLargest(int[] arr, int k) {
+        ArrayList<Integer> list = new ArrayList<>();
+        
+        // Edge case: If the array is empty, return an empty list
+        if (arr.length == 0) {
+            return list;
+        }
+
+        // Step 1: Sort the array in ascending order (O(n log n))
+        Arrays.sort(arr);
+
+        // Step 2: Reverse the array (O(n))
+        for (int i = 0; i < arr.length / 2; i++) {
+            int temp = arr[i];
+            arr[i] = arr[arr.length - i - 1];
+            arr[arr.length - i - 1] = temp;
+        }
+
+        // Step 3: Add first 'k' elements (O(k))
+        for (int i = 0; i < k; i++) {
+            list.add(arr[i]);
+        }
+
+        return list;
+    }
+
+    // Driver Code for Testing
+    public static void main(String[] args) {
+        int[] arr = {12, 5, 787, 1, 23, 56, 9};
+        int k = 3;
+
+        ArrayList<Integer> result = kLargest(arr, k);
+        System.out.println("K largest elements in descending order: " + result);
+        // Expected Output: [787, 56, 23]
+    }
+}
+
