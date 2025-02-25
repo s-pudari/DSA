@@ -1,0 +1,142 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-gfg-160/problem/longest-valid-parentheses5657
+1.(Optimised)/*
+Approach:
+1. We use **two passes** (left-to-right and right-to-left) to count valid parentheses.
+2. We maintain two counters, `left` (count of '(') and `right` (count of ')').
+3. **First Pass (Left to Right)**:
+   - If `right == left`, update `max` as `2 * left` (valid substring).
+   - If `right > left`, reset both counters.
+4. **Second Pass (Right to Left)** (to handle cases like "(()"):
+   - If `left == right`, update `max`.
+   - If `left > right`, reset both counters.
+5. Finally, return `max` as the longest valid parentheses substring.
+
+Time Complexity: **O(N)** (Single traversal in both passes)
+Space Complexity: **O(1)** (Only a few variables are used)
+
+Dry Run:
+Example: `(()))())(`
+
+First Pass (L -> R):
+    i=0: ( → left=1, right=0
+    i=1: ( → left=2, right=0
+    i=2: ) → left=2, right=1
+    i=3: ) → left=2, right=2 (Valid → max=4)
+    i=4: ) → left=2, right=3 (Reset left=0, right=0)
+    i=5: ( → left=1, right=0
+    i=6: ) → left=1, right=1 (Valid → max=4)
+    i=7: ) → left=1, right=2 (Reset left=0, right=0)
+    i=8: ( → left=1, right=0
+
+Second Pass (R -> L):
+    i=8: ( → left=1, right=0
+    i=7: ) → left=1, right=1 (Valid → max=4)
+    i=6: ) → left=1, right=2
+    i=5: ( → left=2, right=2 (Valid → max=4)
+    i=4: ) → left=2, right=3
+    i=3: ) → left=2, right=4
+    i=2: ) → left=2, right=5
+    i=1: ( → left=3, right=5
+    i=0: ( → left=4, right=5
+
+Final max length: **4**
+*/
+
+class Solution {
+    static int maxLength(String s) {
+        int max = 0;
+        int left = 0, right = 0;
+        
+        // Left to right pass
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                left++;
+            } else {
+                right++;
+            }
+            if (right == left) {
+                max = Math.max(max, left * 2);
+            } else if (right > left) {
+                left = 0;
+                right = 0;
+            }
+        }
+        
+        left = 0;
+        right = 0;
+        
+        // Right to left pass
+        for (int i = s.length() - 1; i >= 0; i--) {
+            if (s.charAt(i) == '(') {
+                left++;
+            } else {
+                right++;
+            }
+            
+            if (left == right) {
+                max = Math.max(max, left * 2);
+            } else if (left > right) {
+                left = 0;
+                right = 0;
+            }
+        }
+        return max;
+    }
+}
+2.Using Stack
+/*
+Approach:
+1. Use a **stack** to track indices of unmatched parentheses.
+2. Push the index of **opening '(' brackets** onto the stack.
+3. When encountering **closing ')' brackets**:
+   - If the stack is **not empty**, pop the last '(' index.
+   - If the stack is empty, push the current ')' index (acts as a base).
+4. The longest valid substring is determined by finding **gaps between indices** in the stack.
+   - The stack stores invalid indices, so the valid substring lies **between them**.
+
+Time Complexity: **O(N)** (Single traversal of string)
+Space Complexity: **O(N)** (Stack stores indices)
+
+Dry Run:
+Example: `(()))())(`
+
+Stack Process:
+    i=0: ( → push [0]
+    i=1: ( → push [0,1]
+    i=2: ) → pop [0] → max = 2
+    i=3: ) → pop [] → max = 4
+    i=4: ) → push [4] (no matching '(')
+    i=5: ( → push [4,5]
+    i=6: ) → pop [4] → max = 4
+    i=7: ) → push [4,7] (no matching '(')
+    i=8: ( → push [4,7,8]
+
+Final max length: **4**
+*/
+
+import java.util.*;
+
+class Solution {
+    static int maxLength(String s) {
+        Stack<Integer> stack = new Stack<>();
+        stack.push(-1); // Initial base to handle cases like "()"
+
+        int max = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                stack.push(i); // Store index of '('
+            } else {
+                stack.pop(); // Try to match ')'
+
+                if (!stack.isEmpty()) {
+                    max = Math.max(max, i - stack.peek()); // Valid substring length
+                } else {
+                    stack.push(i); // Store unmatched ')'
+                }
+            }
+        }
+        return max;
+    }
+}
+
