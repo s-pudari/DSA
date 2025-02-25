@@ -1,0 +1,50 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-gfg-160/problem/next-larger-element-1587115620
+/*
+Approach:
+1. Use a **monotonic decreasing stack** to store elements.
+2. Traverse **from right to left**:
+   - Pop elements from the stack **until a greater element is found**.
+   - If no greater element exists, store **-1**.
+   - Else, store the **top of the stack** as the next greater element.
+   - Push the current element onto the stack.
+3. Reverse the stored results before returning.
+
+Time Complexity: **O(N)** (Each element is pushed & popped once)
+Space Complexity: **O(N)** (For storing results & stack)
+
+Dry Run:
+Example: `[4, 5, 2, 10, 8]`
+Step-by-step stack state:
+  i=4: 8 → [-1]
+  i=3: 10 → [-1, -1]
+  i=2: 2 → [10, -1, 10]
+  i=1: 5 → [10, 10, 10, 10]
+  i=0: 4 → [5, 10, 10, 10, -1]
+Final Output: `[5, 10, 10, -1, -1]`
+*/
+
+import java.util.*;
+
+class Solution {
+    public ArrayList<Integer> nextLargerElement(int[] arr) {
+        ArrayList<Integer> result = new ArrayList<>();
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = arr.length - 1; i >= 0; i--) {
+            while (!st.isEmpty() && st.peek() <= arr[i]) {
+                st.pop(); // Remove smaller elements
+            }
+
+            if (st.isEmpty()) {
+                result.add(-1); // No greater element
+            } else {
+                result.add(st.peek()); // Store next greater
+            }
+
+            st.push(arr[i]); // Push current element onto stack
+        }
+
+        Collections.reverse(result); // Reverse to match original order
+        return result;
+    }
+}
