@@ -1,0 +1,72 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-gfg-160/problem/maximum-rectangular-area-in-a-histogram-1587115620
+/*
+Approach:
+------------
+1. **Stack-Based Solution:** We use a **monotonic increasing stack** to efficiently determine the largest rectangle area in a histogram.
+2. **Iterate through the bars:** 
+   - Push elements into the stack if they maintain an increasing order.
+   - When we encounter a bar that is smaller than the top of the stack, we calculate the maximum possible area with the popped bar as the smallest height.
+   - Repeat this until we find a valid position for the current bar.
+3. **Handle Remaining Elements:**
+   - After traversing the entire array, remaining elements in the stack are processed to compute possible areas.
+
+Time Complexity:
+-----------------
+- **O(N)** (Each element is pushed and popped once, making it linear)
+
+Space Complexity:
+-------------------
+- **O(N)** (Stack stores at most N elements in the worst case)
+
+Dry Run:
+---------
+Consider `arr = [2,1,5,6,2,3]`
+
+| Step | i  | Stack (Index) | Popped | Width  | Height | Area  | Max Area |
+|------|----|--------------|--------|--------|--------|-------|----------|
+| 1    | 0  | [0]          | -      | -      | -      | -     | 0        |
+| 2    | 1  | []           | 0      | 1      | 2      | 2     | 2        |
+| 3    | 1  | [1]          | -      | -      | -      | -     | 2        |
+| 4    | 2  | [1,2]        | -      | -      | -      | -     | 2        |
+| 5    | 3  | [1,2,3]      | -      | -      | -      | -     | 2        |
+| 6    | 4  | [1]          | 3,2    | 2,3    | 5,6    | 10    | 10       |
+| 7    | 4  | [1,4]        | -      | -      | -      | -     | 10       |
+| 8    | 5  | [1,4,5]      | -      | -      | -      | -     | 10       |
+| 9    | 6  | [1]          | 5,4,1  | 2,6,1  | 3,12,6 | 12    | **12**   |
+
+Code Implementation:
+---------------------
+*/
+
+class Solution {
+    public static int getMaxArea(int arr[]) {
+        // Using a stack to store indices of histogram bars
+        Stack<Integer> st = new Stack<>();
+        int maxA = 0; 
+        int n = arr.length;
+
+        // Traverse the histogram
+        for(int i = 0; i <= n; i++) {
+            
+            // Process elements in decreasing order
+            while(!st.isEmpty() && (i == n || arr[st.peek()] >= arr[i])) {
+                int height = arr[st.pop()];
+                int width;
+                
+                // If the stack is empty, width is `i` itself
+                if(st.isEmpty()) {
+                    width = i;
+                } 
+                else {
+                    width = i - st.peek() - 1;  // Width is between popped index and current i
+                }
+
+                maxA = Math.max(maxA, height * width);
+            }
+
+            // Push current index to stack
+            st.push(i);
+        }
+        return maxA;
+    }
+}
