@@ -1,0 +1,68 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-bonus-problems/problem/attend-all-meetings-ii
+import java.util.Arrays;
+
+class Solution {
+    /**
+     * Approach:
+     * 1. Sort both start[] and end[] times to process them in chronological order.
+     * 2. Use two pointers (i and j) to iterate through both arrays.
+     * 3. If a meeting starts before the earliest ending meeting ends (start[i] < end[j]), 
+     *    allocate a new room and move the start pointer (i++).
+     * 4. Otherwise, a meeting has ended, so we free a room (minRooms--), and move the end pointer (j++).
+     * 5. Keep track of the maximum number of rooms required at any point (res).
+     * 6. Return the maximum room count at any instance (res).
+     * 
+     * Time Complexity: 
+     * - Sorting start[] and end[] → O(N log N)
+     * - Iterating through the arrays → O(N)
+     * - Total Complexity → O(N log N)
+     * 
+     * Space Complexity:
+     * - Sorting modifies input arrays but no extra space is used → O(1) (constant space)
+     * 
+     * Dry Run Example:
+     * Input: start[] = {1, 3, 5}, end[] = {2, 6, 8}
+     * Step 1: Sort both arrays.
+     *         start[] = {1, 3, 5}
+     *         end[] = {2, 6, 8}
+     * Step 2: Use two pointers and track rooms:
+     * i=0, j=0 → start[0]=1 < end[0]=2 → Allocate 1 room, i++ → minRooms=1, res=1
+     * i=1, j=0 → start[1]=3 > end[0]=2 → Free 1 room, j++ → minRooms=0, res=1
+     * i=1, j=1 → start[1]=3 < end[1]=6 → Allocate 1 room, i++ → minRooms=1, res=1
+     * i=2, j=1 → start[2]=5 < end[1]=6 → Allocate 1 room, i++ → minRooms=2, res=2
+     * i=3, j=1 → End loop, return res=2
+     */
+
+    public int minMeetingRooms(int[] start, int[] end) {
+        // Edge case: If there are no meetings, return 0
+        if (start == null || end == null || start.length == 0 || end.length == 0 || start.length != end.length) {
+            return 0;
+        }
+
+        // Step 1: Sort start and end times
+        Arrays.sort(start);
+        Arrays.sort(end);
+
+        int minRooms = 0; // Current active meeting rooms
+        int res = 0;      // Stores the maximum number of rooms required at any time
+
+        int i = 0, j = 0; // Two pointers for start and end arrays
+
+        // Step 2: Process meetings in sorted order
+        while (i < start.length && j < end.length) {
+            if (start[i] < end[j]) {
+                // A new meeting starts -> Need a new room
+                minRooms++;
+                i++;
+            } else {
+                // A meeting ends -> Free a room
+                minRooms--;
+                j++;
+            }
+            // Update maximum rooms required
+            res = Math.max(res, minRooms);
+        }
+
+        return res;
+    }
+}
