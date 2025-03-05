@@ -1,0 +1,58 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/pairs-with-difference-k1713  
+/*
+Approach:
+1. We use a HashMap to store the frequency of each element in the array.
+2. We iterate through the array, and for each element:
+   - Check if (arr[i] + k) exists in the HashMap and add its frequency to the count.
+   - Check if (arr[i] - k) exists in the HashMap and add its frequency to the count.
+   - Add the current element to the HashMap with its updated frequency.
+3. This ensures that every valid pair (arr[i], arr[j]) where |arr[i] - arr[j]| = k is counted efficiently.
+
+Time Complexity: O(N)
+- We traverse the array once (O(N)).
+- Each lookup and insertion operation in the HashMap takes O(1).
+- Overall, the time complexity is O(N).
+
+Space Complexity: O(N)
+- We store at most N elements in the HashMap, leading to O(N) space complexity.
+
+Dry Run:
+Input: arr = [1, 5, 3, 4, 2], k = 2
+Step-by-step processing:
+------------------------------------------------
+| i  | arr[i] | arr[i]+k | arr[i]-k | count | HashMap State |
+------------------------------------------------
+| 0  |   1    |    3     |   -1     |   0   | {1:1}         |
+| 1  |   5    |    7     |    3     |   0   | {1:1, 5:1}    |
+| 2  |   3    |    5     |    1     |   2   | {1:1, 5:1, 3:1} |
+| 3  |   4    |    6     |    2     |   2   | {1:1, 5:1, 3:1, 4:1} |
+| 4  |   2    |    4     |    0     |   3   | {1:1, 5:1, 3:1, 4:1, 2:1} |
+
+Final Output: 3 (Pairs: (1,3), (3,5), (2,4))
+
+*/
+
+import java.util.HashMap;
+
+class Solution {
+    int countPairs(int[] arr, int k) {
+        int count = 0;
+        HashMap<Integer, Integer> hm = new HashMap<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            // Check if (arr[i] + k) exists in the map
+            if (hm.containsKey(arr[i] + k)) {
+                count += hm.get(arr[i] + k);
+            }
+
+            // Check if (arr[i] - k) exists in the map
+            if (hm.containsKey(arr[i] - k)) {
+                count += hm.get(arr[i] - k);
+            }
+
+            // Insert the current element into the map
+            hm.put(arr[i], hm.getOrDefault(arr[i], 0) + 1);
+        }
+        return count;
+    }
+}
