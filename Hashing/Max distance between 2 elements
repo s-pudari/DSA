@@ -1,0 +1,43 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/max-distance-between-same-elements
+//Approach 2 - using HashMap T.C & S.C --> O(n)
+class Solution {
+    public int maxDistance(int[] arr) {
+        // Code here
+        int max=0;
+        if(arr.length==1){
+            return 0;
+        }
+       
+       HashMap<Integer,Integer> hm = new HashMap<>();
+       
+       for(int i=0;i<arr.length;i++){
+           if(!hm.containsKey(arr[i])){
+               hm.put(arr[i],i);
+           }
+           else{
+               max=Math.max(max,i-hm.get(arr[i])); // similar to j-i
+           }
+       }
+        return max;
+    }
+}
+
+//Approach 1 - using brute force T.C --> O(n^2) S.C-->O(1)
+class Solution {
+    public int maxDistance(int[] arr) {
+        // Code here
+        int max=0;
+        if(arr.length==1){
+            return 0;
+        }
+       
+        for(int i=0;i<arr.length-1;i++){
+            for(int j=i+1;j<arr.length;j++){
+                if(arr[i]==arr[j]){
+                    max=Math.max(j-i,max);
+                }
+            }
+        }
+        return max;
+    }
+}
