@@ -1,5 +1,38 @@
 https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/count-quadruplets-with-given-sum
+//Approach 3 using HashMap T.C --> O(n^2) S.C --> O(n^2)
+class Solution {
+    public int countSum(int arr[], int target) {
+        // Approach: Split the problem into finding two pairs (a, b) and (c, d) such that a + b + c + d = target.
+        // Use a hashmap to track the frequency of sums of all possible pairs (k, i) where k < i.
+        // For each pair (i, j) with j > i, check how many existing pairs in the hashmap have sum equal to (target - (arr[i] + arr[j])).
+        // This ensures that the indices are distinct and ordered: k < m < i < j for pairs (k, m) and (i, j).
 
+        int n = arr.length;
+        int cnt = 0;
+        HashMap<Integer, Integer> hm = new HashMap<>(); // Key: sum of pairs, Value: frequency
+
+        for (int i = 0; i < n - 1; i++) { // Iterate through possible i values (third element in quadruple)
+            
+            // Check all pairs (i, j) where j > i as the second pair (c, d)
+            for (int j = i + 1; j < n; j++) {
+                int currentSum = arr[i] + arr[j];
+                int requiredSum = target - currentSum;
+                cnt += hm.getOrDefault(requiredSum, 0); // Add count of pairs that sum to requiredSum
+            }
+            
+            // Add all pairs (k, i) where k < i to the hashmap after processing j to avoid overlap
+            for (int k = 0; k < i; k++) {
+                int sum = arr[k] + arr[i];
+                hm.put(sum, hm.getOrDefault(sum, 0) + 1);
+            }
+        }
+        
+        return cnt;
+    }
+}
+
+// Time Complexity: O(n^2) - Each of the two nested loops runs O(n) times, leading to O(n^2) operations.
+// Space Complexity: O(n^2) - In the worst case, all possible pairs are stored in the hashmap
 //Approach 2 using HashMap T.C --> O(n^3) S.C --> O(n)
 class Solution {
     public int countSum(int arr[], int target) {
@@ -29,3 +62,23 @@ class Solution {
     }
 }
 //Approach 1 using Brute Force T.C --> O(n^4) S.C --> O(1)
+class Solution {
+    public int countSum(int arr[], int target) {
+        // code here
+        int n=arr.length;
+        int cnt=0;
+        
+        for(int i=0;i<n-3;i++){
+            for(int j=i+1;j<n-2;j++){
+                for(int k=j+1;k<n-1;k++){
+                    for(int l=k+1;l<n;l++){
+                        if(arr[i]+arr[j]+arr[k]+arr[l]==target){
+                            cnt++;
+                        }
+                    }
+                }
+            }
+        }
+        return cnt;
+    }
+}
