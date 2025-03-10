@@ -1,0 +1,74 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/group-shifted-string
+```java
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+class Solution {
+    public ArrayList<ArrayList<String>> groupShiftedString(String[] arr) {
+        // Approach: 
+        // 1. For each string, generate a unique pattern key based on the circular shifts between consecutive characters.
+        // 2. Strings with the same shift pattern are grouped together using a hashmap.
+        // 3. The pattern is computed by taking the difference between each character and the next, 
+        //    considering circular shifts (i.e., 'z' shifted to 'a' is distance 1).
+        // 4. The hashmap keys are string representations of these patterns, and values are lists of corresponding strings.
+        
+        ArrayList<ArrayList<String>> ans = new ArrayList<>();
+        HashMap<String, List<String>> hm = new HashMap<>();
+        
+        for (String str : arr) {
+            StringBuilder pattern = new StringBuilder();
+            
+            // Generate pattern by computing shifts between consecutive characters
+            for (int i = 1; i < str.length(); i++) {
+                char prev = str.charAt(i - 1);
+                char curr = str.charAt(i);
+                int distance = computeDistance(prev, curr);
+                pattern.append(distance).append(","); // Append distance with delimiter
+            }
+            
+            String pat = pattern.toString();
+            // Add the string to the corresponding group in the hashmap
+            List<String> list = hm.containsKey(pat) ? hm.get(pat) : new ArrayList<>();
+            list.add(str);
+            hm.put(pat, list);
+        }
+        
+        // Convert hashmap values to the required output format
+        for (List<String> list : hm.values()) {
+            ans.add(new ArrayList<>(list));
+        }
+        
+        return ans;
+    }
+    
+    // Computes the circular shift distance between two characters
+    private int computeDistance(char prev, char curr) {
+        // Convert characters to 1-based positions (e.g., 'a' -> 1, 'z' -> 26)
+        int val1 = (prev - 'a') + 1;
+        int val2 = (curr - 'a') + 1;
+        
+        // Calculate the minimal positive shift distance considering wrap-around
+        if (val1 <= val2) {
+            return val2 - val1;
+        } else {
+            return (26 - val1) + val2; // Equivalent to (val2 - val1 + 26) % 26
+        }
+    }
+}
+
+// Time Complexity: O(n * m), where n is the number of strings and m is the average length of the strings.
+// - Each string of length m requires O(m) operations to compute its pattern.
+// Space Complexity: O(n * m), 
+// - In the worst case, all strings have unique patterns, each of length O(m).
+
+// Dry Run Example:
+// Input: ["abc", "zab", "a", "ace"]
+// - "abc": 
+//   - Shifts between 'a'→'b' (1), 'b'→'c' (1) → Pattern "1,1,"
+// - "zab":
+//   - Shifts between 'z'→'a' (1), 'a'→'b' (1) → Pattern "1,1,"
+// - "a": No shifts → Pattern ""
+// - "ace": Shifts between 'a'→'c' (2), 'c'→'e' (2) → Pattern "2,2,"
+// Output: [["abc", "zab"], ["a"], ["ace"]]
+```
