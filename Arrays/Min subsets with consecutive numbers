@@ -1,0 +1,36 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/min-subsets-with-consecutive-numbers0601
+//Approach 2 using Hashset T.C & S.C -->O(n)
+class Solution {
+    public int numOfSubset(int[] arr) {
+        // Your code goes here
+        int cnt=0;
+       HashSet<Integer> hs = new HashSet<>();
+       
+       for(int i:arr){
+           hs.add(i);
+       }
+       
+       for(int num : hs){
+           if(!hs.contains(num-1)){
+               cnt++;
+           }
+       }
+        return cnt;
+    }
+}
+
+//Approach 1 by sorting T.C --> O(n*log n) S.C-->O(1)
+class Solution {
+    public int numOfSubset(int[] arr) {
+        // Your code goes here
+        int cnt=1;
+        Arrays.sort(arr);
+        
+        for(int i=0;i<arr.length-1;i++){
+            if(arr[i]+1!=arr[i+1]){
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+}
