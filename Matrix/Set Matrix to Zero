@@ -1,0 +1,115 @@
+https://leetcode.com/problems/set-matrix-zeroes/
+class Solution {
+    /*
+     * ✅ Approach:
+     * The problem is to set an entire row and column to **0** if an element is 0.
+     * 
+     * 🔹 **Optimized Approach (Using Two Arrays - O(N*M))**
+     *   1. Use two **marker arrays (`row[]` and `col[]`)** to track which rows and columns need to be set to 0.
+     *   2. First, traverse the matrix to mark the rows and columns.
+     *   3. Then, traverse again to update the matrix based on the marker arrays.
+     * 
+     * 🔹 **Brute Force Approach (Using In-Place Marking - O(N*M²))**
+     *   - For each `0` found, mark its entire row and column.
+     *   - Then traverse again and set marked values to `0`.
+     *   - **Less efficient due to multiple traversals.**
+     * 
+     * ✅ Time Complexity:
+     * - **Optimized Approach:** O(N*M) (Two full matrix traversals)
+     * - **Brute Force Approach:** O(N*M²) (Marking each column separately)
+     * 
+     * ✅ Space Complexity:
+     * - **Optimized Approach:** O(N+M) (Using additional `row[]` and `col[]`)
+     * - **Brute Force Approach:** O(1) (No extra space but modifies matrix)
+     * 
+     * ✅ Dry Run Example:
+     * Input:
+     *     1  2  3
+     *     4  0  6
+     *     7  8  9
+     * Step 1: Identify `0` → Mark row[1] = 1, col[1] = 1
+     * Step 2: Update matrix based on row[] & col[]
+     * Output:
+     *     1  0  3
+     *     0  0  0
+     *     7  0  9
+     */
+
+    public void setZeroes(int[][] arr) {
+        int n = arr.length;
+        int m = arr[0].length;
+
+        // ✅ Optimized Approach using Two Arrays
+        int row[] = new int[n]; // To track which rows need to be set to zero
+        int col[] = new int[m]; // To track which columns need to be set to zero
+
+        // Step 1: Identify zeroes and mark respective rows & columns
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (arr[i][j] == 0) {
+                    row[i] = 1;
+                    col[j] = 1;
+                }
+            }
+        }
+
+        // Step 2: Modify the matrix based on the markers
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (row[i] == 1 || col[j] == 1) {
+                    arr[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    /*
+     * 🔴 Brute Force Approach (O(N*M²) - Commented Out)
+     * - Instead of extra space, we **mark** the cells to be zeroed in-place.
+     * - Use -1 to mark rows & columns before final update.
+     */
+
+    
+    public void setZeroes(int[][] arr) {
+        int n = arr.length;
+        int m = arr[0].length;
+
+        // Step 1: Identify zeroes and mark rows & columns
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (arr[i][j] == 0) {
+                    markRow(arr, i, m);
+                    markCol(arr, j, n);
+                }
+            }
+        }
+
+        // Step 2: Convert marked (-1) values to 0
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (arr[i][j] == -1) {
+                    arr[i][j] = 0;
+                }
+            }
+        }
+    }
+
+    // Helper method to mark an entire row
+    public void markRow(int[][] arr, int row, int len) {
+        for (int i = 0; i < len; i++) {
+            if (arr[row][i] != 0) {
+                arr[row][i] = -1;
+            }
+        }
+    }
+
+    // Helper method to mark an entire column
+    public void markCol(int[][] arr, int col, int len) {
+        for (int i = 0; i < len; i++) {
+            if (arr[i][col] != 0) {
+                arr[i][col] = -1;
+            }
+        }
+    }
+    
+}
