@@ -1,0 +1,66 @@
+https://leetcode.com/problems/pascals-triangle/
+import java.util.*;
+
+class Solution {
+    /*
+     * ✅ Approach:
+     * - Pascal's Triangle is a triangular array where:
+     *   - The first and last element of each row is **1**.
+     *   - Each element in between is the sum of the two numbers directly above it.
+     * - We generate each row using **nCr formula**:
+     *   - nCr = (n-1)C(r-1) * (n-r) / r
+     *   - We use iterative multiplication and division to compute each row efficiently.
+     * - We then build the full triangle row by row.
+     * 
+     * ✅ Time Complexity:
+     * - `generateRow(row)`: O(row) → Iterates through each row.
+     * - `generate(n)`: O(N²) → Builds `N` rows with `O(N)` complexity each.
+     * - **Overall Complexity: O(N²)**
+     * 
+     * ✅ Space Complexity:
+     * - **O(N²)** → Stores Pascal’s Triangle as a list of lists.
+     * 
+     * ✅ Dry Run Example:
+     * Input: n = 5
+     * Steps:
+     * - Row 1 → [1]
+     * - Row 2 → [1, 1]
+     * - Row 3 → [1, 2, 1]
+     * - Row 4 → [1, 3, 3, 1]
+     * - Row 5 → [1, 4, 6, 4, 1]
+     * Output: 
+     * [
+     *   [1], 
+     *   [1, 1], 
+     *   [1, 2, 1], 
+     *   [1, 3, 3, 1], 
+     *   [1, 4, 6, 4, 1]
+     * ]
+     */
+
+    // ✅ Generates a single row of Pascal's Triangle using nCr formula
+    public List<Integer> generateRow(int row) {
+        int ans = 1;
+        List<Integer> rows = new ArrayList<>();
+        rows.add(1); // First element is always 1
+
+        // Compute values using (nCr = nC(r-1) * (n-r)/r)
+        for (int col = 1; col < row; col++) {
+            ans = ans * (row - col);
+            ans = ans / col;
+            rows.add(ans);
+        }
+        return rows;
+    }
+
+    // ✅ Generates Pascal's Triangle up to 'n' rows
+    public List<List<Integer>> generate(int n) {
+        List<List<Integer>> li = new ArrayList<>();
+
+        // Construct Pascal's Triangle row by row
+        for (int row = 1; row <= n; row++) {
+            li.add(generateRow(row));
+        }
+        return li;
+    }
+}
