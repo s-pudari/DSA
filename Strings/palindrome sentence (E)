@@ -1,0 +1,81 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-bonus-problems/problem/string-palindromic-ignoring-spaces4723
+class Solution {
+    /*
+     * ✅ Approach:
+     * Given a sentence, we need to check if it is a **palindrome**, ignoring case, spaces, and non-alphanumeric characters.
+     * 
+     * 🔹 Optimized Approach (Two-Pointer Method - O(N))
+     *   1. Convert the string to **lowercase** to handle case insensitivity.
+     *   2. Remove all **non-alphanumeric characters**.
+     *   3. Use **two pointers (`l` and `r`)** to compare characters from both ends:
+     *      - If characters at `l` and `r` don't match → **Not a palindrome**.
+     *      - If they match, move both pointers inward.
+     *   4. If the entire string is checked, return **true**.
+     *
+     * 🔹 Brute Force Approach (O(N) - Commented Out)
+     *   - Use `StringBuilder` to **reverse the cleaned string** and compare it with the original cleaned string.
+     *   - This method uses extra space for the reversed string.
+     *
+     * ✅ Time Complexity:
+     * - **Optimized Approach:** O(N) (Single pass comparison)
+     * - **Brute Force Approach:** O(N) (Single pass + string reversal)
+     *
+     * ✅ Space Complexity:
+     * - **Optimized Approach:** O(1) (No extra space except a few variables)
+     * - **Brute Force Approach:** O(N) (Extra space for reversed string)
+     *
+     * ✅ Dry Run Example:
+     * Input: `"A man, a plan, a canal: Panama"`
+     * Steps:
+     * - Convert to lowercase → `"a man, a plan, a canal: panama"`
+     * - Remove non-alphanumeric → `"amanaplanacanalpanama"`
+     * - Two-pointer check:
+     *   - Compare `a` with `a`, `m` with `m`, ..., `a` with `a` ✅
+     * - Since all characters match, return **true**.
+     *
+     * Output: **true**
+     */
+
+    public boolean sentencePalindrome(String s) {
+        // ✅ Optimized Approach (Two-Pointer)
+        
+        // Convert to lowercase
+        String lowerCase  = s.toLowerCase();
+
+        // Remove non-alphanumeric characters
+        String replace = lowerCase.replaceAll("[^a-z0-9]", "");
+
+        int l = 0, r = replace.length() - 1;
+        boolean ans = true;
+
+        // Two-pointer check for palindrome
+        while (l < r) {
+            if (replace.charAt(l) != replace.charAt(r)) {
+                ans = false;
+                break;  // No need to check further
+            }
+            l++;
+            r--;
+        }
+        return ans;
+
+        /*
+         * 🔴 Brute Force Approach (O(N) - Commented Out)
+         * - Convert to **lowercase**.
+         * - Remove **non-alphanumeric characters**.
+         * - Reverse the cleaned string and compare it with the original.
+         */
+
+        
+        String lowerCase = s.toLowerCase();
+        String replace = lowerCase.replaceAll("[^a-z0-9]", "");
+        
+        // Reverse the cleaned string
+        StringBuilder rev = new StringBuilder(replace);
+        rev.reverse();
+        
+        // Compare original and reversed strings
+        return replace.equals(rev.toString());
+        
+    }
+}
