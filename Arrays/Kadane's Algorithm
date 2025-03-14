@@ -1,18 +1,100 @@
 https://leetcode.com/problems/maximum-subarray/
 class Solution {
-    public int maxSubArray(int[] nums) {
-        int n=nums.length;
-        int res=nums[0];
-        int maxEnd=nums[0];
+    /*
+     * ✅ Approach:
+     * Given an integer array, we need to find the contiguous subarray that has the **maximum sum**.
+     *
+     * 🔹 **Optimized Approach (Kadane's Algorithm - O(N))**
+     *   1. Initialize `maxSum = arr[0]` (to store the maximum subarray sum).
+     *   2. Use `maxEnd = arr[0]` to track the **current subarray sum**.
+     *   3. Traverse the array:
+     *      - Either **extend the previous subarray** or **start a new subarray**.
+     *      - Update `maxSum` whenever `maxEnd` exceeds `maxSum`.
+     *   4. Return `maxSum` as the answer.
+     *
+     * 🔹 **Prefix Sum Approach (O(N²)) - Commented Out**
+     *   - Compute all possible subarrays using nested loops.
+     *   - Maintain a `sum` variable to calculate subarray sums in **O(1)** time.
+     *   - Update the maximum sum found.
+     *
+     * 🔹 **Brute Force Approach (O(N³)) - Commented Out**
+     *   - Generate **all possible subarrays** using three nested loops.
+     *   - Compute the sum of each subarray and update the maximum.
+     *
+     * ✅ Time Complexity:
+     * - **Kadane's Algorithm:** O(N) (Single traversal)
+     * - **Prefix Sum Approach:** O(N²) (Nested loops)
+     * - **Brute Force Approach:** O(N³) (Three nested loops)
+     *
+     * ✅ Space Complexity:
+     * - **All approaches:** O(1) (Uses only a few extra variables)
+     *
+     * ✅ Dry Run Example (Kadane's Algorithm):
+     * Input: arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+     * Steps:
+     * - maxEnd = -2, maxSum = -2
+     * - maxEnd = 1, maxSum = 1
+     * - maxEnd = -2, maxSum = 1
+     * - maxEnd = 4, maxSum = 4
+     * - maxEnd = 3, maxSum = 4
+     * - maxEnd = 5, maxSum = 5
+     * - maxEnd = 6, maxSum = 6
+     * - maxEnd = 1, maxSum = 6
+     * - maxEnd = 5, maxSum = 6
+     * Output: **6**
+     */
 
-        int i=1;
+    public int maxSubArray(int[] arr) {
+        // ✅ Optimized Approach: Kadane’s Algorithm (O(N))
+        int res = arr[0]; // Stores the maximum subarray sum
+        int maxEnd = arr[0]; // Tracks the current subarray sum
 
-        while(i<n){
-            maxEnd=Math.max(maxEnd+nums[i],nums[i]);
-
-            res=Math.max(maxEnd,res);
-            i++;
+        for (int i = 1; i < arr.length; i++) {
+            // Either continue the previous subarray or start a new one
+            maxEnd = Math.max(arr[i] + maxEnd, arr[i]);
+            // Update the result with the highest sum found
+            res = Math.max(maxEnd, res);
         }
         return res;
+
+        /*
+         * 🔴 Prefix Sum Approach (O(N²) - Commented Out)
+         * - Use a **nested loop** to calculate subarrays **in O(N²) time**.
+         * - Maintain a running sum to avoid recomputation.
+         */
+
+        
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            int sum = 0;
+            for (int j = i; j < arr.length; j++) {
+                sum += arr[j];  // Maintain a cumulative sum
+                max = Math.max(max, sum);  // Update the max sum
+            }
+        }
+        return max;
+        
+
+        /*
+         * 🔴 Brute Force Approach (O(N³) - Commented Out)
+         * - Generate **all possible subarrays**.
+         * - Compute the sum for each subarray.
+         * - Update the maximum sum found.
+         */
+
+        
+        int max = Integer.MIN_VALUE;
+        for (int i = 0; i < arr.length; i++) { // Start index
+            for (int j = i; j < arr.length; j++) { // End index
+                int sum = 0;
+                for (int k = i; k <= j; k++) { // Compute sum
+                    sum += arr[k];
+                }
+                max = Math.max(sum, max);
+            }
+        }
+        return max;
+        
     }
 }
+
