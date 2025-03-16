@@ -1,31 +1,73 @@
 https://www.geeksforgeeks.org/batch/gfg-160-problems/track/recursion-and-backtracking-gfg-160/problem/powx-n
 class Solution {
-    double power(double base, int exponent) { //pow(b,e)
-        // Base Case 1: Any number raised to power 0 is 1
-        if (exponent == 0) {
-            return 1;
+    /*
+     * ✅ Approach:
+     * The goal is to compute `base^exp` efficiently.
+     *
+     * 🔹 **Optimized Approach (Iterative - Binary Exponentiation)**
+     *   - Instead of multiplying `base` `exp` times (`O(exp)` time complexity), we use **binary exponentiation**.
+     *   - If `exp` is even → `base^exp = (base^(exp/2)) * (base^(exp/2))`.
+     *   - If `exp` is odd → `base^exp = base * (base^(exp-1))`.
+     *   - This reduces the problem size by **half** in every iteration, achieving **O(log exp)** time complexity.
+     *   - **Handles negative exponents** by returning `1 / (base^|exp|)`.
+     *
+     * 🔹 **Brute Force Approach (Recursive Exponentiation) - Commented Out**
+     *   - Uses recursion to divide exponent by 2.
+     *   - Still **O(log exp)** time complexity but uses **O(log exp) space** due to recursion stack.
+     * 
+     * ✅ Time Complexity: `O(log exp)` (Since exponent is divided by 2 in each step)
+     * ✅ Space Complexity: `O(1)` (No extra memory used)
+     *
+     * ✅ Dry Run Example:
+     * **Input:** base = 2, exp = 10
+     * **Steps:**
+     * 1. Start with `res = 1`, `base = 2`, `exp = 10`
+     * 2. `exp` is even → `base = 4`, `exp = 5`
+     * 3. `exp` is odd → Multiply `res = 4`, `base = 16`, `exp = 2`
+     * 4. `exp` is even → `base = 256`, `exp = 1`
+     * 5. `exp` is odd → Multiply `res = 1024`, `exp = 0`
+     * 6. Return `res = 1024`
+     */
+
+    public double myPow(double base, int exp) {
+        double res = 1.0;
+        long pow = Math.abs((long) exp); // Convert to long to handle Integer.MIN_VALUE case
+
+        while (pow > 0) {
+            if (pow % 2 == 1) { // If exponent is odd
+                res *= base;
+                pow--;
+            } else { // If exponent is even
+                base *= base;
+                pow /= 2;
+            }
         }
-        
-        // Base Case 2: If base is 0, return 0 (except 0^0 which is undefined)
-        if (base == 0) {
-            return 0;
-        }
-        
-        // Handle negative exponents by taking reciprocal
-        if (exponent < 0) {
-            return 1 / power(base, -exponent);
+        return (exp >= 0) ? res : 1 / res; // Handle negative exponent case
+    }
+
+    /*
+     * 🔴 Brute Force Recursive Approach (O(log exp) Time, O(log exp) Space)
+     * - Uses recursion to reduce exponent by half in each step.
+     * - Same time complexity as iterative approach but has extra **O(log exp) space** due to recursion.
+     */
+
+    /*
+    public double myPow(double base, int exp) {
+        if (exp == 0) return 1; // Base case: any number to power 0 is 1
+        if (base == 0) return 0; // Edge case: 0^exp is always 0
+
+        if (exp < 0) {
+            return 1 / myPow(base, -exp); // Handle negative exponents
         }
 
-        // Divide & Conquer: Reduce exponent by half
-        double halfPower = power(base, exponent / 2);
+        double halfPower = myPow(base, exp / 2);
 
-        // If exponent is even: (b^e = (b^(e/2)) * (b^(e/2)))
-        if (exponent % 2 == 0) {
-            return halfPower * halfPower;
-        }
-        // If exponent is odd: (b^e = b * (b^(e/2)) * (b^(e/2)))
-        else {
-            return base * halfPower * halfPower;
+        if (exp % 2 == 0) {
+            return halfPower * halfPower; // If exponent is even
+        } else {
+            return base * halfPower * halfPower; // If exponent is odd
         }
     }
+    */
 }
+
