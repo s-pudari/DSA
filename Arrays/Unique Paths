@@ -1,51 +1,102 @@
 https://leetcode.com/problems/unique-paths/description/
 
-//Approach 2 through factorial/Combinations T.C --> O(r) S.C-->O(1)
+import java.util.Arrays;
+
 class Solution {
+    /**
+     * ✅ **Approach 2: Dynamic Programming (Memoization)**
+     * 
+     * 🔹 **Idea**:
+     *  - We use **recursion** with **memoization** (`dp` array) to store results for subproblems.
+     *  - The function `countPaths(i, j, m, n, dp)` computes paths recursively.
+     *  - If we already computed the paths from a position `(i, j)`, we use the cached result.
+     *  - Base case: If we reach the **bottom-right** cell `(m-1, n-1)`, return **1** (valid path).
+     *  - If we move **out of bounds**, return **0**.
+     * 
+     * 🔹 **Time Complexity**: **O(m × n)** → We compute each subproblem only once.
+     * 🔹 **Space Complexity**: **O(m × n)** → We use a `dp` table of size `m × n`.
+     */
     public int uniquePaths(int m, int n) {
-        // Total number of steps needed to go from top-left to bottom-right
-        // (m-1 down steps + n-1 right steps). This is equivalent to (m+n-2).
-        int N = n + m - 2;
+        int[][] dp = new int[m][n];  // DP table for memoization
 
-        // Number of down steps (or right steps) to be chosen from the total steps.
-        // This is the smaller of (m-1) or (n-1), but here we directly use (m-1).
-        int r = m - 1;
+        // Initialize DP table with -1 (indicating uncomputed values)
+        for (int[] row : dp) Arrays.fill(row, -1);
 
-        // Result is initialized as 1, which will store the final value of NCr.
+        return countPaths(0, 0, m, n, dp);
+    }
+
+    private int countPaths(int i, int j, int m, int n, int[][] dp) {
+        // If out of bounds, return 0 (invalid path)
+        if (i >= m || j >= n) return 0;
+
+        // Base Case: If we reach the bottom-right cell, return 1 (valid path found)
+        if (i == m - 1 && j == n - 1) return 1;
+
+        // If the value is already computed, return it (Memoization)
+        if (dp[i][j] != -1) return dp[i][j];
+
+        // Compute the number of paths recursively and store the result in dp
+        dp[i][j] = countPaths(i + 1, j, m, n, dp) + countPaths(i, j + 1, m, n, dp);
+        return dp[i][j];
+    }
+
+    /*
+     ✅ **Approach 3: Combinatorial Mathematics**
+     * 
+     * 🔹 **Idea**:
+     *  - The number of unique paths from (0,0) to (m-1,n-1) is given by:
+     *    `C(m+n-2, m-1) = (m+n-2)! / [(m-1)! * (n-1)!]`
+     *  - We calculate it iteratively to avoid overflow.
+     * 
+     * 🔹 **Time Complexity**: **O(min(m, n))** → We compute the result in a loop.
+     * 🔹 **Space Complexity**: **O(1)** → No extra space is used.
+     */
+    /*
+    public int uniquePaths(int m, int n) {
+        int N = n + m - 2;  // Total steps needed
+        int r = m - 1;      // Choose m-1 down moves
         double res = 1;
 
-        // Loop to calculate NCr using the formula:
-        // NCr = (N * (N-1) * ... * (N-r+1)) / (r * (r-1) * ... * 1)
+        // Compute C(N, r) iteratively
         for (int i = 1; i <= r; i++) {
-            // Multiply the numerator term by (N-r+i) and divide by the current denominator term (i).
             res = res * (N - r + i) / i;
         }
-
-        // Return the result as an integer since the number of unique paths will always be a whole number.
         return (int) res;
     }
-}
+    */
 
-//Approach 1 Recursion T.C --> O(2^(n+m)) S.C --> O(m+n)
-class Solution {
+    /*
+     ✅ **Approach 1: Brute Force (Recursion)**
+     * 
+     * 🔹 **Idea**:
+     *  - Try all possible paths using recursion.
+     *  - At each cell `(i, j)`, move **right** `(i, j+1)` or **down** `(i+1, j)`.
+     *  - If we reach the bottom-right cell, return 1.
+     *  - If we move out of bounds, return 0.
+     * 
+     * 🔹 **Time Complexity**: **O(2^(m+n))** → Exponential time due to recursion.
+     * 🔹 **Space Complexity**: **O(m+n)** → Recursive stack space.
+     */
+    /*
     public int uniquePaths(int m, int n) {
-        // Call the helper function to calculate paths starting from the top-left corner (0,0).
-        int count = countPaths(0, 0, m, n);
-        return count; // Return the total number of unique paths.
+        return countPaths(0, 0, m, n);
     }
 
-    // Helper function to recursively calculate the number of unique paths.
-    public int countPaths(int i, int j, int n, int m) {
-        // Base case: If the bottom-right corner (n-1, m-1) is reached, return 1 (one valid path found).
-        if (i == n - 1 && j == m - 1) return 1;
+    private int countPaths(int i, int j, int m, int n) {
+        // Base Case: If we reach the last cell, return 1
+        if (i == m - 1 && j == n - 1) return 1;
 
-        // Base case: If the indices are out of bounds, return 0 (invalid path).
-        if (i >= n || j >= m) return 0;
+        // If out of bounds, return 0
+        if (i >= m || j >= n) return 0;
 
-        // Recursive calls:
-        // 1. Move "down" to the next row: countPaths(i+1, j, n, m).
-        // 2. Move "right" to the next column: countPaths(i, j+1, n, m).
-        // Add the results of both calls to get the total paths from the current cell (i, j).
-        return countPaths(i + 1, j, n, m) + countPaths(i, j + 1, n, m);
+        // Recursively explore both directions
+        return countPaths(i + 1, j, m, n) + countPaths(i, j + 1, m, n);
+    }
+    */
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int m = 3, n = 3; // Example grid size (3x3)
+        System.out.println("Number of unique paths: " + sol.uniquePaths(m, n));
     }
 }
