@@ -1,0 +1,94 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/matrix-bonus-problem/problem/c-matrix-rotation-by-180-degree0745
+class Solution {
+    /*
+     * ✅ **Approach 1: Optimized In-Place Rotation (Transpose + Reverse)**
+     *
+     * 🔹 **Idea**:
+     *   - To rotate a matrix 180 degrees:
+     *     1. **Transpose the matrix** by swapping `matrix[i][j]` with `matrix[j][i]`.
+     *     2. **Reverse both rows and columns** to achieve the 180-degree rotation.
+     *   - This is done **in-place** without using extra space.
+     *
+     * ✅ **Time Complexity**: **O(n²)** → Iterating over each element of the matrix twice (Transpose + Reverse).
+     * ✅ **Space Complexity**: **O(1)** → No extra matrix used.
+     *
+     * ✅ **Dry Run Example**:
+     * ```
+     * Input Matrix (3x3):
+     * 1  2  3
+     * 4  5  6
+     * 7  8  9
+     *
+     * After Transpose:
+     * 1  4  7
+     * 2  5  8
+     * 3  6  9
+     *
+     * After Reversing Rows:
+     * 9  8  7
+     * 6  5  4
+     * 3  2  1
+     * ```
+     */
+    public void rotateMatrix(int[][] arr) {
+        int n = arr.length;
+
+        // 🔎 Step 1: Transpose the matrix (swap arr[i][j] with arr[j][i])
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                int temp = arr[i][j];
+                arr[i][j] = arr[j][i];
+                arr[j][i] = temp;
+            }
+        }
+
+        // 🔎 Step 2: Reverse both rows and columns to rotate by 180 degrees
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n / 2; j++) {
+                int temp = arr[i][j];
+                arr[i][j] = arr[i][n - j - 1];
+                arr[i][n - j - 1] = temp;
+            }
+        }
+
+        for (int i = 0; i < n / 2; i++) {
+            int[] temp = arr[i];
+            arr[i] = arr[n - i - 1];
+            arr[n - i - 1] = temp;
+        }
+    }
+
+    /*
+     * 🔴 **Approach 2: Brute Force Using Extra Matrix**
+     *
+     * 🔹 **Idea**:
+     *   - Create a new matrix `res[][]`.
+     *   - Place the element `arr[i][j]` to the correct rotated position using:
+     *     `res[i][j] = arr[n-i-1][n-j-1];`
+     *   - Then copy the result matrix back to `arr[][]`.
+     *   - This approach is simple but uses additional space.
+     *
+     * ✅ **Time Complexity**: **O(n²)** → Iterating through the matrix twice (once for rotation, once for copying).
+     * ✅ **Space Complexity**: **O(n²)** → Extra matrix `res` used for storing the rotated result.
+     */
+    /*
+    public void rotateMatrix(int[][] arr) {
+        int n = arr.length;
+        int[][] res = new int[n][n];
+
+        // Step 1: Create the rotated matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                res[i][j] = arr[n - i - 1][n - j - 1];
+            }
+        }
+
+        // Step 2: Copy back to the original matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                arr[i][j] = res[i][j];
+            }
+        }
+    }
+    */
+}
