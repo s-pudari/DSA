@@ -1,0 +1,70 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/sorting-bonus-problems/problem/attend-all-meetings
+/*
+Approach Explanation:
+
+- **Optimized Approach (Approach 2)**:
+  - Sort the intervals based on their start times.
+  - Iterate through the sorted intervals and check for any overlap using a simple comparison.
+  - If the start of the current interval is less than the end of the previous interval, it means an overlap has occurred.
+  - Return false if overlap is detected, otherwise return true.
+
+- **Brute Force Approach (Approach 1)**:
+  - Compare each interval with every other interval to check for overlaps.
+  - Use the isOverlap function to determine if two intervals overlap.
+  - Time-consuming as it uses nested loops.
+
+Time Complexity:
+- **Optimized Approach:** O(n log n) (Due to sorting)
+- **Brute Force Approach:** O(n²) (Due to nested loop comparison)
+
+Space Complexity:
+- **Optimized Approach:** O(1)
+- **Brute Force Approach:** O(1)
+
+Dry Run Example:
+Input: [[0,30],[5,10],[15,20]]
+
+1. After Sorting: [[0,30],[5,10],[15,20]]
+2. First Comparison: 5 < 30 → Overlap Detected → Return False
+
+Output: False
+*/
+
+import java.util.Arrays;
+
+class Solution {
+    // Optimized Approach (Approach 2)
+    static boolean canAttend(int[][] arr) {
+        // Sort the intervals by their start time
+        Arrays.sort(arr, (a, b) -> Integer.compare(a[0], b[0]));
+        
+        // Check for overlaps
+        for (int i = arr.length - 1; i >= 1; i--) {
+            // If overlap is detected, return false
+            if (!(arr[i][0] >= arr[i - 1][1])) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    // Brute Force Approach (Approach 1)
+    /*
+    static boolean isOverlap(int[] a, int[] b) {
+        // Check if intervals overlap
+        return (a[0] >= b[0] && a[0] < b[1]) || (b[0] >= a[0] && b[0] < a[1]);
+    }
+
+    static boolean canAttend(int[][] arr) {
+        // Compare each interval with all other intervals
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
+                if (isOverlap(arr[i], arr[j])) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    */
+}
