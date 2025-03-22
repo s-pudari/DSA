@@ -1,72 +1,87 @@
 https://leetcode.com/problems/4sum/
 
-T.C --> O(n^3) and S.C --> O(k)
+import java.util.*;
+
 class Solution {
+    /*
+    🔹 Approach 2: Two Pointers + Sorting (Optimized)
+    ---------------------------------------------------
+    - Sort the array to use a two-pointer technique efficiently.
+    - Iterate through each pair (i, j) and use two pointers (left, right) to find remaining two numbers.
+    - Store unique quadruplets in a HashSet to avoid duplicates.
+
+    🔹 Time Complexity: O(N³) -> Three nested loops + Two-pointer search.
+    🔹 Space Complexity: O(K) -> Where K is the number of unique quadruplets stored.
+
+    🔹 Dry Run Example:
+      Input: nums = [1, 0, -1, 0, -2, 2], target = 0
+      Sorted: [-2, -1, 0, 0, 1, 2]
+      Unique Quadruplets: [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+    */
     public List<List<Integer>> fourSum(int[] nums, int target) {
         int n = nums.length;
+        Set<List<Integer>> hs = new HashSet<>();  // To store unique quadruplets
 
-        // Use a HashSet to store unique quadruplets, avoiding duplicates
-        Set<List<Integer>> resultSet = new HashSet<>();
+        Arrays.sort(nums);  // Sort the array for two-pointer approach
 
-        // Sort the array to simplify duplicate handling and enable two-pointer technique
-        Arrays.sort(nums);
-
-        // Outer loop for the first element of the quadruplet
+        // First two loops to fix two elements
         for (int i = 0; i < n - 3; i++) {
-            // Second loop for the second element of the quadruplet
             for (int j = i + 1; j < n - 2; j++) {
+                int left = j + 1, right = n - 1;
 
-                // Two-pointer approach to find the remaining two elements
-                int left = j + 1;      // Left pointer starts right after the second element
-                int right = n - 1;     // Right pointer starts at the end of the array
-
+                // Two-pointer approach
                 while (left < right) {
-                    // Calculate the sum of the four elements
                     long sum = (long) nums[i] + nums[j] + nums[left] + nums[right];
 
-                    // If the sum matches the target
                     if (sum == target) {
-                        // Create a list for the quadruplet and add it to the result set
-                        List<Integer> temp = Arrays.asList(nums[i], nums[j], nums[left], nums[right]);
-                        resultSet.add(temp);
-
-                        // Move both pointers to look for other valid combinations
+                        hs.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
                         left++;
                         right--;
-                    } 
-                    // If the sum is less than the target, move the left pointer to increase the sum
-                    else if (sum < target) {
-                        left++;
-                    } 
-                    // If the sum is greater than the target, move the right pointer to decrease the sum
-                    else {
-                        right--;
+                    } else if (sum < target) {
+                        left++;  // Need a larger sum
+                    } else {
+                        right--;  // Need a smaller sum
                     }
                 }
             }
         }
 
-        // Convert the result set to a list and return it
-        return new ArrayList<>(resultSet);
+        return new ArrayList<>(hs);
     }
-//Brute force O(n^4)
-class Solution {
-    public int countSum(int arr[], int target) {
-        // code here
-        int n=arr.length;
-        int cnt=0;
-        
-        for(int i=0;i<n-3;i++){
-            for(int j=i+1;j<n-2;j++){
-                for(int k=j+1;k<n-1;k++){
-                    for(int l=k+1;l<n;l++){
-                        if(arr[i]+arr[j]+arr[k]+arr[l]==target){
-                            cnt++;
+
+    /*
+    🔹 Approach 1: Brute Force (Nested Loops)
+    ---------------------------------------------------
+    - Use four nested loops to check all quadruplets.
+    - Store them in a HashSet to avoid duplicates.
+
+    🔹 Time Complexity: O(N⁴) -> Four nested loops.
+    🔹 Space Complexity: O(K) -> Where K is the number of unique quadruplets.
+
+    🔹 Dry Run Example:
+      Input: nums = [1, 0, -1, 0, -2, 2], target = 0
+      All Possible Quadruplets Checked (Even Duplicates)
+      Unique Quadruplets Extracted from HashSet: [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+    
+    static List<List<Integer>> fourSum(int[] nums, int target) {
+        int n = nums.length;
+        Set<List<Integer>> hs = new HashSet<>();
+
+        // Four nested loops to generate all possible quadruplets
+        for (int i = 0; i < n - 3; i++) {
+            for (int j = i + 1; j < n - 2; j++) {
+                for (int k = j + 1; k < n - 1; k++) {
+                    for (int l = k + 1; l < n; l++) {
+                        if ((long) nums[i] + nums[j] + nums[k] + nums[l] == target) {
+                            hs.add(Arrays.asList(nums[i], nums[j], nums[k], nums[l]));
                         }
                     }
                 }
             }
         }
-        return cnt;
+
+        return new ArrayList<>(hs);
     }
+    */
 }
+
