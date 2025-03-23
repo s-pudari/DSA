@@ -1,74 +1,133 @@
 https://leetcode.com/problems/longest-consecutive-sequence/
-//Approach 2 using HashSet T.C and S.C--> O(n) 
+/*
+Approach Explanation:
+
+- **Approach 1 (Brute Force)**:
+  - For each number, perform a linear search to check if the next consecutive number exists.
+  - Time Complexity: **O(N²)** (Due to nested loops and linear search)
+  - Space Complexity: **O(1)** (No additional data structures used)
+
+- **Approach 2 (Sorting)**:
+  - First, sort the array. Then iterate to count consecutive elements.
+  - Time Complexity: **O(NlogN)** (Due to sorting)
+  - Space Complexity: **O(1)** (Ignoring sorting space for the array)
+
+- **Approach 3 (Optimal)**:
+  - Use a HashSet to store unique elements. 
+  - For each element, check if it’s the starting point of a sequence using `hs.contains(num-1)`.
+  - Then, count the length of the sequence using a while loop.
+  - Time Complexity: **O(N)** (Efficient lookup and insert with HashSet)
+  - Space Complexity: **O(N)** (For the HashSet)
+
+Example:
+Input: [1, 0, 1, 2]
+- After removing duplicates → {0, 1, 2}
+- Start from 0 → Sequence = {0, 1, 2}, Length = 3
+Output: 3
+*/
+
 class Solution {
+
+    // Optimized Approach using HashSet
     public int longestConsecutive(int[] nums) {
         int n = nums.length;
+        int longest = 1;
+
         if (n == 0) {
-            return 0; // Edge case: If array is empty, return 0
-        }
-
-        // Use a HashSet to store all elements for O(1) lookup
-        HashSet<Integer> set = new HashSet<>();
-        for (int num : nums) {
-            set.add(num);
-        }
-
-        int longest = 0;
-
-        // Iterate through the array
-        for (int num : nums) {
-            // Check if it's the start of a sequence i.e no number is smaller than it
-            if (!set.contains(num - 1)) { 
-                int currentNum = num;
-                int count = 1;
-
-                // Count consecutive numbers in the sequence
-                while (set.contains(currentNum + 1)) {
-                    currentNum += 1;
-                    count += 1;
-                }
-
-                // Update the longest sequence
-                longest = Math.max(longest, count);
-            }
-        }
-
-        return longest;
-    }
-}
-
-
-//Approach 1 using linearSearch - T.C --> O(n^2)
-
-class Solution {
-    public boolean linearSearch(int[] arr,int num){
-        boolean ans = false;                                                 
-        for(int i=0;i<arr.length;i++){
-            if(arr[i]==num){
-                ans=true;
-            }
-
-        }
-        return ans;
-    }
-    public int longestConsecutive(int[] nums) {
-        int n= nums.length;
-        int longest=1;
-        if(n==0){
             return 0;
         }
-     
-        for(int i=0;i<n;i++){
-           int a=nums[i];
-           int count=1;
 
-           while(linearSearch(nums,a+1)==true){
-            a+=1;
-            count+=1;
-           }
-           longest = Math.max(longest,count);
+        // Using HashSet to store unique numbers
+        Set<Integer> hs = new HashSet<>();
+        for (int i : nums) {
+            hs.add(i);
         }
-    return longest;
+
+        // Check for the start of a sequence
+        for (int num : hs) {
+            if (!hs.contains(num - 1)) { // Start only if there's no previous number
+                int a = num;
+                int cnt = 1;
+
+                // Continue while the next consecutive number exists
+                while (hs.contains(a + 1)) {
+                    cnt++;
+                    a++;
+                }
+                
+                // Track the longest sequence
+                longest = Math.max(longest, cnt);
+            }
+        }
+        return longest;
     }
+
+    // --------------------------------------------------------------------------------
+    // Sorting Approach (Commented)
+    /*
+    public int longestConsecutive(int[] nums) {
+        int n = nums.length;
+        int longest = 1;
+
+        if (n == 0) {
+            return 0;
+        }
+
+        int cnt = 1;
+        Arrays.sort(nums);
+
+        int lastSmaller = nums[0];
+
+        for (int i = 1; i < n; i++) {
+            if (nums[i] == nums[i - 1]) continue;
+
+            if (nums[i] - 1 == lastSmaller) {
+                cnt++;
+                lastSmaller = nums[i];
+            } else {
+                cnt = 1;
+                lastSmaller = nums[i];
+            }
+            longest = Math.max(longest, cnt);
+        }
+        return longest;
+    }
+    */
+
+    // --------------------------------------------------------------------------------
+    // Brute Force Approach (Commented)
+    /*
+    public int longestConsecutive(int[] nums) {
+        int n = nums.length;
+        int longest = 1;
+
+        if (n == 0) {
+            return 0;
+        }
+
+        for (int i = 0; i < n; i++) {
+            int a = nums[i];
+            int cnt = 1;
+
+            // Perform a linear search to find the next number in sequence
+            while (linearSearch(nums, a + 1)) {
+                cnt++;
+                a++;
+            }
+
+            longest = Math.max(longest, cnt);
+        }
+        return longest;
+    }
+
+    public boolean linearSearch(int[] arr, int a) {
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] == a) {
+                return true;
+            }
+        }
+        return false;
+    }
+    */
 }
 
