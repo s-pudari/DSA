@@ -1,0 +1,101 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/sorting-bonus-problems/problem/largest-number-formed-from-an-array1117
+import java.util.*;
+
+class Solution {
+
+    /*
+    🔎 Approach 2: Custom Sorting (Optimized)
+    --------------------------------------------
+    - Convert all integers to strings for easier concatenation and comparison.
+    - Use a custom comparator to sort based on which combination (s1+s2) or (s2+s1) forms a larger number.
+    - Append the sorted numbers to form the largest possible number.
+    - If the largest number is "0", return "0" to avoid cases like [0,0].
+    
+    🔹 Time Complexity: O(N log N) -> Sorting the numbers.
+    🔹 Space Complexity: O(N) -> For storing the numbers as strings.
+
+    🔎 Dry Run Example:
+      Input: [3, 30, 34, 5, 9]
+      - Convert to Strings: ["3", "30", "34", "5", "9"]
+      - Sorted using custom comparator: ["9", "5", "34", "3", "30"]
+      - Result: "9534330"
+    */
+
+    String findLargest(int[] arr) {
+        ArrayList<String> numbers = new ArrayList<>();
+
+        // Convert numbers to strings
+        for (int num : arr) {
+            numbers.add(Integer.toString(num));
+        }
+
+        // Sort using custom comparator
+        Collections.sort(numbers, (s1, s2) -> myCompare(s1, s2) ? -1 : 1);
+
+        // If the largest number is "0", return "0"
+        if (numbers.get(0).equals("0")) {
+            return "0";
+        }
+
+        // Append all sorted numbers to form the largest number
+        StringBuilder sb = new StringBuilder();
+        for (String s : numbers) {
+            sb.append(s);
+        }
+
+        return sb.toString();
+    }
+
+    // Custom comparator to compare two concatenations
+    boolean myCompare(String s1, String s2) {
+        return (s1 + s2).compareTo(s2 + s1) > 0;
+    }
+
+    /*
+    🔎 Approach 1: Brute Force
+    --------------------------------------------
+    - Generate all possible permutations of the given numbers.
+    - Form a number from each permutation and keep track of the maximum number formed.
+    - Return the largest number formed.
+
+    🔹 Time Complexity: O(N!) -> Due to generating all permutations.
+    🔹 Space Complexity: O(N) -> For storing the permutations.
+
+    🔎 Dry Run Example:
+      Input: [3, 30, 34]
+      Permutations: [3034, 3430, 3034, 3430]
+      Largest Number Formed: 3430
+      
+    // Commented Brute Force Approach
+    /*
+    String findLargest(int[] arr) {
+        List<String> numbers = new ArrayList<>();
+        for (int num : arr) {
+            numbers.add(String.valueOf(num));
+        }
+        
+        List<String> permutations = new ArrayList<>();
+        permute(numbers, 0, permutations);
+
+        String largest = "";
+        for (String p : permutations) {
+            if (p.compareTo(largest) > 0) {
+                largest = p;
+            }
+        }
+        return largest;
+    }
+
+    void permute(List<String> arr, int l, List<String> result) {
+        if (l == arr.size() - 1) {
+            result.add(String.join("", arr));
+        } else {
+            for (int i = l; i < arr.size(); i++) {
+                Collections.swap(arr, l, i);
+                permute(arr, l + 1, result);
+                Collections.swap(arr, l, i); // Backtrack
+            }
+        }
+    }
+    */
+}
