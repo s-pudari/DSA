@@ -23,60 +23,108 @@ while(right<n){
 return maxLen;
 
 
-        
+/*
+✅ Approach Explanation:
+- **Optimized Approach (Approach 2)**:
+  - Use a **HashMap** to store the prefix sum and its corresponding index.
+  - Track the cumulative sum while iterating through the array.
+  - If the sum becomes **0**, update the `max` length.
+  - If the sum is found in the HashMap, calculate the subarray length and update the maximum length.
+  - This approach uses efficient lookup using HashMap in O(1).
 
+- **Brute Force Approach (Approach 1)**:
+  - Use two nested loops to generate all possible subarrays.
+  - Calculate the sum of each subarray and check if it equals **0**.
+  - Track the maximum subarray length.
 
-//Approach 2 using hashMap T.C and S.C --> O(n)
+---
+
+✅ Time and Space Complexity:
+- **Optimized Approach**:
+  - **Time Complexity:** O(N) → Single pass using HashMap for constant-time lookups.
+  - **Space Complexity:** O(N) → For storing prefix sums in HashMap.
+- **Brute Force Approach**:
+  - **Time Complexity:** O(N²) → Due to nested loops.
+  - **Space Complexity:** O(1) → No extra space used.
+
+---
+
+✅ Dry Run with Example:
+Input: [15, -2, 2, -8, 1, 7, 10, 23]
+
+1. Initialize `sum = 0`, `max = 0`
+2. Iterate through the array:
+    - **15** → sum = 15 → Not in HashMap → Store (15, 0)
+    - **-2** → sum = 13 → Not in HashMap → Store (13, 1)
+    - **2** → sum = 15 → Found in HashMap → Length = 2 - 0 = 2
+    - **-8** → sum = 7 → Not in HashMap → Store (7, 3)
+    - **1** → sum = 8 → Not in HashMap → Store (8, 4)
+    - **7** → sum = 15 → Found in HashMap → Length = 5 - 0 = 5
+3. Max Length = 5
+
+Output: **5**
+
+*/
+
+import java.util.*;
+
 class Solution {
+    // ✅ Optimized Approach
     int maxLen(int arr[]) {
-        // code here
-        int n=arr.length;
-        int sum=0;
-        int ans=0;
-        
-        Map<Integer,Integer> prefixSum = new HashMap<>();
-        
-        for(int i=0;i<n;i++){
-            sum+=arr[i];
-            
-            if(sum==0){
-                ans=i+1;
+        // HashMap to store prefix sum and index
+        HashMap<Integer, Integer> prefixSum = new HashMap<>();
+       
+        int max = 0;
+        int sum = 0;
+       
+        // Traverse through the array
+        for (int i = 0; i < arr.length; i++) {
+            sum += arr[i];
+           
+            // If sum is 0, update max length
+            if (sum == 0) {
+                max = i + 1;
             }
             
-            if(prefixSum.containsKey(sum)){
-                ans = Math.max(ans,i-prefixSum.get(sum));
-            }
-            else{
-                prefixSum.put(sum,i);
+            // Check if sum exists in HashMap
+            if (prefixSum.containsKey(sum)) {
+                max = Math.max(max, i - prefixSum.get(sum));
+            } else {
+                // Store sum and index if not already present
+                prefixSum.put(sum, i);
             }
         }
-        return ans;
-       
+        return max;
     }
+    
+    // -------------------------------------------------------------------------------
+    
+    // ❗❗ Brute Force Approach
+    /*
+    int maxLen(int arr[]) {
+        int max = 0;
+        
+        // Generate all possible subarrays
+        for (int i = 0; i < arr.length; i++) {
+            int sum = 0;
+            
+            for (int j = i; j < arr.length; j++) {
+                sum += arr[j];
+                
+                // Check if the sum is zero
+                if (sum == 0) {
+                    max = Math.max(max, j - i + 1);
+                }
+            }
+        }
+        return max;
+    }
+    */
 }
 
 
-//Approach 1 (Brute Force) T.C --> O(n^2)
-class Solution {
-    int maxLen(int arr[]) {
-        // code here
-        int n=arr.length;
         
-        int ans=0;
-        
-     
-        
-        for(int i=0;i<n;i++){
-            int sum=0;
-            
-            for(int j=i;j<n;j++){
-                sum+=arr[j];
-            if(sum==0){
-                ans=Math.max(ans,j-i+1);
-            }
-            
-            }
-        }
+
         return ans;
     }
 }
