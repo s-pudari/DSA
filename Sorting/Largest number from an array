@@ -19,6 +19,7 @@ class Solution {
       - Convert to Strings: ["3", "30", "34", "5", "9"]
       - Sorted using custom comparator: ["9", "5", "34", "3", "30"]
       - Result: "9534330"
+    for more explaination scroll to last
     */
 
     String findLargest(int[] arr) {
@@ -29,7 +30,7 @@ class Solution {
             numbers.add(Integer.toString(num));
         }
 
-        // Sort using custom comparator
+        // Sort using custom comparator 
         Collections.sort(numbers, (s1, s2) -> myCompare(s1, s2) ? -1 : 1);
 
         // If the largest number is "0", return "0"
@@ -99,3 +100,99 @@ class Solution {
     }
     */
 }
+
+Collections.sort(numbers, (s1, s2) -> myCompare(s1, s2) ? -1 : 1);
+📌 Understanding the Code First:
+Collections.sort() is sorting the list of strings (numbers).
+
+(s1, s2) is the lambda function where the myCompare(s1, s2) method is applied.
+
+myCompare(s1, s2) is a custom comparator that compares two concatenated string results:
+
+java
+Copy
+Edit
+(s1 + s2).compareTo(s2 + s1)
+If myCompare(s1, s2) returns true, the result is -1, meaning s1 comes before s2.
+
+If myCompare(s1, s2) returns false, the result is 1, meaning s2 comes before s1.
+
+🧑‍💻 Example for Dry Run
+plaintext
+Copy
+Edit
+Input: [3, 30, 34, 5, 9]
+Convert to strings → ["3", "30", "34", "5", "9"]
+
+Step 1: Start Sorting Comparisons
+We will apply myCompare() to compare all possible pairs using:
+
+java
+Copy
+Edit
+(s1 + s2).compareTo(s2 + s1)
+➡️ Compare "30" and "3"
+"303" vs "330"
+
+"303".compareTo("330") = Negative → s1 comes before s2
+
+No Swap
+
+➡️ Compare "34" and "30"
+"3430" vs "3034"
+
+"3430".compareTo("3034") = Positive → s1 comes before s2
+
+Swap "34" and "30"
+
+✅ Array After Comparison: ["3", "34", "30", "5", "9"]
+
+➡️ Compare "5" and "34"
+"534" vs "345"
+
+"534".compareTo("345") = Positive → s1 comes before s2
+
+Swap "5" and "34"
+
+✅ Array After Comparison: ["3", "5", "34", "30", "9"]
+
+➡️ Compare "9" and "5"
+"95" vs "59"
+
+"95".compareTo("59") = Positive → s1 comes before s2
+
+Swap "9" and "5"
+
+✅ Array After Comparison: ["3", "9", "5", "34", "30"]
+
+Step 2: Continue Sorting
+Now the comparisons continue to finalize the correct order.
+
+➡️ Compare "9" and "3"
+"93" vs "39"
+
+"93".compareTo("39") = Positive → s1 comes before s2
+
+Swap "9" and "3"
+
+✅ Array After Comparison: ["9", "3", "5", "34", "30"]
+
+➡️ Compare "5" and "3"
+"53" vs "35"
+
+"53".compareTo("35") = Positive → s1 comes before s2
+
+Swap "5" and "3"
+
+✅ Final Sorted Array:
+
+plaintext
+Copy
+Edit
+["9", "5", "34", "3", "30"]
+📦 Final Step: Form the Largest Number
+Join the sorted numbers → "9534330"
+
+Output: "9534330"
+
+
