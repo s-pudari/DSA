@@ -1,32 +1,120 @@
 https://leetcode.com/problems/longest-substring-without-repeating-characters/
-//Sliding window and two pointers approach T.C & S.C --> O(N)
+/*
+✅ Approach Explanation:
+- **Optimized Approach (Approach 2)**:
+  - Use a **sliding window** (two pointers `l` and `r`) and a **HashSet** to keep track of unique characters.
+  - Expand the window using `r` until a duplicate character is found.
+  - When a duplicate is detected, shrink the window from the left (`l`) until there are no duplicates.
+  - Update the maximum window length using `Math.max()`.
+
+- **Brute Force Approach (Approach 1)**:
+  - Use two nested loops to check all possible substrings.
+  - Use a **HashSet** to track characters within a given substring.
+  - If a duplicate character is found, stop and compare the current substring length with the previous maximum.
+
+---
+
+✅ Time and Space Complexity:
+- **Optimized Approach**:
+  - **Time Complexity:** \( O(N) \) → Each character is added and removed from the set at most once.
+  - **Space Complexity:** \( O(K) \) → Where K is the size of the HashSet (max 26 for lowercase letters).
+- **Brute Force Approach**:
+  - **Time Complexity:** \( O(N^2) \) → Due to nested loops.
+  - **Space Complexity:** \( O(K) \) → For storing unique characters.
+
+---
+
+✅ Dry Run with Example:
+Input: `"abcabcbb"`
+
+**Step 1:** Initialize `l=0`, `r=0`, `ans=0`, HashSet = `{}`
+
+- `r = 0` → `'a'` → Not in HashSet → Add `'a'`, Update `ans = 1`
+- `r = 1` → `'b'` → Not in HashSet → Add `'b'`, Update `ans = 2`
+- `r = 2` → `'c'` → Not in HashSet → Add `'c'`, Update `ans = 3`
+- `r = 3` → `'a'` → Found in HashSet → Remove `'a'` from HashSet → Slide `l` → Add `'a'`
+- `r = 4` → `'b'` → Found in HashSet → Remove `'b'` from HashSet → Slide `l` → Add `'b'`
+- Continue this process until `r = 7`
+
+✅ Final Output: **3**
+
+---
+
+✅ **Optimized Approach (Sliding Window)** 
+*/
+
+import java.util.*;
+
 class Solution {
     public int lengthOfLongestSubstring(String s) {
-      int r=0;
-      int l=0;
-      HashSet<Character> hs=new HashSet<>();
-      
-     
-      
-      int ans=0;
-      int n=s.length();
-    while(r<n){
+        // Handle edge cases
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
 
-        char ch=s.charAt(r);
-        if(!hs.contains(ch)){
-            hs.add(ch);
-        }
-        else{
-            while(hs.contains(ch)){
-                hs.remove(s.charAt(l));
-                l++;
+        int l = 0;
+        int r = 0;
+        HashSet<Character> hs = new HashSet<>();
+        int ans = 0;
+        int n = s.length();
+
+        // Expand window using 'r' while maintaining unique characters
+        while (r < n) {
+            char ch = s.charAt(r);
+
+            // If character is not in the set, add it
+            if (!hs.contains(ch)) {
+                hs.add(ch);
+            } else {
+                // Remove characters from the left until no duplicate exists
+                while (hs.contains(ch)) {
+                    hs.remove(s.charAt(l));
+                    l++;
+                }
+                hs.add(ch);
             }
-            hs.add(ch);
-        
+            ans = Math.max(ans, r - l + 1);
+            r++;
         }
-        ans=Math.max(ans,r-l+1);
-        r++;
-      }
-      return ans;
+        return ans;
     }
+
+    // -------------------------------------------------------------------------------
+
+    // ❗❗ Brute Force Approach
+    /*
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        if (s.length() == 1) {
+            return 1;
+        }
+
+        int ans = 0;
+        int n = s.length();
+
+        // Iterate through all possible starting points
+        for (int i = 0; i < n - 1; i++) {
+            HashSet<Character> hs = new HashSet<>();
+            hs.add(s.charAt(i));
+
+            // Check for duplicates by extending the substring
+            for (int j = i + 1; j < n; j++) {
+                if (!hs.contains(s.charAt(j))) {
+                    hs.add(s.charAt(j));
+                } else {
+                    break;
+                }
+            }
+            // Track maximum substring length
+            ans = Math.max(ans, hs.size());
+        }
+        return ans;
+    }
+    */
 }
+
