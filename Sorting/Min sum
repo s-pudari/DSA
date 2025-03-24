@@ -1,0 +1,148 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/sorting-bonus-problems/problem/minimum-sum4058
+/*
+✅ Approach Explanation:
+- **Optimized Approach (Approach 2)**:
+  - First, sort the array in ascending order using `Arrays.sort()`.
+  - Form two numbers (`s1` and `s2`) by alternatively picking elements.
+  - Perform manual addition using a helper function `addString()`.
+  - This ensures large numbers are handled without overflow issues.
+
+- **Brute Force Approach (Approach 1)**:
+  - Convert numbers to strings and store them in a list.
+  - Sort the list using a custom comparator to minimize concatenated sum.
+  - Form two numbers using alternate picking and add using `BigInteger`.
+
+---
+
+✅ Time and Space Complexity:
+- **Optimized Approach**:
+  - **Time Complexity:** O(N log N) → Due to sorting.
+  - **Space Complexity:** O(N) → For storing two numbers as Strings.
+- **Brute Force Approach**:
+  - **Time Complexity:** O(N log N) → Sorting using a custom comparator.
+  - **Space Complexity:** O(N) → For storing strings and using BigInteger.
+
+---
+
+✅ Dry Run with Example:
+Input: [6, 8, 4, 5, 2, 3]
+1. After Sorting: [2, 3, 4, 5, 6, 8]
+2. Form two numbers using alternate elements:
+    - s1 = "246"
+    - s2 = "358"
+3. Perform Addition: 246 + 358 = 604
+Output: "604"
+*/
+
+import java.util.*;
+
+class Solution {
+    
+    // ✅ Optimized Approach
+    String minSum(int[] arr) {
+        if (arr.length == 2) {
+            return Integer.toString(arr[0] + arr[1]);
+        }
+        
+        // Step 1: Sort the array
+        Arrays.sort(arr);
+        StringBuilder s1 = new StringBuilder();
+        StringBuilder s2 = new StringBuilder();
+        
+        // Step 2: Form two numbers by alternating
+        for (int i = 0; i < arr.length; i++) {
+            if (i % 2 == 0) {
+                s1.append(arr[i]);
+            } else {
+                s2.append(arr[i]);
+            }
+        }
+        
+        // Step 3: Perform addition using addString() function
+        return addString(s1, s2);
+    }
+    
+    // ✅ Helper Function to Perform String Addition
+    String addString(StringBuilder s1, StringBuilder s2) {
+        int i = s1.length() - 1;
+        int j = s2.length() - 1;
+        int carry = 0;
+        StringBuilder res = new StringBuilder();
+        
+        // Perform addition like manual column addition
+        while (i >= 0 || j >= 0 || carry > 0) {
+            int sum = carry;
+            
+            if (i >= 0) {
+                sum += (s1.charAt(i) - '0');
+                i--;
+            }
+            
+            if (j >= 0) {
+                sum += (s2.charAt(j) - '0');
+                j--;
+            }
+            
+            res.append(sum % 10);
+            carry = sum / 10;
+        }
+        
+        // Remove leading zeros
+        while (res.length() > 1 && res.charAt(res.length() - 1) == '0') {
+            res.deleteCharAt(res.length() - 1);
+        }
+        
+        res.reverse();
+        return res.toString();
+    }
+    
+    // -------------------------------------------------------------------------------
+    
+    // ❗❗ Brute Force Approach
+    /*
+    import java.math.BigInteger;
+    import java.util.*;
+    
+    class Solution {
+        String minSum(int[] arr) {
+            if (arr.length == 2) {
+                return Integer.toString(arr[0] + arr[1]);
+            }
+            
+            List<String> li = new ArrayList<>();
+            
+            // Convert numbers to strings
+            for (int i : arr) {
+                li.add(Integer.toString(i));
+            }
+            
+            // Sort using custom comparator
+            Collections.sort(li, (s1, s2) -> myCompare(s1, s2) ? 1 : -1);
+            
+            String s1 = "";
+            String s2 = "";
+            
+            // Form numbers using alternate picking
+            for (int i = 0; i < li.size(); i++) {
+                if (i % 2 == 0) {
+                    s1 += li.get(i);
+                } else {
+                    s2 += li.get(i);
+                }
+            }
+            
+            // Use BigInteger for addition
+            BigInteger num1 = new BigInteger(s1);
+            BigInteger num2 = new BigInteger(s2);
+            BigInteger ans = num1.add(num2);
+            
+            return ans.toString();
+        }
+        
+        // Custom Comparator for Sorting
+        boolean myCompare(String s1, String s2) {
+            return (s1 + s2).compareTo(s2 + s1) > 0;
+        }
+    }
+    */
+}
