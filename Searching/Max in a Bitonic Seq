@@ -41,7 +41,7 @@ Output: **12**
 ---
 
 ✅ **Optimized Approach (Using Binary Search)** 
-*/
+*/ O(log n)
 
 class Solution {
     public int findMaximum(int[] arr) {
@@ -81,7 +81,7 @@ class Solution {
     // -------------------------------------------------------------------------------
     
     // ❗❗ Brute Force Approach
-    /*
+    /* O(n)
     public int findMaximum(int[] arr) {
         int n = arr.length;
         
