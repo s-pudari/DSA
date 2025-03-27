@@ -1,0 +1,90 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/searching-bonus-problems/problem/square-root
+/*
+ * Approach Explanation:
+ * 
+ * Optimized Approach (Binary Search):
+ * - We use binary search to efficiently find the square root of the given number `n`.
+ * - Start with `lo = 1` and `hi = n`, and repeatedly calculate `mid = lo + (hi - lo) / 2`.
+ * - Check if `mid * mid <= n`. If true, store `mid` as a potential result and search on the right (`lo = mid + 1`).
+ * - Otherwise, search on the left (`hi = mid - 1`).
+ * 
+ * Time Complexity: O(log n) → Due to binary search.
+ * Space Complexity: O(1) → Constant space used for variables.
+ * 
+ * ---------------------------
+ * 
+ * Brute Force Approach:
+ * - Start with `res = 1` and increment it until `res * res > n`.
+ * - Return `res - 1` as the floor square root.
+ * 
+ * Time Complexity: O(√n) → We iterate until the square root is found.
+ * Space Complexity: O(1) → Constant space used.
+ * 
+ * ---------------------------
+ * 
+ * In-Built Approach (Using Math.sqrt()):
+ * - Directly return `(int)Math.sqrt(n)` using Java's built-in square root function.
+ * - Time Complexity: O(1) → Constant time.
+ * - Space Complexity: O(1).
+ * 
+ * ---------------------------
+ * 
+ * Example Dry Run (n = 10):
+ * 
+ * Step 1: lo = 1, hi = 10, mid = (1+10)/2 = 5 → 5*5 = 25 (Too large) → hi = 4
+ * Step 2: lo = 1, hi = 4, mid = (1+4)/2 = 2 → 2*2 = 4 (Valid) → res = 2, lo = 3
+ * Step 3: lo = 3, hi = 4, mid = (3+4)/2 = 3 → 3*3 = 9 (Valid) → res = 3, lo = 4
+ * Step 4: lo = 4, hi = 4, mid = (4+4)/2 = 4 → 4*4 = 16 (Too large) → hi = 3
+ * 
+ * Final Result = 3
+ */
+
+class Solution {
+
+    // Optimized Approach using Binary Search
+    int floorSqrt(int n) {
+        // Edge case for 0 or 1
+        if (n == 0 || n == 1) {
+            return n;
+        }
+
+        int lo = 1, hi = n;
+        int res = 1;
+
+        // Perform binary search to find the floor square root
+        while (lo <= hi) {
+            int mid = lo + (hi - lo) / 2;
+
+            // Check if mid * mid is within the limit
+            if (mid * mid <= n) {
+                res = mid;  // Potential answer
+                lo = mid + 1; // Search right
+            } else {
+                hi = mid - 1; // Search left
+            }
+        }
+        return res;
+    }
+
+    /*
+    // In-Built Approach using Math.sqrt()
+    int floorSqrt(int n) {
+        return (int)Math.sqrt(n);
+    }
+    */
+
+    /*
+    // Brute Force Approach
+    int floorSqrt(int n) {
+        int res = 1;
+
+        // Increment res until res^2 exceeds n
+        while (res * res <= n) {
+            res++;
+        }
+
+        // Return the previous value as the floor square root
+        return res - 1;
+    }
+    */
+}
