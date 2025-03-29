@@ -1,0 +1,134 @@
+https://leetcode.com/problems/minimum-number-of-days-to-make-m-bouquets/
+// Optimized Approach (Binary Search)
+// Approach Explanation:
+// - Perform a binary search on the possible days to find the minimum day that satisfies the condition.
+// - Use a helper function `isPossible` to check if it's possible to form `m` bouquets using `k` flowers per bouquet on a given day.
+
+// Time Complexity: O(n * log(maxDay)), where n is the number of flowers and maxDay is the maximum bloom day.
+// Space Complexity: O(1) - Constant space used.
+
+class Solution {
+
+    // Main function to find the minimum day to make m bouquets
+    public int minDays(int[] bloomDay, int m, int k) {
+        // Define the search space from 1 to the maximum possible bloom day
+        int l = 1;
+        int r = (int) Math.pow(10, 9);
+
+        // Perform binary search to find the minimum day
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+
+            // Check if it's possible to form the required bouquets on this day
+            if (isPossible(bloomDay, m, k, mid)) {
+                r = mid - 1; // Search in the left half
+            } else {
+                l = mid + 1; // Search in the right half
+            }
+        }
+
+        // If no valid day is found, return -1
+        int exceed = (int) Math.pow(10, 9);
+        if (l > exceed) {
+            return -1;
+        }
+        return l;
+    }
+
+    // Helper function to check if it is possible to form m bouquets with k flowers each on a specific day
+    public boolean isPossible(int[] arr, int m, int k, int day) {
+        int took = 0; // Track consecutive flowers that can be used
+        for (int i = 0; i < arr.length; i++) {
+            if (day >= arr[i]) {
+                took++;
+            } else {
+                took = 0;
+            }
+
+            // Form a bouquet when we have k consecutive flowers
+            if (took == k) {
+                m--;
+                took = 0;
+            }
+
+            // Return true if we successfully form all bouquets
+            if (m == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+
+/*
+ * Dry Run Example:
+ * bloomDay = [1, 10, 3, 10, 2], m = 3, k = 1
+ * Search Space: 1 to 10
+ * 
+ * Step 1: mid = 5
+ * Check if possible with day 5 → Possible (bouquets formed: [1], [3], [2])
+ * Update r = 4
+ * 
+ * Step 2: mid = 2
+ * Check if possible with day 2 → Possible (bouquets formed: [1], [2])
+ * Update r = 1
+ * 
+ * Step 3: mid = 1
+ * Check if possible with day 1 → Not Possible
+ * Update l = 2
+ * 
+ * Output: Minimum day = 2
+ */
+
+
+// ----------------------------------------------------
+// Brute Force Approach (Commented Out)
+// ----------------------------------------------------
+// Approach Explanation:
+// - Iterate through all possible days from 1 to the maximum bloom day.
+// - For each day, check if it's possible to form `m` bouquets using `k` flowers using the `isPossible` function.
+// - Return the first day that satisfies the condition.
+
+// Time Complexity: O(n * maxDay) - Very inefficient for large inputs
+// Space Complexity: O(1) - Constant space used.
+
+/*
+class Solution {
+
+    public int minDays(int[] bloomDay, int m, int k) {
+        int maxDay = Integer.MIN_VALUE;
+        for (int day : bloomDay) {
+            maxDay = Math.max(maxDay, day);
+        }
+
+        // Check each day from 1 to maxDay
+        for (int day = 1; day <= maxDay; day++) {
+            if (isPossible(bloomDay, m, k, day)) {
+                return day;
+            }
+        }
+        return -1;
+    }
+
+    public boolean isPossible(int[] arr, int m, int k, int day) {
+        int took = 0;
+        for (int i = 0; i < arr.length; i++) {
+            if (day >= arr[i]) {
+                took++;
+            } else {
+                took = 0;
+            }
+
+            if (took == k) {
+                m--;
+                took = 0;
+            }
+
+            if (m == 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+}
+*/
