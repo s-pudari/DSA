@@ -65,19 +65,47 @@ class Solution {
  * bloomDay = [1, 10, 3, 10, 2], m = 3, k = 1
  * Search Space: 1 to 10
  * 
- * Step 1: mid = 5
- * Check if possible with day 5 → Possible (bouquets formed: [1], [3], [2])
- * Update r = 4
- * 
- * Step 2: mid = 2
- * Check if possible with day 2 → Possible (bouquets formed: [1], [2])
- * Update r = 1
- * 
- * Step 3: mid = 1
- * Check if possible with day 1 → Not Possible
- * Update l = 2
- * 
- * Output: Minimum day = 2
+ * Step 1:
+      mid = (1 + 10) / 2 = 5
+
+      Check if possible with day = 5
+
+      Bloomed flowers: [1, 3, 2] → Form 3 bouquets
+
+      Possible
+
+      Update r = 4
+
+*Step 2:
+
+     mid = (1 + 4) / 2 = 2
+
+     Check if possible with day = 2
+
+     Bloomed flowers: [1, 2] → Form 2 bouquets
+
+     Not possible
+
+     Update l = 3
+
+*Step 3:
+
+     mid = (3 + 4) / 2 = 3
+
+     Check if possible with day = 3
+
+     Bloomed flowers: [1, 3, 2] → Form 3 bouquets
+
+     Possible
+
+     Update r = 2
+
+*Final check:
+
+    l = 3
+
+   Minimum day = 3
+   ✅ Output: 3
  */
 
 
