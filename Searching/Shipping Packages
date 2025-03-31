@@ -1,0 +1,90 @@
+https://leetcode.com/problems/capacity-to-ship-packages-within-d-days/description/
+// Approach Explanation:
+// Optimized Approach (Binary Search):
+// - The goal is to find the minimum capacity of the ship that allows shipping all packages within the given number of days.
+// - Perform a binary search on the possible ship capacities, ranging from the maximum weight in the array to the sum of all weights.
+// - Use a helper function `isPossible` to check if a given capacity can meet the day requirement.
+// - Adjust the search range based on whether the capacity is sufficient or not.
+// Time Complexity: O(N * log(S)) - N for checking the possibility and log(S) for binary search, where S is the sum of weights.
+// Space Complexity: O(1) - No extra space used apart from variables.
+
+// Brute-Force Approach (Commented Out):
+// - Try every possible ship capacity from the maximum weight to the sum of all weights.
+// - For each capacity, check if it satisfies the day requirement using a linear scan.
+// Time Complexity: O(N * S) - N for checking each capacity and S for the possible capacity range.
+// Space Complexity: O(1)
+
+// Dry Run Example:
+// Input: weights = [1,2,3,4,5,6,7,8,9,10], days = 5
+// Binary Search Range: 10 to 55
+// mid = (10 + 55)/2 = 32
+// Check if 32 is possible:
+// - Day 1: [1,2,3,4,5,6,7] (Total = 28)
+// - Day 2: [8] (Total = 8)
+// - Day 3: [9] (Total = 9)
+// - Day 4: [10] (Total = 10)
+// Result: Capacity 32 works, try lower.
+// Continue until optimal solution is found.
+
+class Solution { 
+    // Helper function to check if a given capacity is sufficient
+    public static boolean isPossible(int[] weights, int days, int k) {
+        int temp = 0; // Tracks current load on the ship
+        
+        for (int i = 0; i < weights.length; i++) {
+            int val = weights[i];
+            
+            // If a single weight exceeds capacity, return false
+            if (val > k) {
+                return false;
+            }
+
+            // If adding this weight exceeds capacity, start a new day
+            if (temp + val > k) {
+                days--;
+                temp = 0;
+            }
+
+            temp += val;
+
+            // If days are exhausted, return false
+            if (days <= 0) {
+                return false;
+            }
+        }
+        return true; // All packages shipped within days
+    }
+
+    // Main function to find the minimum capacity of the ship
+    public int shipWithinDays(int[] weights, int days) {
+        int l = 1; // Lower bound (at least 1 capacity)
+        int r = 5 * (int) Math.pow(10, 4) * 500; // Upper bound (worst case)
+      
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+
+            // Check if the current capacity is sufficient
+            if (isPossible(weights, days, mid)) {
+                r = mid - 1; // Try smaller capacity
+            } else {
+                l = mid + 1; // Increase capacity
+            }
+        }
+        return l; // Minimum capacity that works
+    }
+    
+    // Brute-Force Approach (Commented Out):
+    /*
+    public int shipWithinDaysBruteForce(int[] weights, int days) {
+        int maxWeight = Arrays.stream(weights).max().getAsInt();
+        int totalWeight = Arrays.stream(weights).sum();
+
+        for (int capacity = maxWeight; capacity <= totalWeight; capacity++) {
+            if (isPossible(weights, days, capacity)) {
+                return capacity; // Return first valid capacity
+            }
+        }
+        return -1; // No valid capacity found
+    }
+    */
+}
