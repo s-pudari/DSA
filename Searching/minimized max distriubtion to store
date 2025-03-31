@@ -1,0 +1,104 @@
+https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/
+/**
+ * Approach Explanation:
+ * ---------------------
+ * Optimized Approach:
+ * - We perform a binary search on the possible maximum number of items per bag (the "limit").
+ * - For each candidate limit, we use the helper method isPossible to check if it is feasible to distribute
+ *   all items in the given quantities into 'n' bags without exceeding the candidate limit.
+ * - The binary search significantly reduces the number of candidate limits to check.
+ *
+ * Brute-Force Approach (Commented Out):
+ * - Iteratively test every possible limit starting from 1 until finding a valid distribution.
+ * - This method would check each possible value one by one, leading to higher time complexity.
+ *
+ * Time Complexity:
+ * - Optimized: O(m * log(maxQuantity)), where m = number of quantities.
+ * - Brute-force: O(m * maxQuantity) [Commented Out]
+ *
+ * Space Complexity:
+ * - Both approaches use O(1) additional space.
+ *
+ * Dry Run Example:
+ * ----------------
+ * Input: quantities = [10, 5], n = 3
+ * - Binary Search Range: l = 1, r = 10^5 (initially)
+ * - mid is calculated and isPossible is used to check:
+ *   For mid = candidate limit:
+ *     For 10: bags needed = ceil(10 / mid)
+ *     For 5:  bags needed = ceil(5 / mid)
+ *   Sum of required bags <= n then mid is a valid candidate.
+ * - The search narrows until the minimal valid mid is found, which is returned.
+ */
+
+class Solution {
+    
+    // Optimized Approach: Binary Search Method
+    // Checks if it is possible to distribute quantities into n bags with each bag holding at most 'limit' items.
+    public boolean isPossible(int n, int[] arr, int limit) {
+        // Loop through each quantity in the array.
+        for (int i = 0; i < arr.length; i++) {
+            // Calculate the number of bags required for current quantity,
+            // using integer division; if there is a remainder, we need an extra bag.
+            int temp = arr[i] / limit;
+            if (arr[i] % limit != 0) {
+                temp++; // Increment bag count if items don't divide evenly.
+            }
+            // Decrease the available bag count by the number of bags used.
+            n -= temp;
+            // If available bags run out, the limit is not feasible.
+            if (n < 0) {
+                return false;
+            }
+        }
+        return true; // All quantities can be distributed within the given bag limit.
+    }
+
+    // Main function to find the minimized maximum number of items per bag using binary search.
+    public int minimizedMaximum(int n, int[] quantities) {
+        // Define search space: lower bound l and an arbitrarily high upper bound r.
+        int l = 1;
+        int r = (int) Math.pow(10, 5);
+        
+        // Perform binary search.
+        while (l <= r) {
+            // Calculate the mid value to test as a candidate limit.
+            int mid = l + (r - l) / 2;
+            
+            // If it's possible to distribute items with the current mid as limit,
+            // try for a smaller limit by reducing the upper bound.
+            if (isPossible(n, quantities, mid)) {
+                r = mid - 1;
+            } else {
+                // Otherwise, increase the lower bound.
+                l = mid + 1;
+            }
+        }
+        // 'l' now holds the minimal possible maximum value that meets the criteria.
+        return l;
+    }
+    
+    /*
+    // Brute-Force Approach (Commented Out):
+    // This method incrementally checks each possible limit starting from 1 until a valid distribution is found.
+    public int minimizedMaximumBruteForce(int n, int[] quantities) {
+        // Start with the smallest possible limit.
+        int limit = 1;
+        // Continue checking until a valid distribution is found.
+        while (true) {
+            int bagsNeeded = 0;
+            // For each quantity, calculate the number of bags required.
+            for (int i = 0; i < quantities.length; i++) {
+                // Use ceiling division to determine bags needed for current quantity.
+                bagsNeeded += (quantities[i] + limit - 1) / limit;
+            }
+            // If the number of bags needed is within the available n bags, return the current limit.
+            if (bagsNeeded <= n) {
+                return limit;
+            }
+            // Otherwise, try the next limit.
+            limit++;
+        }
+    }
+    */
+}
