@@ -1,0 +1,110 @@
+https://leetcode.com/problems/split-array-largest-sum/description/
+
+class Solution {
+    /**
+     * Optimized Approach: Binary Search on Possible Maximum Subarray Sum
+     * 1. The minimal possible maximum sum is between the maximum element (when split into n subarrays) and total sum (when not split).
+     * 2. Use binary search to find the smallest possible maximum sum where the array can be split into (target + 1) subarrays.
+     * 3. For each candidate sum 'mid', check if splitting the array into <= (target + 1) subarrays is possible.
+     * 
+     * Brute-force Approach:
+     * 1. Iterate from the maximum element to the total sum.
+     * 2. For each sum value, check if the array can be split into (target + 1) subarrays with sums <= current value.
+     * 3. Return the first valid sum. Time Complexity: O(n * S) where S is total sum → Infeasible for large sums.
+     * 
+     * Time Complexity (Optimized): O(n log S) where S is the sum of the array
+     * Space Complexity (Optimized): O(1)
+     * 
+     * Dry Run Example:
+     * Input: nums = [7,2,5,10,8], target = 2 (split into 3 subarrays)
+     * Binary Search Steps:
+     * low = 10 (max element), high = 32 (total sum)
+     * mid = 21 → Check if possible to split into 3 subarrays with max sum 21:
+     *   Subarrays: [7,2,5,7 (sum 21)], [10,8 (sum 18)] → Valid. Search lower (high=20)
+     * mid=15 → Check: [7,2,5 (14)], [10 (10)], [8 (8)] → 3 splits needed (target=2 allowed). Valid. Search lower (high=14)
+     * mid=12 → Not possible. Search higher (low=13)
+     * Continue until low=18, high=18 → return 18.
+     */
+    
+    /**
+     * Checks if the array can be split into (target + 1) subarrays with each sum <= k.
+     * @param arr Array of integers
+     * @param target Maximum allowed splits (number of subarrays = target + 1)
+     * @param k Maximum allowed sum per subarray
+     * @return True if possible, False otherwise
+     */
+    public boolean isPossible(int[] arr, int target, int k) {
+        int currentSum = 0; // Sum of current subarray
+        target--; // Each split reduces remaining splits (initial splits = target)
+
+        for (int i = 0; i < arr.length; i++) {
+            int val = arr[i];
+            if (val > k) return false; // Single element exceeds k → impossible
+
+            // If adding current element exceeds k, make a split
+            if (currentSum + val > k) {
+                target--; // Use a split
+                currentSum = 0; // Reset current subarray sum
+            }
+            currentSum += val;
+
+            if (target < 0) return false; // Exceeded allowed splits
+        }
+        return true; // All splits used within limit
+    }
+
+    /**
+     * Finds the minimal possible maximum sum when splitting the array into (target + 1) subarrays.
+     * @param nums Input array
+     * @param target Number of splits allowed (subarrays = target + 1)
+     * @return Minimal maximum subarray sum
+     */
+    public int splitArray(int[] nums, int target) {
+        // Edge case: if target is 0, no splits allowed (sum is entire array)
+        if (target == 0) return Arrays.stream(nums).sum();
+
+        int l = Arrays.stream(nums).max().getAsInt(); // Minimal possible sum (max element)
+        int r = Arrays.stream(nums).sum(); // Max possible sum (entire array)
+
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            if (isPossible(nums, target, mid)) {
+                r = mid - 1; // Try for smaller sum
+            } else {
+                l = mid + 1; // Need larger sum
+            }
+        }
+        return l; // 'l' is the minimal valid sum
+    }
+
+    /**
+     * Brute-force Approach (Commented for reference):
+     * 1. Iterate from max element to total sum.
+     * 2. For each sum, check if splitting is possible.
+     * Time Complexity: O(n * S) → Infeasible for large S.
+     */
+    /*
+    public int bruteForceSplitArray(int[] nums, int target) {
+        int max = Arrays.stream(nums).max().getAsInt();
+        int total = Arrays.stream(nums).sum();
+        
+        for (int sum = max; sum <= total; sum++) {
+            int splitsNeeded = 0;
+            int currentSum = 0;
+            
+            for (int num : nums) {
+                if (currentSum + num > sum) {
+                    splitsNeeded++;
+                    currentSum = 0;
+                }
+                currentSum += num;
+            }
+            
+            if (splitsNeeded <= target) {
+                return sum;
+            }
+        }
+        return total;
+    }
+    */
+}
