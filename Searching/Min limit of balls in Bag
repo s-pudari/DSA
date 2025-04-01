@@ -1,0 +1,91 @@
+https://leetcode.com/problems/minimum-limit-of-balls-in-a-bag/description/
+class Solution {
+    /**
+     * Optimized Approach: Binary Search on Answer
+     * 1. The minimum possible penalty (max bag size) is 1, maximum is up to 1e9.
+     * 2. Use binary search to find the smallest possible penalty where we can achieve it with <= maxOperations.
+     * 3. For each candidate penalty 'mid', calculate required operations using the formula:
+     *    For a bag of size 's', splits needed = (s-1) // mid (equivalent to (s/mid rounded up) - 1).
+     * 
+     * Brute-force Approach:
+     * 1. Check every possible penalty from 1 upwards.
+     * 2. For each penalty, calculate required operations as in the optimized method.
+     * 3. Return the first penalty where required operations <= maxOperations.
+     *    This is O(D * n) → Infeasible for large D (up to 1e9).
+     * 
+     * Time Complexity (Optimized): O(n log D) where D is max possible value (1e9)
+     * Space Complexity (Optimized): O(1)
+     * 
+     * Dry Run Example:
+     * Input: nums = [9], maxOperations = 2
+     * Binary Search Steps:
+     * low=1, high=9 → mid=5 → Operations needed: (9-1)/5 =1 → 1<=2 → search lower (high=4)
+     * mid=2 → Operations: (9-1)/2=4 → 4>2 → search higher (low=3)
+     * mid=3 → Operations: (9-1)/3=2 → 2<=2 → high=2 (loop ends). Return low=3.
+     */
+    
+    /**
+     * Checks if 'maxOperations' are sufficient to make all bags <= 'k' size.
+     * @param nums Array of bag sizes
+     * @param max Maximum allowed operations
+     * @param k Candidate penalty (max allowed bag size)
+     * @return True if possible, False otherwise
+     */
+    public boolean isPossible(int[] nums, int max, int k) {
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] > k) {
+                // Calculate splits needed: (nums[i] + k -1)/k gives ceiling division
+                int splits = (nums[i] + k - 1) / k - 1;
+                max -= splits;
+            }
+            if (max < 0) return false; // Early exit if operations exhausted
+        }
+        return max >= 0; // All operations used within limit
+    }
+
+    /**
+     * Finds the minimum possible maximum bag size after performing operations.
+     * @param nums Array of bag sizes
+     * @param maxOperations Maximum allowed split operations
+     * @return Minimum possible maximum bag size
+     */
+    public int minimumSize(int[] nums, int maxOperations) {
+        int l = 1; // Minimum possible penalty
+        int r = (int) Math.pow(10, 9); // Upper bound
+        
+        // Binary search to find minimal valid penalty
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            if (isPossible(nums, maxOperations, mid)) {
+                r = mid - 1; // Try for smaller penalty
+            } else {
+                l = mid + 1; // Need larger penalty
+            }
+        }
+        return l; // 'l' is the minimal valid penalty
+    }
+
+    /**
+     * Brute-force Approach (Commented for reference):
+     * 1. Iterate from penalty=1 upwards.
+     * 2. For each penalty, check if achievable with allowed operations.
+     * 3. Return first valid penalty.
+     * Time Complexity: O(n * D) → Infeasible for large D.
+     * Space Complexity: O(1)
+     */
+    /*
+    public int bruteForceMinSize(int[] nums, int maxOperations) {
+        for (int penalty = 1; ; penalty++) {
+            int opsNeeded = 0;
+            for (int num : nums) {
+                if (num > penalty) {
+                    opsNeeded += (num + penalty - 1) / penalty - 1;
+                }
+            }
+            if (opsNeeded <= maxOperations) {
+                return penalty;
+            }
+        }
+    }
+    */
+}
