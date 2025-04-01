@@ -1,0 +1,98 @@
+https://leetcode.com/problems/maximum-candies-allocated-to-k-children/description/
+import java.util.Arrays;
+
+class Solution {
+    /**
+     * Optimized Approach: Binary Search on Answer
+     * 1. The maximum possible candies per child is between 1 and max(candies).
+     * 2. Use binary search to find the largest value where the total sub-piles >= children.
+     * 3. For each candidate value 'mid', calculate how many sub-piles each bag can contribute.
+     * 
+     * Brute-force Approach:
+     * 1. Iterate from max(candies) down to 1.
+     * 2. For each value, check if total sub-piles >= children.
+     * 3. Return the first valid value (maximum possible). Infeasible due to O(n * D) time.
+     * 
+     * Time Complexity (Optimized): O(n log D) where D is max(candies)
+     * Space Complexity (Optimized): O(1)
+     * 
+     * Dry Run Example:
+     * Input: candies = [5,8,6], children = 3
+     * max(candies) = 8 → binary search in [1,8]
+     * mid=4 → total sub-piles = 1 (5/4) + 2 (8/4) + 1 (6/4) =4 → >=3 → search higher (l=5)
+     * mid=6 → total = 0 + 1 +1 =2 <3 → search lower (r=5)
+     * mid=5 → total =1 +1 +1=3 → valid. Return 5.
+     */
+    
+    /**
+     * Checks if 'children' can be allocated with each getting at least 'k' candies.
+     * @param arr Array of candy piles
+     * @param children Number of children to allocate
+     * @param k Candidate candy count per child
+     * @return True if possible, False otherwise
+     */
+    public boolean isPossible(int[] arr, long children, int k) {
+        for (int i = 0; i < arr.length; i++) {
+            // Each pile can contribute (arr[i]/k) sub-piles
+            int subPiles = arr[i] / k;
+            children -= subPiles;
+            
+            // Early exit: enough sub-piles found
+            if (children <= 0) return true;
+        }
+        return children <= 0;
+    }
+
+    /**
+     * Finds the maximum number of candies each child can get.
+     * @param candies Array of candy piles
+     * @param children Number of children to allocate
+     * @return Maximum candies per child
+     */
+    public int maximumCandies(int[] candies, long children) {
+        // Edge case: sum of all candies < children → impossible
+        long total = 0;
+        int maxCandy = 0;
+        for (int c : candies) {
+            total += c;
+            if (c > maxCandy) maxCandy = c;
+        }
+        if (total < children) return 0;
+
+        // Binary search boundaries
+        int l = 1;
+        int r = maxCandy; // Correct upper bound
+
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            if (isPossible(candies, children, mid)) {
+                l = mid + 1; // Try larger value
+            } else {
+                r = mid - 1; // Reduce value
+            }
+        }
+        return r; // r is the largest valid value
+    }
+
+    /**
+     * Brute-force Approach (Commented for reference):
+     * 1. Check each possible candy count from max down to 1.
+     * 2. Return first valid count.
+     * Time Complexity: O(n * D) → Infeasible for large D.
+     */
+    /*
+    public int bruteForceMaxCandies(int[] candies, long children) {
+        int maxCandy = Arrays.stream(candies).max().getAsInt();
+        for (int k = maxCandy; k >= 1; k--) {
+            long total = 0;
+            for (int c : candies) {
+                total += c / k;
+            }
+            if (total >= children) {
+                return k;
+            }
+        }
+        return 0;
+    }
+    */
+}
