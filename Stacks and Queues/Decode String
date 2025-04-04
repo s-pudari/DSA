@@ -1,0 +1,123 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-gfg-160/problem/decode-the-string2444
+/*
+Approach Explanation:
+This problem requires decoding a string where numbers represent the number of times the enclosed substring should be repeated.
+
+Optimized Approach:
+- Use a stack to store characters until we encounter ']'.
+- When ']' is found, extract the substring within '[' and ']', then get the repetition count and push back the expanded string.
+- Uses a single stack and processes the input efficiently.
+
+Brute Force Approach:
+- Uses two stacks: one for characters and one for numbers.
+- When encountering ']', extract the substring, get the repetition count, repeat the string, and push it back.
+
+Time Complexity: O(N) (Each character is pushed and popped from the stack once)
+Space Complexity: O(N) (Stack usage for storing characters and numbers)
+*/
+
+class Solution {
+    static String decodeString(String s) {
+        Stack<Character> charStack = new Stack<>();
+        
+        for (int i = 0; i < s.length(); i++) {
+            char currentChar = s.charAt(i);
+            
+            // Push characters into the stack until we encounter ']'
+            if (currentChar != ']') {
+                charStack.push(currentChar);
+            } else {
+                // Extract the substring enclosed in '[' and ']'
+                StringBuilder decodedSegment = new StringBuilder();
+                
+                while (!charStack.isEmpty() && charStack.peek() != '[') {
+                    decodedSegment.append(charStack.pop());
+                }
+                
+                // Remove the '['
+                if (!charStack.isEmpty()) {
+                    charStack.pop();
+                }
+                
+                decodedSegment.reverse(); // Since we extracted in reverse order
+                
+                // Extract the number of times to repeat
+                StringBuilder numStr = new StringBuilder();
+                while (!charStack.isEmpty() && Character.isDigit(charStack.peek())) {
+                    numStr.append(charStack.pop());
+                }
+                numStr.reverse();
+                
+                int repeatCount = numStr.length() != 0 ? Integer.parseInt(numStr.toString()) : 0;
+                
+                // Repeat the segment accordingly
+                StringBuilder expandedSegment = new StringBuilder();
+                for (int j = 0; j < repeatCount; j++) {
+                    expandedSegment.append(decodedSegment);
+                }
+                
+                // Push the expanded segment back onto the stack
+                for (char ch : expandedSegment.toString().toCharArray()) {
+                    charStack.push(ch);
+                }
+            }
+        }
+        
+        // Construct the final decoded string
+        StringBuilder result = new StringBuilder();
+        for (char ch : charStack) {
+            result.append(ch);
+        }
+        return result.toString();
+
+        // Brute Force Approach (Commented out for reference)
+        /*
+        Stack<Character> charStack = new Stack<>();
+        Stack<Integer> numStack = new Stack<>();
+        
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+        
+            if (Character.isDigit(ch)) {
+                int num = 0;
+                while (i < s.length() && Character.isDigit(s.charAt(i))) {
+                    num = num * 10 + (s.charAt(i) - '0');
+                    i++;
+                }
+                i--;
+                numStack.push(num);
+            } else if (ch != ']') {
+                charStack.push(ch);
+            } else {
+                // Extract substring
+                StringBuilder decodedSegment = new StringBuilder();
+                while (!charStack.isEmpty() && charStack.peek() != '[') {
+                    decodedSegment.append(charStack.pop());
+                }
+                
+                if (!charStack.isEmpty()) {
+                    charStack.pop();
+                }
+                
+                decodedSegment.reverse();
+                int repeatCount = numStack.pop();
+                
+                StringBuilder expandedSegment = new StringBuilder();
+                for (int j = 0; j < repeatCount; j++) {
+                    expandedSegment.append(decodedSegment);
+                }
+                
+                for (char ch1 : expandedSegment.toString().toCharArray()) {
+                    charStack.push(ch1);
+                }
+            }
+        }
+        
+        StringBuilder result = new StringBuilder();
+        for (char ch : charStack) {
+            result.append(ch);
+        }
+        return result.toString();
+        */
+    }
+}
