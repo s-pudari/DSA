@@ -1,0 +1,148 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-bonus-problems/problem/the-celebrity-problem
+/*
+Celebrity Problem
+
+A celebrity is someone who:
+- Is known by everyone.
+- Doesn't know anyone.
+
+Input: Matrix mat[][] of size n x n,
+       where mat[i][j] == 1 means person i knows person j.
+
+---------------------------------------------------------------
+Approach 1: Optimized Stack-Based Elimination
+---------------------------------------------------------------
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Explanation:
+- Use a stack to pairwise eliminate non-celebrities.
+- Only one candidate remains at the end.
+- Validate the final candidate to ensure they are known by all and know no one.
+
+Dry Run Example:
+mat = {
+    {0, 1, 1},
+    {0, 0, 1},
+    {0, 0, 0}
+}
+→ Final candidate: 2
+→ mat[2][0] == 0 (doesn’t know 0), mat[0][2] == 1 (0 knows 2)
+→ mat[2][1] == 0, mat[1][2] == 1 ⇒ Valid celebrity
+*/
+
+import java.util.*;
+
+class Solution {
+
+    public int celebrity(int mat[][]) {
+        Stack<Integer> st = new Stack<>();
+        int n = mat.length;
+
+        // Push all people onto the stack
+        for (int i = 0; i < n; i++) {
+            st.push(i);
+        }
+
+        // Eliminate non-celebrities in pairs
+        while (st.size() > 1) {
+            int a = st.pop();
+            int b = st.pop();
+
+            if (mat[a][b] == 1) {
+                // a knows b ⇒ a can't be a celebrity
+                st.push(b);
+            } else {
+                // a doesn't know b ⇒ b can't be a celebrity
+                st.push(a);
+            }
+        }
+
+        // Final candidate left in stack
+        int c = st.pop();
+
+        // Validate the candidate
+        for (int i = 0; i < n; i++) {
+            if (i == c) continue; // Skip checking person with themselves
+
+            // If candidate knows someone OR someone doesn't know candidate ⇒ not a celeb
+            if (mat[c][i] == 1 || mat[i][c] == 0) {
+                return -1;
+            }
+        }
+
+        return c; // Celebrity found
+    }
+
+    /*
+    ---------------------------------------------------------------
+    Approach 2: Using iKnow[] and knowMe[] Arrays
+    ---------------------------------------------------------------
+    Time Complexity: O(n^2)
+    Space Complexity: O(n)
+
+    Explanation:
+    - Track how many people each person knows using iKnow[]
+    - Track how many people know each person using knowMe[]
+    - Celebrity will be the person who knows 0 people and is known by n-1
+    */
+
+    public int celebrityWithCountArrays(int[][] mat) {
+        int n = mat.length;
+        int[] iKnow = new int[n];   // Number of people i knows
+        int[] knowMe = new int[n];  // Number of people who know i
+
+        // Fill arrays by scanning matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (mat[i][j] == 1) {
+                    iKnow[i]++;      // i knows j
+                    knowMe[j]++;     // j is known by i
+                }
+            }
+        }
+
+        // Check for the celebrity condition
+        for (int i = 0; i < n; i++) {
+            if (iKnow[i] == 0 && knowMe[i] == n - 1) {
+                return i;
+            }
+        }
+
+        return -1; // No celebrity found
+    }
+
+    /*
+    ---------------------------------------------------------------
+    Approach 3: Brute-Force (Commented Out)
+    ---------------------------------------------------------------
+    Time Complexity: O(n^2)
+    Space Complexity: O(1)
+
+    Explanation:
+    - For each person, check if they know no one and everyone knows them.
+    - If both conditions are satisfied, they are the celebrity.
+
+    public int celebrityBruteForce(int[][] mat) {
+        int n = mat.length;
+
+        for (int i = 0; i < n; i++) {
+            boolean isCeleb = true;
+
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue; // Skip comparing the person with themselves
+
+                // If person i knows someone OR someone doesn't know i
+                if (mat[i][j] == 1 || mat[j][i] == 0) {
+                    isCeleb = false;
+                    break;
+                }
+            }
+
+            if (isCeleb) return i;
+        }
+
+        return -1; // No celebrity found
+    }
+    */
+}
