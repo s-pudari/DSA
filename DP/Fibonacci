@@ -1,0 +1,94 @@
+import java.util.Arrays;
+import java.util.Scanner;
+
+class Main {
+    // Optimized Approach: Dynamic Programming (Memoization)
+    // - Explanation:
+    //   - This approach uses memoization, a top-down dynamic programming technique.
+    //   - It stores the results of previously computed Fibonacci numbers in the 'dp' array.
+    //   - When a Fibonacci number is needed, it first checks if it has already been computed.
+    //   - If yes, it returns the stored value, avoiding redundant calculations.
+    //   - If no, it computes the value, stores it in 'dp', and then returns it.
+    //   - This significantly reduces the number of function calls compared to the brute-force approach.
+    // - Time Complexity: O(n) - Each Fibonacci number is computed at most once.
+    // - Space Complexity: O(n) - The 'dp' array stores n+1 Fibonacci numbers.
+
+    public static int fibDp(int n, int[] dp) {
+        if (n <= 1) {
+            return n; // Base cases: F(0) = 0, F(1) = 1
+        }
+
+        if (dp[n] != -1) {
+            return dp[n]; // Return stored result if already computed
+        }
+
+        // Recursively compute Fibonacci number and store it in dp[n]
+        return dp[n] = fibDp(n - 1, dp) + fibDp(n - 2, dp);
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the value of n: "); // Prompt the user for input
+        int n = sc.nextInt();
+
+        int[] dp = new int[n + 1]; // Create DP table to store Fibonacci numbers
+        Arrays.fill(dp, -1);    // Initialize DP table with -1 (indicating not computed)
+
+        System.out.println("Fibonacci(" + n + ") = " + fibDp(n, dp)); // Print the nth Fibonacci number
+        sc.close(); // Close the scanner to prevent resource leaks
+    }
+}
+
+/*
+// Brute-Force Approach: Recursive
+// - Explanation:
+//   - This is the basic recursive solution for the Fibonacci sequence.
+//   - It directly applies the definition: F(n) = F(n-1) + F(n-2).
+//   - It makes many redundant function calls, leading to exponential time complexity.
+// - Time Complexity: O(2^n) - Each call makes two more calls.
+// - Space Complexity: O(n)   - Maximum depth of the recursion tree.
+
+public static int fibonacci(int n) {
+    if (n <= 1) {
+        return n; // Base cases: F(0) = 0, F(1) = 1
+    }
+    return fibonacci(n - 1) + fibonacci(n - 2); // Recursive call
+}
+*/
+
+// Dry Run Example for Optimized Approach (fibDp):
+// Let's say n = 4.
+// 1.  main:
+//     -   n = 4
+//     -   dp = [-1, -1, -1, -1, -1]
+//     -   fibDp(4, dp) is called.
+// 2.  fibDp(4, dp):
+//     -   n is not <= 1.
+//     -   dp[4] is -1.
+//     -   Returns dp[4] = fibDp(3, dp) + fibDp(2, dp).
+// 3.  fibDp(3, dp):
+//     -   n is not <= 1.
+//     -   dp[3] is -1.
+//     -   Returns dp[3] = fibDp(2, dp) + fibDp(1, dp).
+// 4.  fibDp(2, dp):
+//     -   n is not <= 1.
+//     -   dp[2] is -1.
+//     -   Returns dp[2] = fibDp(1, dp) + fibDp(0, dp).
+// 5.  fibDp(1, dp):
+//     -   n <= 1, returns 1.
+// 6.  fibDp(0, dp):
+//     -   n <= 1, returns 0.
+// 7.  Back in fibDp(2, dp):
+//     -   Returns dp[2] = 1 + 0 = 1. dp[2] is now 1.
+// 8.  Back in fibDp(3, dp):
+//     -   fibDp(1,dp) returns 1.
+//     -   Returns dp[3] = 1 + 1 = 2. dp[3] is now 2.
+// 9.  Back in fibDp(4, dp):
+//     -   fibDp(2,dp) returns 1.
+//     -   fibDp(3,dp) returns 2.
+//     -   Returns dp[4] = 2 + 1 = 3. dp[4] is now 3.
+// 10. main:
+//     -   Prints "Fibonacci(4) = 3".
+//
+// The key is that the results for fibDp(2) and fibDp(1) are stored, so they are not recomputed when called again.
