@@ -1,0 +1,84 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/queue-and-deque-bonus-problems/problem/maximum-score-from-at-most-k-jumps
+import java.util.Deque;
+import java.util.LinkedList;
+
+/**
+ * This program calculates the maximum score you can achieve in a jump game where:
+ * - Starting from index 0, you can jump up to 'k' steps ahead.
+ * - At each step, you collect points from the array.
+ *
+ * ➤ Brute-force (Approach 1):
+ *   - For each index, tries all possible jumps from 1 to k to compute the best score.
+ *   - Time Complexity: O(n * k)
+ *   - Space Complexity: O(n)
+ *
+ * ➤ Optimized (Approach 2 - Using Deque for Sliding Window Maximum):
+ *   - Traverses the array from right to left, maintaining a deque to efficiently get the max of the next k steps.
+ *   - Time Complexity: O(n)
+ *   - Space Complexity: O(n)
+ *
+ * ➤ Dry Run Example (arr = [10, -5, -2, 4, 0, 3], k = 3):
+ *   - dp[5] = 3
+ *   - dp[4] = 0 + 3 = 3
+ *   - dp[3] = 4 + 3 = 7
+ *   - dp[2] = -2 + 7 = 5
+ *   - dp[1] = -5 + 7 = 2
+ *   - dp[0] = 10 + 5 = 15
+ *   => Output: 15
+ */
+
+class Solution {
+    public int getScore(int arr[], int k) {
+        // Optimized Approach using a monotonic deque
+        int n = arr.length;
+        int[] dp = new int[n];
+
+        dp[n - 1] = arr[n - 1]; // Base case: last element score is the value itself
+
+        Deque<Integer> dq = new LinkedList<>();
+        dq.offer(n - 1); // Start deque with the last index
+
+        for (int i = n - 2; i >= 0; i--) {
+            /* Remove all indices from the front of the deque
+             * that are out of the current jump range (i + k)
+             */
+            while (!dq.isEmpty() && dq.peekFirst() > i + k) {
+                dq.pollFirst(); // Remove out-of-window indices
+            }
+
+            // dp[i] = current value + best score within next k steps
+            dp[i] = arr[i] + dp[dq.peekFirst()];
+
+            /* Maintain deque in decreasing order of dp[] values.
+             * Remove all smaller values from the back of the deque,
+             * as they are not useful anymore.
+             */
+            while (!dq.isEmpty() && dp[i] >= dp[dq.peekLast()]) {
+                dq.pollLast();
+            }
+
+            dq.offerLast(i); // Add current index to deque
+        }
+
+        return dp[0]; // Return the best score starting from index 0
+
+        /*
+        // Brute-force Approach:
+        int[] dp = new int[n];
+        dp[n - 1] = arr[n - 1];
+
+        for (int i = n - 2; i >= 0; i--) {
+            dp[i] = Integer.MIN_VALUE;
+
+            // Try all jumps from i + 1 to i + k
+            for (int jump = 1; jump <= k; jump++) {
+                if (i + jump < n) {
+                    dp[i] = Math.max(dp[i], arr[i] + dp[i + jump]);
+                }
+            }
+        }
+
+        return dp[0];
+        */
+    }
+}
