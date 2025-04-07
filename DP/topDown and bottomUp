@@ -1,0 +1,108 @@
+https://www.geeksforgeeks.org/problems/introduction-to-dp/1
+import java.util.Arrays;
+
+/**
+ * This program calculates the nth Fibonacci number using both Top-Down (memoization) and Bottom-Up (tabulation)
+ * dynamic programming approaches, including a space-optimized variant.
+ *
+ * ➤ Brute-force (Top-Down with memoization):
+ *   - Uses recursion and memoizes already computed values in a dp array to avoid redundant calculations.
+ *
+ * ➤ Optimized (Bottom-Up with space optimization):
+ *   - Iteratively builds the Fibonacci sequence using only the last two computed values (O(1) space).
+ *
+ * ➤ Time Complexity:
+ *   - Top-Down: O(n)
+ *   - Bottom-Up: O(n)
+ *
+ * ➤ Space Complexity:
+ *   - Top-Down: O(n) (due to recursion + memo array)
+ *   - Bottom-Up (optimized): O(1)
+ *
+ * ➤ Dry Run Example (n = 5):
+ *   - Iteration 2: curr = 1 (0 + 1)
+ *   - Iteration 3: curr = 2 (1 + 1)
+ *   - Iteration 4: curr = 3 (2 + 1)
+ *   - Iteration 5: curr = 5 (3 + 2)
+ *   => Output: 5
+ */
+
+class Solution {
+
+    static final int mod = 1000000007; // Modulo to prevent integer overflow
+
+    /**
+     * Top-Down Recursive Function with Memoization
+     * @param n  Fibonacci term to compute
+     * @param dp Memoization array
+     * @return nth Fibonacci number modulo mod
+     */
+    static long dpTD(int n, long[] dp) {
+        // Base case: return n when n is 0 or 1
+        if (n <= 1) {
+            return n;
+        }
+
+        // Return precomputed result to avoid recomputation
+        if (dp[n] != -1) {
+            return dp[n];
+        }
+
+        // Store and return the result of recursive calls
+        dp[n] = (dpTD(n - 1, dp) + dpTD(n - 2, dp)) % mod;
+        return dp[n];
+    }
+
+    /**
+     * Wrapper for Top-Down DP
+     * @param n Fibonacci term to compute
+     * @return nth Fibonacci number modulo mod
+     */
+    static long topDown(int n) {
+        // Initialize memoization array
+        long[] dp = new long[n + 1];
+        Arrays.fill(dp, -1); // Fill with -1 to mark uncomputed states
+
+        return dpTD(n, dp);
+    }
+
+    /**
+     * Bottom-Up DP with Space Optimization
+     * @param n Fibonacci term to compute
+     * @return nth Fibonacci number modulo mod
+     */
+    static long bottomUp(int n) {
+        // Edge cases: directly return for n = 0 or 1
+        if (n == 0) return 0;
+        if (n == 1) return 1;
+
+        // Initialize first two Fibonacci numbers
+        long prev2 = 0; // Represents F(n-2)
+        long prev1 = 1; // Represents F(n-1)
+        long curr = 0;  // To store current Fibonacci value
+
+        // Build the Fibonacci series from 2 to n
+        for (int i = 2; i <= n; i++) {
+            curr = (prev1 + prev2) % mod; // Compute current term with modulo
+            prev2 = prev1; // Move window forward
+            prev1 = curr;
+        }
+
+        // 'curr' holds the final result, which is F(n)
+        return curr;
+
+        /*
+        // ➤ Alternate: Bottom-Up using Full DP Array
+        long[] dp = new long[n + 1];
+
+        dp[0] = 0;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = (dp[i - 1] + dp[i - 2]) % mod;
+        }
+
+        return dp[n];
+        */
+    }
+}
