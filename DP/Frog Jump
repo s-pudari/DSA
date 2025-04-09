@@ -1,0 +1,96 @@
+https://www.geeksforgeeks.org/problems/geek-jump/1
+/*
+Explanation:
+------------
+This problem is a variation of the classic "frog jump" problem. 
+Given an array 'height' where height[i] represents the height of stone i, the frog can jump to the next stone or skip one to land two stones ahead. 
+Each jump incurs a cost: the absolute difference in heights between stones. We need to compute the minimum cost to reach the last stone.
+
+Approaches:
+-----------
+1. Optimized Approach (Space Optimized DP):
+   - We use only two variables to store the previous states instead of a full DP array.
+   - Time Complexity: O(n)
+   - Space Complexity: O(1)
+
+2. Brute-force Approach (Recursive with Memoization):
+   - We use recursion with memoization to compute the result.
+   - Time Complexity: O(n)
+   - Space Complexity: O(n)
+
+Dry Run (Optimized Approach Example):
+--------------------------------------
+Input: height = [10, 20, 10]
+Step 0: prev1 = 0 (starting point), prev2 = 0
+Step 1: i = 1 => oneJump = |20-10| = 10 => curr = 10
+Step 2: i = 2 => oneJump = |10-20| + prev1 = 10 + 10 = 20
+                     twoJump = |10-10| + prev2 = 0 + 0 = 0 => curr = min(20, 0) = 0
+Result = curr = 0
+*/
+
+class Solution {
+
+    int minCost(int[] height) {
+        int n = height.length;
+
+        // Base cases initialization
+        int prev2 = 0;  // cost to reach (i-2)th stone
+        int prev1 = 0;  // cost to reach (i-1)th stone
+        int curr = 0;   // cost to reach ith stone
+
+        for (int i = 1; i < n; i++) {
+            // One jump from previous stone
+            int oneJump = prev1 + Math.abs(height[i] - height[i - 1]);
+
+            // Two jumps from stone before previous
+            int twoJump = Integer.MAX_VALUE;
+            if (i > 1) {
+                twoJump = prev2 + Math.abs(height[i] - height[i - 2]);
+            }
+
+            // Minimum cost to reach current stone
+            curr = Math.min(oneJump, twoJump);
+
+            // Update states for next iteration
+            prev2 = prev1;
+            prev1 = curr;
+        }
+
+        return curr;
+    }
+
+    /*
+    // Brute-force Approach (Recursive with Memoization)
+    // This approach uses top-down dynamic programming.
+    
+    int fun(int i, int[] height, int[] dp) {
+        // Base case: starting stone has zero cost
+        if (i == 0) {
+            return 0;
+        }
+
+        // If already computed, return stored value
+        if (dp[i] != 0) {
+            return dp[i];
+        }
+
+        // Cost from previous stone
+        int oneJump = fun(i - 1, height, dp) + Math.abs(height[i] - height[i - 1]);
+
+        // Cost from the stone before previous
+        int twoJumps = Integer.MAX_VALUE;
+        if (i > 1) {
+            twoJumps = fun(i - 2, height, dp) + Math.abs(height[i] - height[i - 2]);
+        }
+
+        // Store and return minimum cost
+        return dp[i] = Math.min(oneJump, twoJumps);
+    }
+
+    int minCostBrute(int[] height) {
+        int n = height.length;
+        int[] dp = new int[n];
+        return fun(n - 1, height, dp);
+    }
+    */
+}
