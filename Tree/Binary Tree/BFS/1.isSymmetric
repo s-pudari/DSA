@@ -1,32 +1,109 @@
-T.C & S.C --> O(n)
+/*
+Optimized Approach:
+This solution checks if a binary tree is symmetric by recursively comparing the left and right subtrees 
+in a mirrored manner. It avoids unnecessary storage by checking symmetry on-the-fly.
+
+Time Complexity: O(n), where n is the number of nodes in the tree (each node is visited once).
+Space Complexity: O(h), where h is the height of the tree (due to recursive call stack).
+
+Brute-Force Approach (Commented Below):
+This approach stores the level order traversal of both left and right subtrees and compares 
+mirrored elements. It uses extra space and is less efficient.
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Dry Run of Optimized Approach:
+Consider a tree:
+        1
+       / \
+      2   2
+     / \ / \
+    3  4 4  3
+
+fun(2, 2) → true
+ ├─ fun(3, 3) → true
+ └─ fun(4, 4) → true
+All mirror nodes match, so the tree is symmetric.
+*/
+
 class Solution {
-    public boolean isSymmetric(TreeNode root) {
-        Queue<TreeNode> queue = new LinkedList<>();
 
-        queue.offer(root.left);
-        queue.offer(root.right);
-
-        while(!queue.isEmpty()){
-          TreeNode left=queue.poll();
-          TreeNode right=queue.poll();
-
-          if(left == null && right==null){
-            continue;
-          }
-
-          if(left==null || right==null){
-            return false;
-          }
-
-          if(left.val!=right.val){
-            return false;
-          }
-
-          queue.offer(left.left);
-          queue.offer(right.right);
-          queue.offer(left.right);
-          queue.offer(right.left);
+    /* 
+     * Helper function to compare two nodes recursively to check if they are mirror images.
+     */
+    public static boolean fun(Node left, Node right) {
+        /* 
+         * If both nodes are null, this subtree is symmetric.
+         */
+        if (left == null && right == null) {
+            return true;
         }
-        return true;
+
+        /* 
+         * If only one is null or their values don't match, it's not symmetric.
+         */
+        if (left == null || right == null || left.data != right.data) {
+            return false;
+        }
+
+        /*
+         * Recursively check:
+         * - Left subtree of left node with right subtree of right node
+         * - Right subtree of left node with left subtree of right node
+         */
+        return fun(left.left, right.right) && fun(left.right, right.left);
     }
+
+    public static boolean isSymmetric(Node root) {
+        /*
+         * An empty tree is symmetric.
+         */
+        if (root == null) {
+            return true;
+        }
+
+        /*
+         * Start the comparison from the left and right children of the root.
+         */
+        return fun(root.left, root.right);
+    }
+
+    /*
+     * Brute-Force Approach (Commented):
+     * Use two queues to do level-order traversal (BFS) of the left and right subtrees.
+     * For each level, compare the values of the nodes from left to right in one subtree
+     * and right to left in the other subtree.
+     * This method uses additional space for storing traversal results.
+     */
+    
+    /*
+    public static boolean isSymmetric(Node root) {
+        if (root == null) return true;
+
+        Queue<Node> q1 = new LinkedList<>();
+        Queue<Node> q2 = new LinkedList<>();
+
+        q1.add(root.left);
+        q2.add(root.right);
+
+        while (!q1.isEmpty() && !q2.isEmpty()) {
+            Node n1 = q1.poll();
+            Node n2 = q2.poll();
+
+            if (n1 == null && n2 == null) continue;
+            if (n1 == null || n2 == null || n1.data != n2.data) return false;
+
+            // For left subtree (q1), add left then right
+            q1.add(n1.left);
+            q1.add(n1.right);
+
+            // For right subtree (q2), add right then left (mirror order)
+            q2.add(n2.right);
+            q2.add(n2.left);
+        }
+
+        return q1.isEmpty() && q2.isEmpty(); // Both queues should be empty if symmetric
+    }
+    */
 }
