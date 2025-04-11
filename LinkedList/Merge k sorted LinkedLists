@@ -1,0 +1,135 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/LL-bonus-problem/problem/merge-k-sorted-linked-lists
+/*
+Optimized Approach (Min-Heap / PriorityQueue):
+- We push the head of all non-null linked lists into a min-heap based on node data.
+- We then iteratively pop the smallest node from the heap and attach it to the result list.
+- If the popped node has a next node, we push that next node to the heap.
+
+Time Complexity: O(N log K), where N is the total number of nodes and K is the number of linked lists.
+Space Complexity: O(K), for the min-heap that stores at most K nodes at a time.
+
+Brute-Force Approach (Divide and Conquer) [Commented Below]:
+- We recursively divide the K lists into two halves and merge them using a helper function.
+- This mimics the merge sort pattern and avoids the overhead of repeatedly merging full lists.
+
+Time Complexity: O(N log K)
+Space Complexity: O(log K), due to recursion stack.
+
+Dry Run of Optimized Approach:
+Input:
+List 1: 1 -> 4 -> 5  
+List 2: 1 -> 3 -> 4  
+List 3: 2 -> 6
+
+Heap: [1 (L1), 1 (L2), 2 (L3)]  
+Step-by-step:
+- Pop 1 (L1), push 4  
+- Pop 1 (L2), push 3  
+- Pop 2 (L3), push 6  
+- Pop 3, push 4  
+- Pop 4 (L1), push 5  
+- Pop 4 (L2), no push  
+- Pop 5, no push  
+- Pop 6, done
+Result: 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+*/
+
+class Solution {
+
+    // Function to merge K sorted linked lists using a Min-Heap (Optimized Approach)
+    Node mergeKLists(List<Node> arr) {
+
+        /* If there are no linked lists, return null as there's nothing to merge */
+        if (arr.size() == 0) return null;
+
+        /* 
+         * Initialize a min-heap (priority queue) that compares nodes based on their data.
+         * This ensures we always get the smallest current node among the list heads.
+         */
+        PriorityQueue<Node> minHeap = new PriorityQueue<>(arr.size(), (a, b) -> a.data - b.data);
+
+        /*
+         * Add the head of each non-null linked list to the min-heap.
+         * This sets up our initial candidates for merging.
+         */
+        for (Node node : arr) {
+            if (node != null) {
+                minHeap.add(node);
+            }
+        }
+
+        /*
+         * Create a dummy node to build the merged list. 'temp' will be used to append nodes.
+         */
+        Node dummy = new Node(-1);
+        Node temp = dummy;
+
+        /*
+         * While the heap is not empty, extract the minimum node and add it to the result.
+         * Then push the next node of that list (if exists) into the heap.
+         */
+        while (!minHeap.isEmpty()) {
+            Node minNode = minHeap.poll();  // Get the node with the smallest value
+            temp.next = minNode;            // Append it to the merged list
+            temp = temp.next;               // Move the pointer forward
+
+            if (minNode.next != null) {
+                minHeap.add(minNode.next);  // Push the next node of the extracted list
+            }
+        }
+
+        /* Return the merged list (excluding dummy node) */
+        return dummy.next;
+    }
+
+    /*
+     * Brute-Force Approach (Divide and Conquer) — Commented for clarity:
+     * Recursively divide the list array and merge pairs of lists using a helper function.
+     * This approach is memory-efficient and avoids inserting into a heap.
+     */
+
+    /*
+    Node mergeKLists(List<Node> arr) {
+        if (arr.size() == 0) return null;
+        return mergeRec(0, arr.size() - 1, arr);  // Start recursive merging
+    }
+
+    // Recursive method to divide the list range and merge them
+    Node mergeRec(int i, int j, List<Node> arr) {
+        if (i == j) return arr.get(i);  // Base case: only one list to return
+
+        int mid = i + (j - i) / 2;
+
+        Node head1 = mergeRec(i, mid, arr);      // Merge left half
+        Node head2 = mergeRec(mid + 1, j, arr);  // Merge right half
+
+        return merge(head1, head2);              // Merge the two sorted halves
+    }
+
+    // Standard merge function to merge two sorted linked lists
+    Node merge(Node head1, Node head2) {
+        Node dummy = new Node(-1);
+        Node temp = dummy;
+
+        while (head1 != null && head2 != null) {
+            if (head1.data <= head2.data) {
+                temp.next = head1;
+                head1 = head1.next;
+            } else {
+                temp.next = head2;
+                head2 = head2.next;
+            }
+            temp = temp.next;
+        }
+
+        // Append the remaining nodes of the list that's not yet finished
+        if (head1 != null) {
+            temp.next = head1;
+        } else {
+            temp.next = head2;
+        }
+
+        return dummy.next;
+    }
+    */
+}
