@@ -1,0 +1,107 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/queue-and-deque-bonus-problems/problem/minimum-number-of-k-consecutive-bit-flips--171650
+class Solution {
+
+    /* 
+    ===================================
+    OPTIMIZED APPROACH: Sliding Window + Queue (O(N))
+    ===================================
+    Instead of flipping bits directly for every 0 we encounter, we simulate the flipping using a queue
+    and a flag that tracks the current flip status. This helps us avoid repeated work.
+    
+    Time Complexity: O(N) — Each element is visited once, and queue operations are O(1)
+    Space Complexity: O(K) — At most K elements are in the queue at any time (one for each active flip)
+    
+    Dry Run Example:
+    Input: arr = [0,1,0], k = 1
+    
+    Step-by-step:
+    i = 0 -> arr[0] == 0 → flip → res = 1 → flag ^= 1 → arr[0] = 1
+    i = 1 -> flag = 1 → arr[1] ^= 1 → arr[1] = 0 → flip → res = 2 → arr[1] = 1
+    i = 2 -> flag = 1 → arr[2] ^= 1 → arr[2] = 1 → no flip needed
+    
+    Result = 2 flips
+    
+    ===================================
+    BRUTE-FORCE APPROACH (Commented Below)
+    ===================================
+    For every 0 found, flip the next K bits manually. Simple but inefficient.
+
+    Time Complexity: O(N*K)
+    Space Complexity: O(1)
+    */
+
+    static int kBitFlips(int[] arr, int k) {
+        // Optimized Approach
+
+        int n = arr.length;
+        int res = 0; // To store number of flips
+        int flag = 0; // This flag keeps track of whether current index is flipped odd or even times
+        Queue<Integer> q = new LinkedList<>(); // Queue to store active flips within window
+
+        for (int i = 0; i < n; i++) {
+
+            // Remove flip effect from window if we've moved past size K
+            if (i >= k) {
+                flag ^= q.poll(); 
+                /* 
+                We use XOR to toggle the flip status.
+                If q.poll() is 1, we are removing an active flip from the window.
+                */
+            }
+
+            if (flag == 1) {
+                arr[i] ^= 1; 
+                /* 
+                If flag is 1, it means this position has been flipped an odd number of times.
+                We simulate the flip here.
+                */
+            }
+
+            if (arr[i] == 0) {
+                // If still 0 after flipping, we need to perform a real flip starting from i
+
+                // Check if flipping from this position would overflow array bounds
+                if (i + k > n) {
+                    return -1; // Not possible to flip K bits from here
+                }
+
+                res++;        // Increase flip count
+                flag ^= 1;    // Mark this flip in the flag
+                q.offer(1);   // Enqueue this flip
+
+            } else {
+                q.offer(0); // No flip starting here, but we need to maintain size of window
+            }
+        }
+
+        return res;
+
+        /*
+        ===================================
+        BRUTE-FORCE APPROACH (Inefficient)
+        ===================================
+
+        int n = arr.length;
+        int res = 0;
+
+        for (int i = 0; i <= n - k; i++) {
+            if (arr[i] == 0) {
+                // Found a 0, flip next K bits
+                for (int j = i; j < i + k; j++) {
+                    arr[j] = 1 ^ arr[j]; // Flip each bit (0->1 or 1->0)
+                }
+                res++;
+            }
+        }
+
+        // After all flips, if any 0 remains at end that couldn’t be flipped, return -1
+        for (int i = n - k + 1; i < n; i++) {
+            if (arr[i] == 0) {
+                return -1;
+            }
+        }
+
+        return res;
+        */
+    }
+}
