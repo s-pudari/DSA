@@ -1,0 +1,109 @@
+https://leetcode.com/problems/maximum-product-subarray/
+class Solution {
+
+    /**
+     * ✅ Optimized Approach (Bottom-Up DP with Space Optimization):
+     * 
+     * We track two values at each step:
+     * - maxSoFar: maximum product ending at current index
+     * - minSoFar: minimum product ending at current index (because a negative number can flip sign)
+     * 
+     * Why do we need both max and min?
+     * Example: nums = [-2, 3, -4]
+     * At index 2:
+     *     - curr = -4
+     *     - maxSoFar = 3, minSoFar = -6 (from previous index)
+     *     - max = max(-4, -4 * 3, -4 * -6) = 24
+     *     - So min product flipped into max.
+     * 
+     * Dry Run Example: nums = [2, 3, -2, 4]
+     * 
+     * i=0: prev1 = 2, prev2 = 2, res = 2
+     * i=1: curr=3 → temp=max(3, 3*2, 3*2)=6 → prev1=6, prev2=3 → res=6
+     * i=2: curr=-2 → temp=max(-2, -2*6, -2*3)=-2 → prev1=-2, prev2=-12 → res=6
+     * i=3: curr=4 → temp=max(4, 4*-2, 4*-12)=4 → prev1=4, prev2=-48 → res=6
+     * Final res = 6
+     * 
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     */
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+
+        /* 
+         prev1: max product ending at previous index
+         prev2: min product ending at previous index
+         res: stores overall max product found
+        */
+        int prev1 = nums[0];
+        int prev2 = nums[0];
+        int res = nums[0];
+
+        for (int i = 1; i < n; i++) {
+            int curr = nums[i];
+
+            /* 
+             temp stores the new max product including current element.
+             It could be:
+             - The element itself (starting new subarray)
+             - curr * prev1 (extend previous max)
+             - curr * prev2 (extend previous min, becomes max if curr is negative)
+            */
+            int temp = Math.max(curr, Math.max(curr * prev1, curr * prev2));
+
+            /*
+             Update prev2 (minSoFar) for next iteration.
+             Similar logic, but looking for the minimum.
+            */
+            prev2 = Math.min(curr, Math.min(curr * prev1, curr * prev2));
+
+            // Update prev1 to the max value just computed
+            prev1 = temp;
+
+            // Update global result if this is the highest seen so far
+            res = Math.max(res, prev1);
+        }
+
+        return res;
+    }
+
+    /*
+    ✅ Brute-Force Recursive Approach (Bottom-Up Recursion)
+
+    This version uses recursion from end of array to front, keeping track of
+    max and min product at each level, and updates a global max.
+
+    Time Complexity: O(n)
+    Space Complexity: O(n) for recursion stack
+
+    Dry Run Example for nums = [2, 3, -2, 4]
+    prod(3, ...) → prod(2, ...) → prod(1, ...) ... 
+    computes max and min at each index, updates global max as needed.
+
+    Uncomment to test:
+
+    static int globalMax;
+
+    public int maxProduct(int[] nums) {
+        int n = nums.length;
+        globalMax = nums[n - 1]; // start from last element
+        prod(n - 1, nums, nums[n - 1], nums[n - 1]); // recurse backwards
+        return globalMax;
+    }
+
+    public void prod(int i, int[] arr, int minSoFar, int maxSoFar) {
+        if (i == 0) {
+            return; // base case
+        }
+
+        int curr = arr[i - 1];
+
+        int currMax = Math.max(curr, Math.max(curr * maxSoFar, curr * minSoFar));
+        int currMin = Math.min(curr, Math.min(curr * maxSoFar, curr * minSoFar));
+
+        globalMax = Math.max(globalMax, currMax); // update global max
+
+        prod(i - 1, arr, currMin, currMax); // recursive call
+    }
+    */
+}
