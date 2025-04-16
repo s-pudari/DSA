@@ -1,0 +1,102 @@
+https://leetcode.com/problems/longest-common-subsequence/description/
+/*
+Optimized Approach (Top-down DP with Memoization):
+--------------------------------------------------
+This approach uses recursion along with memoization to avoid redundant calculations. 
+We define a recursive function that compares characters from the end of both strings and 
+stores the results in a DP table to reuse already computed subproblems.
+
+Time Complexity: O(m * n) - where m and n are the lengths of text1 and text2.
+Space Complexity: O(m * n) - for the DP table.
+
+Brute-Force Approach (Commented below):
+---------------------------------------
+This approach recursively checks all possible subsequences by exploring both possibilities: 
+either taking the current character if they match or moving one index at a time without taking it.
+
+Time Complexity: O(2^(m + n)) - exponential due to exploring all combinations.
+Space Complexity: O(m + n) - for the recursion stack.
+
+Dry Run Example:
+----------------
+text1 = "abcde", text2 = "ace"
+The recursive function checks from the end:
+- Compare 'e' with 'e' => Match (count 1)
+- Then 'd' with 'c' => No match => max of skipping one in either string
+- Continue this process...
+Final LCS = 3 ("ace")
+*/
+
+class Solution {
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        int idx1 = text1.length();
+        int idx2 = text2.length();
+
+        // Initialize a DP table with -1 to mark uncomputed subproblems
+        int[][] dp = new int[idx1][idx2];
+        for (int i = 0; i < dp.length; i++) {
+            Arrays.fill(dp[i], -1); // -1 indicates the value is not yet calculated
+        }
+
+        // Start the recursive DP function from the last characters of both strings
+        return fun(idx1 - 1, idx2 - 1, text1, text2, dp);
+    }
+
+    public int fun(int idx1, int idx2, String s1, String s2, int[][] dp) {
+        // Base case: If either index goes out of bounds, no common subsequence is possible
+        if (idx1 == -1 || idx2 == -1) {
+            return 0;
+        }
+
+        // Return the memoized result if already computed
+        if (dp[idx1][idx2] != -1) return dp[idx1][idx2];
+
+        // If current characters match, count it and move diagonally in both strings
+        if (s1.charAt(idx1) == s2.charAt(idx2)) {
+            return dp[idx1][idx2] = 1 + fun(idx1 - 1, idx2 - 1, s1, s2, dp);
+        }
+
+        /* 
+        If characters don't match, we have two choices:
+        1. Move back in s1 and keep s2 index the same
+        2. Move back in s2 and keep s1 index the same
+        Take the maximum of both to get the longest subsequence
+        */
+        return dp[idx1][idx2] = Math.max(
+            fun(idx1 - 1, idx2, s1, s2, dp),
+            fun(idx1, idx2 - 1, s1, s2, dp)
+        );
+    }
+
+    /*
+    Brute-Force Approach (Unoptimized Recursive):
+    ---------------------------------------------
+    This approach checks all combinations of subsequences recursively.
+
+    public int longestCommonSubsequence(String text1, String text2) {
+        return bruteForce(text1.length() - 1, text2.length() - 1, text1, text2);
+    }
+
+    public int bruteForce(int idx1, int idx2, String s1, String s2) {
+        // If either pointer is out of bounds, we've reached the end of one string
+        if (idx1 < 0 || idx2 < 0) {
+            return 0;
+        }
+
+        // If characters match, count 1 and move diagonally
+        if (s1.charAt(idx1) == s2.charAt(idx2)) {
+            return 1 + bruteForce(idx1 - 1, idx2 - 1, s1, s2);
+        }
+
+        // If they don't match, we explore both options:
+        // 1. Move in s1, keep s2
+        // 2. Move in s2, keep s1
+        // Take the max of both paths
+        return Math.max(
+            bruteForce(idx1 - 1, idx2, s1, s2),
+            bruteForce(idx1, idx2 - 1, s1, s2)
+        );
+    }
+    */
+}
