@@ -1,0 +1,175 @@
+https://leetcode.com/problems/longest-increasing-subsequence/description/
+/*
+Optimized Approach (Dynamic Programming - Tabulation):
+------------------------------------------------------
+We use a DP array `lis[]` where each element at index `i` represents the length of the longest increasing subsequence ending at index `i`. For each element `nums[i]`, we compare it with all previous elements `nums[j] (j < i)` and update `lis[i]` if `nums[i] > nums[j]`.
+
+Time Complexity: O(n^2)
+Space Complexity: O(n)
+
+Dry Run Example for Optimized Approach:
+Input: nums = [10, 9, 2, 5, 3, 7, 101, 18]
+Initialization: lis = [1, 1, 1, 1, 1, 1, 1, 1]
+Step-by-step:
+  At i=3 (nums[3]=5), compare with nums[2]=2 → lis[3]=2
+  At i=4 (nums[4]=3), compare with nums[2]=2 → lis[4]=2
+  At i=5 (nums[5]=7), compare with nums[3]=5 → lis[5]=3
+  At i=6 (nums[6]=101), longest subsequence is [2,3,7,101] → lis[6]=4
+Final lis[]: [1,1,1,2,2,3,4,4] → max = 4
+
+Brute-force Approach:
+---------------------
+Try all subsequences using recursion and select the one which is strictly increasing and has max length.
+
+Time Complexity: O(2^n)
+Space Complexity: O(n) recursion stack
+
+Dry Run Example:
+nums = [4,10,4,3,8,9]
+Start with prev=-∞, curr=0
+Try including/excluding each number recursively → explore all subsequences
+Max increasing subsequence found = [4, 8, 9] → length = 3
+
+Top-Down DP (Memoized Recursion):
+----------------------------------
+Memoize the results of each recursive state (curr, prevIdx) using a 2D DP table.
+
+Time Complexity: O(n^2)
+Space Complexity: O(n^2)
+
+Dry Run Example:
+nums = [4,10,4,3,8,9]
+Using dp[curr][prevIdx+1] to store overlapping subproblem results.
+Avoids recomputation for same (curr, prevIdx) pairs.
+
+Binary Search Optimization (Patience Sorting technique):
+---------------------------------------------------------
+Use a list to store smallest tail values of increasing subsequences of various lengths. Use binary search to find the position of `num` in the list and replace or extend accordingly.
+
+Time Complexity: O(n log n)
+Space Complexity: O(n)
+
+Dry Run Example:
+Input: nums = [10, 9, 2, 5, 3, 7, 101, 18]
+sub = []
+Insert 10 → sub = [10]
+Replace 9 at pos 0 → sub = [9]
+Replace 2 at pos 0 → sub = [2]
+Append 5 → sub = [2,5]
+Replace 3 → sub = [2,3]
+Append 7 → sub = [2,3,7]
+Append 101 → sub = [2,3,7,101]
+Replace 18 → sub = [2,3,7,18] → length = 4
+*/
+
+class Solution {
+    // Optimized DP Tabulation (Standard O(n^2) DP)
+    public int lengthOfLIS(int[] nums) {
+        int n = nums.length;
+        int[] lis = new int[n];
+        Arrays.fill(lis, 1);
+
+        for (int i = 1; i < n; i++) {
+            for (int prev = 0; prev < i; prev++) {
+                /*
+                If nums[i] > nums[prev], then nums[i] can extend the subsequence ending at prev.
+                So we check if the LIS at i can be updated.
+                */
+                if (nums[i] > nums[prev] && lis[i] < lis[prev] + 1) {
+                    lis[i] = lis[prev] + 1;
+                }
+            }
+        }
+
+        int max = 1;
+        for (int i = 0; i < n; i++) {
+            max = Math.max(max, lis[i]);
+        }
+        return max;
+    }
+
+    // Binary Search Optimized O(n log n) version
+    public int lengthOfLISBinarySearch(int[] nums) {
+        List<Integer> sub = new ArrayList<>();
+
+        for (int num : nums) {
+            int i = Collections.binarySearch(sub, num);
+
+            /*
+            If num not found, binarySearch returns -(insertion_point + 1)
+            We convert to insertion point
+            */
+            if (i < 0) i = -(i + 1);
+
+            /*
+            If num is bigger than all in sub → extend
+            Else → replace first element greater or equal to num
+            */
+            if (i == sub.size()) {
+                sub.add(num);
+            } else {
+                sub.set(i, num);
+            }
+        }
+        return sub.size();
+    }
+
+    // Brute-force Recursive Version (Exponential Time)
+    public int lengthOfLISBruteForce(int[] nums) {
+        return dfs(nums, Integer.MIN_VALUE, 0);
+    }
+
+    public int dfs(int[] nums, int prev, int curr) {
+        if (curr == nums.length) return 0;
+
+        // Exclude current
+        int excl = dfs(nums, prev, curr + 1);
+
+        // Include current if it's increasing
+        int incl = 0;
+        if (nums[curr] > prev) {
+            incl = 1 + dfs(nums, nums[curr], curr + 1);
+        }
+
+        return Math.max(incl, excl);
+    }
+
+    // Top-Down DP (Memoized Recursion)
+    public int lengthOfLISTopDown(int[] nums) {
+        int[][] dp = new int[nums.length][nums.length + 1];
+        for (int[] row : dp) Arrays.fill(row, -1);
+        return helper(0, -1, nums, dp);
+    }
+
+    public int helper(int curr, int prevIdx, int[] nums, int[][] dp) {
+        if (curr == nums.length) return 0;
+
+        if (dp[curr][prevIdx + 1] != -1) return dp[curr][prevIdx + 1];
+
+        int notTake = helper(curr + 1, prevIdx, nums, dp);
+        int take = 0;
+        if (prevIdx == -1 || nums[curr] > nums[prevIdx]) {
+            take = 1 + helper(curr + 1, curr, nums, dp);
+        }
+
+        return dp[curr][prevIdx + 1] = Math.max(take, notTake);
+    }
+
+    // Space-Optimized Bottom-Up DP (Two Variables)
+    public int lengthOfLISSpaceOptimized(int[] nums) {
+        int n = nums.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, 1);
+        int max = 1;
+
+        for (int i = 1; i < n; i++) {
+            for (int j = 0; j < i; j++) {
+                if (nums[i] > nums[j]) {
+                    dp[i] = Math.max(dp[i], dp[j] + 1);
+                }
+            }
+            max = Math.max(max, dp[i]);
+        }
+        return max;
+    }
+}
