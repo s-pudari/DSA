@@ -1,0 +1,150 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/longest-string-chain
+/*
+ * 🔍 Problem: Longest String Chain
+ * 
+ * A string chain is formed by adding exactly one character to a word to make the next.
+ * Example: "a" → "ba" → "bda" → "bdca"
+ *
+ * ----------------------------------------------------------------------
+ * ✅ Optimized Approach (Using HashMap for memoization & deletion logic):
+ * ----------------------------------------------------------------------
+ * 1. Sort words by length.
+ * 2. For each word, generate all possible predecessors by deleting one character at a time.
+ * 3. If a predecessor exists in the dp map, update the current word’s best chain length.
+ * 4. Track the maximum chain length across all words.
+ *
+ * ⏱ Time Complexity: O(N * L^2), where N = number of words, L = average word length
+ * 🧠 Space Complexity: O(N), for storing the dp map
+ *
+ * 🧪 Dry Run Example:
+ * Input: ["a", "b", "ba", "bca", "bda", "bdca"]
+ * Sorted: ["a", "b", "ba", "bca", "bda", "bdca"]
+ *
+ * - dp["a"] = 1
+ * - dp["b"] = 1
+ * - dp["ba"] = 2 (← "a" exists)
+ * - dp["bca"] = 3 (← "ba" exists)
+ * - dp["bda"] = 3 (← "ba" exists)
+ * - dp["bdca"] = 4 (← "bca" and "bda" exist)
+ * 
+ * Final Answer: 4
+ *
+ * ----------------------------------------------------------------------
+ * 🐌 Brute-force Approach (Using DP and character comparison):
+ * ----------------------------------------------------------------------
+ * 1. Sort words by length.
+ * 2. Use a nested loop to compare each word pair and check if one is a predecessor.
+ * 3. Use a DP array to store the longest chain ending at each index.
+ *
+ * ⏱ Time Complexity: O(N^2 * L)
+ * 🧠 Space Complexity: O(N), for DP array
+ *
+ * 🧪 Dry Run Example:
+ * Input: ["a", "b", "ba", "bca", "bda", "bdca"]
+ * Sorted: ["a", "b", "ba", "bca", "bda", "bdca"]
+ *
+ * DP Array: lis[] tracks max chain ending at each word
+ *
+ * - i=0 ("a") → lis[0] = 1
+ * - i=1 ("b") → lis[1] = 1
+ * - i=2 ("ba") → valid predecessors: "a", "b" → lis[2] = 2
+ * - i=3 ("bca") → predecessor: "ba" → lis[3] = 3
+ * - i=4 ("bda") → predecessor: "ba" → lis[4] = 3
+ * - i=5 ("bdca") → predecessor: "bca" or "bda" → lis[5] = 4
+ * 
+ * Final LIS: [1, 1, 2, 3, 3, 4] → Answer: 4
+ */
+import java.util.*;
+
+class Solution {
+
+    // ✅ Optimized Approach using HashMap
+    public int longestStringChain(String words[]) {
+
+        // Step 1: Sort words by length so shorter words come first
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+
+        int n = words.length;
+        Map<String, Integer> dp = new HashMap<>(); // Stores longest chain ending at each word
+        int max = 1;
+
+        for (String word : words) {
+            int best = 1; // Minimum chain length is 1 (the word itself)
+
+            /* Try deleting one character at every position and see if the resulting
+               word (a possible predecessor) exists in dp map */
+            for (int i = 0; i < word.length(); i++) {
+
+                // Create a possible predecessor by removing the i-th character
+                String prev = word.substring(0, i) + word.substring(i + 1);
+
+                // If this predecessor exists in the map, try to extend its chain
+                if (dp.containsKey(prev)) {
+                    best = Math.max(best, dp.get(prev) + 1);
+                }
+            }
+
+            // Store the best chain length ending at current word
+            dp.put(word, best);
+
+            // Update global max if needed
+            max = Math.max(max, best);
+        }
+
+        return max;
+    }
+
+    /*
+    // 🐌 Brute-force Approach using DP and custom check function
+
+    // Check if s2 is a valid predecessor of s1 (s1 has one extra char)
+    public boolean check(String s1, String s2) {
+        if (s1.length() != s2.length() + 1) return false;
+
+        int l = 0; // pointer for s1
+        int r = 0; // pointer for s2
+
+        // Compare characters with at most one mismatch allowed (skip in s1)
+        while (l < s1.length() && r < s2.length()) {
+            if (s1.charAt(l) == s2.charAt(r)) {
+                l++;
+                r++;
+            } else {
+                l++; // skip one char in s1 (only once)
+            }
+        }
+
+        // If r reached end of s2, then it's a valid predecessor
+        return r == s2.length();
+    }
+
+    public int longestStringChain(String words[]) {
+        int n = words.length;
+        int max = 1;
+        int[] lis = new int[n]; // Longest chain ending at each word
+
+        Arrays.sort(words, Comparator.comparingInt(String::length));
+
+        // Initialize all chains with 1 (word itself)
+        for (int i = 0; i < n; i++) {
+            lis[i] = 1;
+        }
+
+        // Check all pairs (i, prev) and update lis[i] if valid predecessor
+        for (int i = 1; i < n; i++) {
+            for (int prev = 0; prev < i; prev++) {
+
+                // If words[prev] is a predecessor of words[i]
+                if (check(words[i], words[prev]) && lis[i] < lis[prev] + 1) {
+                    lis[i] = lis[prev] + 1;
+                }
+            }
+
+            // Update global max chain
+            max = Math.max(max, lis[i]);
+        }
+
+        return max;
+    }
+    */
+}
