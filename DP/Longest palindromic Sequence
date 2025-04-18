@@ -1,0 +1,157 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/longest-palindromic-subsequence-1612327878
+/****************************************************************************************
+ * 🧠 Problem: Longest Palindromic Subsequence
+ *
+ * A palindromic subsequence is a subsequence that reads the same forwards and backwards.
+ * The task is to find the length of the longest palindromic subsequence in a given string.
+ * This is solved by finding the Longest Common Subsequence (LCS) between the original
+ * string and its reversed version.
+ *
+ * 🔍 Approaches:
+ * 1. Optimized Recursive + Memoization (Top-down DP)
+ * 2. Brute-force Recursive (Commented below)
+ * 3. Tabulation (Bottom-up DP)
+ * 4. Space Optimized DP
+ *
+ * 🧮 Time and Space Complexities:
+ * - Recursive (Brute-force): Time = O(2^n), Space = O(n) [Recursion stack]
+ * - Memoization: Time = O(n^2), Space = O(n^2 + recursion stack)
+ * - Tabulation: Time = O(n^2), Space = O(n^2)
+ * - Space Optimized: Time = O(n^2), Space = O(n)
+ *
+ * 📘 Dry Run Example (Input: "bbabcbcab"):
+ * Reversed string = "bacbcbabb"
+ * Longest Common Subsequence = "babcbab" → Length = 7
+ ****************************************************************************************/
+
+class Solution {
+
+    /************************************************************************************
+     * 🔹 Optimized Recursive Approach (Top-Down DP / Memoization)
+     * lcs(i, j, s1, s2, dp) → returns length of LCS from s1[0...i] and s2[0...j]
+     ************************************************************************************/
+    public int lcs(int i, int j, String s1, String s2, int[][] dp) {
+        // Base case: if either string is exhausted
+        if (i < 0 || j < 0) {
+            return 0;
+        }
+
+        // Return memoized result if already computed
+        if (dp[i][j] != -1) {
+            return dp[i][j];
+        }
+
+        // If characters match, move diagonally in the matrix
+        if (s1.charAt(i) == s2.charAt(j)) {
+            return dp[i][j] = 1 + lcs(i - 1, j - 1, s1, s2, dp);
+        }
+
+        // If they don't match, explore both possibilities
+        return dp[i][j] = Math.max(
+            lcs(i - 1, j, s1, s2, dp),
+            lcs(i, j - 1, s1, s2, dp)
+        );
+    }
+
+    public int longestPalinSubseq(String s) {
+        int n = s.length();
+
+        // Create a reverse of the original string
+        StringBuilder sb = new StringBuilder(s).reverse();
+        String rev = sb.toString();
+
+        // Initialize DP array with -1
+        int[][] dp = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                dp[i][j] = -1;
+            }
+        }
+
+        return lcs(n - 1, n - 1, s, rev, dp);
+    }
+
+    /************************************************************************************
+     * 🔸 Brute-force Recursive Approach (Uncomment to use)
+     * Time Complexity: Exponential O(2^n)
+     * This is the same as the memoized version, just without memoization (DP array).
+     ************************************************************************************/
+    /*
+    public int lcs(int i, int j, String s1, String s2) {
+        // Base case
+        if (i < 0 || j < 0) {
+            return 0;
+        }
+
+        // If characters match
+        if (s1.charAt(i) == s2.charAt(j)) {
+            return 1 + lcs(i - 1, j - 1, s1, s2);
+        }
+
+        // If not, take the max of two possibilities
+        return Math.max(
+            lcs(i - 1, j, s1, s2),
+            lcs(i, j - 1, s1, s2)
+        );
+    }
+
+    public int longestPalinSubseq(String s) {
+        StringBuilder sb = new StringBuilder(s).reverse();
+        return lcs(s.length() - 1, s.length() - 1, s, sb.toString());
+    }
+    */
+
+    /************************************************************************************
+     * 🔹 Tabulation Approach (Bottom-Up DP)
+     * dp[i][j] = LCS of s[0...i-1] and rev[0...j-1]
+     ************************************************************************************/
+    public int longestPalinSubseqTab(String s) {
+        int n = s.length();
+        String rev = new StringBuilder(s).reverse().toString();
+
+        int[][] dp = new int[n + 1][n + 1];
+
+        /* 
+         * Fill the dp table iteratively. 
+         * dp[i][j] means LCS length of s[0..i-1] and rev[0..j-1]
+         */
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s.charAt(i - 1) == rev.charAt(j - 1)) {
+                    dp[i][j] = 1 + dp[i - 1][j - 1]; // Match case
+                } else {
+                    dp[i][j] = Math.max(dp[i - 1][j], dp[i][j - 1]); // Skip one character
+                }
+            }
+        }
+
+        return dp[n][n];
+    }
+
+    /************************************************************************************
+     * 🔹 Space-Optimized Tabulation
+     * Only two 1D arrays are used to store previous and current rows.
+     ************************************************************************************/
+    public int longestPalinSubseqSpaceOptimized(String s) {
+        int n = s.length();
+        String rev = new StringBuilder(s).reverse().toString();
+
+        int[] prev = new int[n + 1];
+        int[] curr = new int[n + 1];
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                if (s.charAt(i - 1) == rev.charAt(j - 1)) {
+                    curr[j] = 1 + prev[j - 1]; // Characters match
+                } else {
+                    curr[j] = Math.max(prev[j], curr[j - 1]); // Take max of skipping one
+                }
+            }
+
+            // Swap current row with previous for next iteration
+            prev = curr.clone(); // or use temp swap to save more memory
+        }
+
+        return prev[n];
+    }
+}
