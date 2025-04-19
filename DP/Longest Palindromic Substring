@@ -1,0 +1,101 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/longest-palindrome-in-a-string3411
+class Solution {
+
+    /**
+     * Optimized Approach: Expand Around Center
+     *
+     * Idea:
+     * - A palindrome mirrors around its center.
+     * - There are 2n-1 possible centers (n for odd length palindromes, n-1 for even ones).
+     * - For each center, expand as far as characters match on both sides.
+     *
+     * Time Complexity: O(n^2)
+     * Space Complexity: O(1)
+     *
+     * Dry Run Example: s = "babad"
+     * - Center at index 0: Expand "b" → not longer than 1
+     * - Center between 0 and 1: "ba" → not a palindrome
+     * - Center at index 1: expands to "bab" → update maxLen to 3
+     * - Center at index 2: expands to "aba" → also length 3 (doesn’t beat "bab")
+     * - Final result: "bab" (or "aba", both are valid)
+     */
+    static String longestPalindrome(String s) {
+        int n = s.length();
+
+        if (n < 1) return "";
+
+        int start = 0, maxLen = 1;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= 1; j++) {
+                // j = 0 handles odd length, j = 1 handles even length palindromes
+                int l = i;
+                int r = i + j;
+
+                // Expand around the center while characters match
+                while (l >= 0 && r < n && s.charAt(l) == s.charAt(r)) {
+                    int currLen = r - l + 1;
+
+                    // If current palindrome is longer than maxLen, update the result
+                    if (currLen > maxLen) {
+                        start = l;
+                        maxLen = currLen;
+                    }
+
+                    l--;
+                    r++;
+                }
+            }
+        }
+
+        return s.substring(start, start + maxLen);
+
+        /* ------------------------------------------------------------------
+         * Brute-force Approach (Commented)
+         *
+         * Idea:
+         * - Check every possible substring.
+         * - For each, verify if it's a palindrome using a helper function.
+         *
+         * Time Complexity: O(n^3)
+         * Space Complexity: O(1)
+         *
+         * Dry Run Example: s = "abcba"
+         * - i = 0, j = 4 → check "abcba" → is palindrome → store it
+         * - i = 1, j = 3 → check "bcb" → already stored longer one
+         * - Final result: "abcba"
+         */
+        /*
+        int n = s.length();
+
+        if (n < 1) return "";
+
+        int maxLen = 1, start = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+
+                // Check if substring s[i...j] is a palindrome
+                if (checkIsPal(s, i, j) && (j - i + 1) > maxLen) {
+                    start = i;
+                    maxLen = j - i + 1;
+                }
+            }
+        }
+
+        return s.substring(start, start + maxLen);
+    }
+
+    // Helper function to check if a substring is palindrome
+    static boolean checkIsPal(String s, int l, int r) {
+        while (l < r) {
+            if (s.charAt(l) != s.charAt(r)) {
+                return false; // mismatch found
+            }
+            l++;
+            r--;
+        }
+        return true;
+        */
+    }
+}
