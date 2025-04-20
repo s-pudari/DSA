@@ -1,0 +1,148 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/edit-distance3702
+class Solution {
+
+    /**
+     * Edit Distance Problem
+     *
+     * Optimized Approach: Dynamic Programming (Bottom-Up Tabulation)
+     * ---------------------------------------------------------------
+     * - Build a dp table where dp[i][j] represents the edit distance between
+     *   first i characters of s1 and first j characters of s2.
+     * - Transition:
+     *   - If characters match, no operation: dp[i][j] = dp[i-1][j-1]
+     *   - Else, choose min of insert, delete, replace: dp[i][j] = 1 + min(...)
+     *
+     * Time Complexity: O(n * m)
+     * Space Complexity: O(n * m)
+     *
+     * Dry Run (s1 = "horse", s2 = "ros"):
+     *
+     *          ""  r   o   s
+     *     ""   0   1   2   3
+     *     h    1   1   2   3
+     *     o    2   2   1   2
+     *     r    3   2   2   2
+     *     s    4   3   3   2
+     *     e    5   4   4   3  --> answer
+     */
+
+    public int editDistance(String s1, String s2) {
+        int n = s1.length();
+        int m = s2.length();
+
+        int[][] dp = new int[n + 1][m + 1];
+
+        // Base Case: If second string is empty, we need to delete all characters from first string
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = i;
+        }
+
+        // Base Case: If first string is empty, we need to insert all characters from second string
+        for (int j = 0; j <= m; j++) {
+            dp[0][j] = j;
+        }
+
+        // Fill the dp table
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+
+                // If characters match, no operation needed
+                if (s1.charAt(i - 1) == s2.charAt(j - 1)) {
+                    dp[i][j] = dp[i - 1][j - 1];
+                } else {
+                    /* If characters differ:
+                     - Delete:  dp[i-1][j]
+                     - Insert:  dp[i][j-1]
+                     - Replace: dp[i-1][j-1]
+                     Choose the minimum of these three + 1 */
+                    dp[i][j] = 1 + Math.min(
+                        Math.min(dp[i - 1][j], dp[i][j - 1]),
+                        dp[i - 1][j - 1]
+                    );
+                }
+            }
+        }
+
+        return dp[n][m];
+    }
+
+    // ----------------------------------------------------------------------------------------
+    /*
+     * Approach 2: Top-Down Memoization (Commented)
+     *
+     * Time Complexity: O(n * m)
+     * Space Complexity: O(n * m) for dp + recursion stack
+     *
+     * Dry Run for s1 = "horse", s2 = "ros":
+     * recDP(4,2) => (e,s) mismatch -> 1 + min(delete, insert, replace)
+     *   => recDP(3,2), recDP(4,1), recDP(3,1)
+     *   ... continues recursively ...
+     */
+    /*
+    public int editDistance(String s1, String s2) {
+        int n = s1.length();
+        int m = s2.length();
+
+        int[][] dp = new int[n][m];
+
+        // Initialize dp array with -1
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < m; j++)
+                dp[i][j] = -1;
+
+        return recDP(n - 1, m - 1, s1, s2, dp);
+    }
+
+    private int recDP(int i, int j, String s1, String s2, int[][] dp) {
+        if (i < 0) return j + 1; // Insert remaining characters of s2
+        if (j < 0) return i + 1; // Delete remaining characters of s1
+
+        if (dp[i][j] != -1) return dp[i][j];
+
+        if (s1.charAt(i) == s2.charAt(j)) {
+            return dp[i][j] = recDP(i - 1, j - 1, s1, s2, dp);
+        } else {
+            return dp[i][j] = 1 + Math.min(
+                Math.min(recDP(i - 1, j, s1, s2, dp),   // delete
+                         recDP(i, j - 1, s1, s2, dp)),  // insert
+                         recDP(i - 1, j - 1, s1, s2, dp) // replace
+            );
+        }
+    }
+    */
+    // ----------------------------------------------------------------------------------------
+
+    /*
+     * Approach 1: Brute-force Recursion (Commented)
+     *
+     * Time Complexity: O(3^n)
+     * Space Complexity: O(n) recursion stack
+     *
+     * Dry Run for s1 = "horse", s2 = "ros":
+     * rec(4,2) => (e,s) mismatch -> 1 + min(rec(3,2), rec(4,1), rec(3,1))
+     * rec(3,2) => (s,s) match -> rec(2,1)
+     * ... continues recursively ...
+     */
+    /*
+    public int editDistance(String s1, String s2) {
+        int n = s1.length();
+        int m = s2.length();
+        return rec(n - 1, m - 1, s1, s2);
+    }
+
+    private int rec(int i, int j, String s1, String s2) {
+        if (i < 0) return j + 1; // Insert remaining
+        if (j < 0) return i + 1; // Delete remaining
+
+        if (s1.charAt(i) == s2.charAt(j)) {
+            return rec(i - 1, j - 1, s1, s2); // No operation
+        } else {
+            return 1 + Math.min(
+                Math.min(rec(i - 1, j, s1, s2),     // delete
+                         rec(i, j - 1, s1, s2)),    // insert
+                         rec(i - 1, j - 1, s1, s2)  // replace
+            );
+        }
+    }
+    */
+}
