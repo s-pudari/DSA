@@ -1,0 +1,146 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/min-cost-climbing-stairs
+class Solution {
+
+    /*
+     * Problem: Minimum Cost to Climb Stairs
+     *
+     * You are given an array cost[] where cost[i] is the cost of step i.
+     * You can either climb 1 or 2 steps at a time.
+     * You can start from either step 0 or step 1.
+     * The goal is to reach just beyond the last step (i.e., step n).
+     *
+     * Approaches Overview:
+     * ---------------------
+     *
+     * ➤ Approach 4: Space Optimization (Active)
+     * - Uses two variables to keep track of the minimum cost of the last two steps.
+     * - Avoids using extra space for a DP array.
+     * Time Complexity: O(n)
+     * Space Complexity: O(1)
+     *
+     * ➤ Approach 3: Bottom-Up Tabulation
+     * - Standard DP approach where dp[i] stores the min cost to reach step i.
+     * Time Complexity: O(n)
+     * Space Complexity: O(n)
+     *
+     * ➤ Approach 2: Top-Down DP with Memoization
+     * - Recursive solution with memoization to avoid recomputation.
+     * Time Complexity: O(n)
+     * Space Complexity: O(n) (due to recursion stack and memo table)
+     *
+     * ➤ Approach 1: Brute-force Recursive
+     * - Pure recursion without memoization; results in overlapping subproblems.
+     * Time Complexity: O(2^n)
+     * Space Complexity: O(n)
+     *
+     * Dry Run Example (cost = [10, 15, 20]):
+     * -------------------------------------
+     * - You can either start from index 0 or index 1.
+     * - From index 0: 10 → 15 → 20 → end → cost = 10 + 15 = 25
+     * - From index 1: 15 → 20 → end → cost = 15 + 20 = 35
+     * - From index 0: 10 → 20 → end → cost = 10 + 20 = 30
+     * Minimum among 25 and 30 → Final answer = 25
+     */
+
+    // -------------------------------------------------------------
+    // Approach 4: Space Optimization (Most Efficient)
+    // -------------------------------------------------------------
+    static int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+
+        if (n == 1) return cost[0]; // Edge case: only one step
+
+        int prev0 = cost[0]; // Cost to reach step 0
+        int prev1 = cost[1]; // Cost to reach step 1
+
+        /* 
+         * We compute the minimum cost to reach each step using only last two steps
+         */
+        for (int i = 2; i < n; i++) {
+            int curr = cost[i] + Math.min(prev0, prev1); // min cost to reach i
+            prev0 = prev1;
+            prev1 = curr;
+        }
+
+        // We can end on either the last or second last step, so take min of both
+        return Math.min(prev1, prev0);
+    }
+
+    // -------------------------------------------------------------
+    // Approach 3: Bottom-Up DP (Tabulation)
+    // -------------------------------------------------------------
+    /*
+    static int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+
+        int[] dp = new int[n + 1]; // dp[i] = min cost to reach step i
+
+        dp[0] = cost[0];
+        dp[1] = cost[1];
+
+        for (int i = 2; i < n; i++) {
+            dp[i] = cost[i] + Math.min(dp[i - 1], dp[i - 2]);
+        }
+
+        // Return min cost to reach just beyond the last step
+        return Math.min(dp[n - 1], dp[n - 2]);
+    }
+    */
+
+    // -------------------------------------------------------------
+    // Approach 2: Top-Down DP with Memoization
+    // -------------------------------------------------------------
+    /*
+    static int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+
+        if (n == 1) return cost[0]; // Edge case
+
+        int[] dp = new int[n + 1];
+
+        // Initialize all values to -1 (uncomputed)
+        for (int i = 0; i <= n; i++) {
+            dp[i] = -1;
+        }
+
+        // Return the minimum of reaching last or second-last step
+        return Math.min(recDP(n - 1, cost, dp), recDP(n - 2, cost, dp));
+    }
+
+    static int recDP(int n, int[] cost, int[] dp) {
+        if (n == 0 || n == 1) return dp[n] = cost[n]; // base case
+
+        if (dp[n] != -1) return dp[n]; // Return memoized result
+
+        /* 
+         * Calculate recursively the min cost from step (n-1) and (n-2)
+         * Add the current step cost and memoize it
+         */
+        return dp[n] = cost[n] + Math.min(recDP(n - 1, cost, dp), recDP(n - 2, cost, dp));
+    }
+    */
+
+    // -------------------------------------------------------------
+    // Approach 1: Brute-force Recursive (No Memoization)
+    // -------------------------------------------------------------
+    /*
+    static int minCostClimbingStairs(int[] cost) {
+        int n = cost.length;
+
+        if (n == 1) return cost[0]; // Edge case
+
+        // Recursively compute the minimum from last or second-last step
+        return Math.min(rec(n - 1, cost), rec(n - 2, cost));
+    }
+
+    static int rec(int n, int[] cost) {
+        if (n == 0 || n == 1) return cost[n]; // base case
+
+        /* 
+         * Recursively get the cost from n-1 and n-2,
+         * Add current cost to that
+         */
+        return cost[n] + Math.min(rec(n - 1, cost), rec(n - 2, cost));
+    }
+    */
+}
