@@ -1,0 +1,114 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/longest-palindrome-in-a-string3411
+class Solution {
+
+    /*
+     * Problem: Longest Palindromic Substring
+     * --------------------------------------
+     * Given a string `s`, return the longest palindromic substring in `s`.
+     *
+     * ➤ Approach 2: Expand Around Center (Optimized) ✅ (Active)
+     * ----------------------------------------------------------
+     * We consider each index (and index pair) as the center and try to expand around it.
+     * This captures both odd and even length palindromes efficiently.
+     * Time Complexity: O(n^2)
+     * Space Complexity: O(1)
+     *
+     * ➤ Approach 1: Brute-Force with Palindrome Checking
+     * ---------------------------------------------------
+     * We generate all substrings and check if they are palindromes.
+     * Time Complexity: O(n^3) due to substring generation and checking.
+     * Space Complexity: O(1)
+     *
+     * Dry Run Example: s = "babad"
+     * ----------------------------
+     * - i = 0 → Expand around 'b' → "b"
+     * - i = 1 → Expand around 'a' → "aba"
+     * - i = 2 → Expand around 'b' → "bab"
+     * - Max so far → "bab" or "aba"
+     */
+
+    // ------------------------------------------------------------
+    // Approach 2: Expand Around Center (Optimized)
+    // ------------------------------------------------------------
+    static String longestPalindrome(String s) {
+        int n = s.length();
+
+        if (n < 1) return ""; // Edge case: empty string
+
+        int start = 0;  // Starting index of longest palindrome found
+        int maxLen = 1; // Minimum length of a palindrome is 1
+
+        /* 
+         * For every character, try expanding around both:
+         * 1. A single center (odd-length palindrome)
+         * 2. A pair of centers (even-length palindrome)
+         */
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j <= 1; j++) {
+                int l = i;
+                int r = i + j;
+
+                /* 
+                 * Expand as long as characters match and boundaries are valid.
+                 * This finds the longest palindrome centered at (l, r).
+                 */
+                while (l >= 0 && r < n && s.charAt(l) == s.charAt(r)) {
+                    int currLen = r - l + 1;
+
+                    if (currLen > maxLen) {
+                        start = l;
+                        maxLen = currLen;
+                    }
+
+                    l--;
+                    r++;
+                }
+            }
+        }
+
+        return s.substring(start, start + maxLen);
+    }
+
+    // ------------------------------------------------------------
+    // Approach 1: Brute-Force with Palindrome Check
+    // ------------------------------------------------------------
+    /*
+    static String longestPalindrome(String s) {
+        int n = s.length();
+
+        if (n < 1) return ""; // Edge case
+
+        int start = 0;   // Starting index of the longest palindrome
+        int maxLen = 1;  // At minimum, every character is a palindrome of length 1
+
+        // Generate all substrings using two pointers
+        for (int i = 0; i < n; i++) {
+            for (int j = i; j < n; j++) {
+                /* 
+                 * Check if the substring from i to j is a palindrome
+                 * and if it's longer than the current maximum, update it.
+                 */
+                if (checkIsPal(s, i, j) && (j - i + 1) > maxLen) {
+                    start = i;
+                    maxLen = j - i + 1;
+                }
+            }
+        }
+
+        // Return the longest palindromic substring found
+        return s.substring(start, start + maxLen);
+    }
+
+    // Helper function to check if a substring s[l...r] is a palindrome
+    static boolean checkIsPal(String s, int l, int r) {
+        while (l < r) {
+            if (s.charAt(l) != s.charAt(r)) {
+                return false; // Not a palindrome
+            }
+            l++;
+            r--;
+        }
+        return true;
+    }
+    */
+}
