@@ -1,63 +1,105 @@
+
 class Solution {
-    //Approach 3 using Tabulation
-    
-    //Approach 2 using DP
+
     /*
+     * Problem: 0/1 Knapsack
+     * ----------------------------------------
+     * Given weights and values of n items, put these items in a knapsack of capacity W
+     * to get the maximum total value in the knapsack.
+     *
+     * Optimized Approach (Tabulation):
+     * ----------------------------------------
+     * - Use bottom-up DP to fill table where dp[i][j] = max value with capacity j using i items.
+     * - Time Complexity: O(n * W)
+     * - Space Complexity: O(n * W)
+     *
+     * Dry Run Example:
+     * ----------------------------------------
+     * W = 4, wt = [1, 3, 4], val = [2, 4, 5]
+     * dp table filling:
+     * i=1: dp[1][1]=2
+     * i=2: dp[2][4]=max(dp[1][4], val[1]+dp[1][1]) = 6
+     */
+
     static int knapsack(int W, int val[], int wt[]) {
-        // code here
-        int n=val.length;
-        int[][] dp=new int[n+1][W+1];
-        
-        for(int i=0;i<=n;i++){
-            for(int j=0;j<=W;j++){
-            dp[i][j]=-1;
+        int n = val.length;
+        int[][] dp = new int[n + 1][W + 1];
+
+        // Fill DP table
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= W; j++) {
+                if (wt[i - 1] <= j) {
+                    // Include current item or exclude it
+                    dp[i][j] = Math.max(val[i - 1] + dp[i - 1][j - wt[i - 1]], dp[i - 1][j]);
+                } else {
+                    // Can't include the item
+                    dp[i][j] = dp[i - 1][j];
+                }
             }
         }
-       
-        
-        return rec(W,val,wt,n,dp);
+        return dp[n][W];
     }
-    
-    static int rec(int W,int[] val,int[] wt,int n,int[][] dp){
-        if(n==0 || W==0) return 0;
-        
-        if(dp[n][W] != -1) return dp[n][W];
-        
-        int pick=0;
-        
-        if(wt[n-1]<=W){
-            pick=val[n-1]+rec(W-wt[n-1],val,wt,n-1,dp);
-            // dp[n-1]=pick;
-        }
-        
-        int notpick = rec(W,val,wt,n-1,dp);
-        // dp[n-1]=notpick;
-        
-        return dp[n][W]=Math.max(pick,notpick);
-    }*/
-    //Approach 1 using rec
+
+    // -----------------------------------------------------------------------------------------
+    /*
+     * Approach 2: Top-down (Memoization)
+     * ---------------------------------------
+     * - Cache recursive results to avoid recomputation.
+     * - Time: O(n * W)
+     * - Space: O(n * W)
+     *
+     * Dry Run Example:
+     * W=4, n=3
+     * rec(4,3) => max(rec(3,2), rec(1,2)) etc...
+     */
+
     /*
     static int knapsack(int W, int val[], int wt[]) {
-        // code here
-        int n=val.length;
-        
-       
-        
-        return rec(W,val,wt,n);
+        int n = val.length;
+        int[][] dp = new int[n + 1][W + 1];
+        for (int[] row : dp) Arrays.fill(row, -1);
+        return rec(W, val, wt, n, dp);
     }
-    
-    static int rec(int W,int[] val,int[] wt,int n){
-        if(n==0 || W==0) return 0;
-        
-        
-        int pick=0;
-        
-        if(wt[n-1]<=W){
-            pick=val[n-1]+rec(W-wt[n-1],val,wt,n-1);
+
+    static int rec(int W, int[] val, int[] wt, int n, int[][] dp) {
+        if (n == 0 || W == 0) return 0;
+        if (dp[n][W] != -1) return dp[n][W];
+
+        int pick = 0;
+        if (wt[n - 1] <= W) {
+            pick = val[n - 1] + rec(W - wt[n - 1], val, wt, n - 1, dp);
         }
-        
-        int notpick = rec(W,val,wt,n-1);
-        
-        return Math.max(pick,notpick);
-    }*/
+        int notpick = rec(W, val, wt, n - 1, dp);
+        return dp[n][W] = Math.max(pick, notpick);
+    }
+    */
+
+    // -----------------------------------------------------------------------------------------
+    /*
+     * Approach 1: Brute-force Recursion
+     * ---------------------------------------
+     * - Explore all combinations by picking/not picking each item.
+     * - Time Complexity: O(2^n)
+     * - Space Complexity: O(n)
+     *
+     * Dry Run:
+     * W=4, n=3
+     * rec(4,3) => rec(4,2) & rec(3,2) => ...
+     */
+
+    /*
+    static int knapsack(int W, int val[], int wt[]) {
+        return rec(W, val, wt, val.length);
+    }
+
+    static int rec(int W, int[] val, int[] wt, int n) {
+        if (n == 0 || W == 0) return 0;
+        int pick = 0;
+        if (wt[n - 1] <= W) {
+            pick = val[n - 1] + rec(W - wt[n - 1], val, wt, n - 1);
+        }
+        int notpick = rec(W, val, wt, n - 1);
+        return Math.max(pick, notpick);
+    }
+    */
 }
