@@ -1,0 +1,114 @@
+https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/
+/*
+Approach Explanation:
+----------------------
+We are solving the **Find All Disappeared Numbers** problem using a variant of **Cycle Sort**.
+The idea is to arrange elements such that `arr[i] == i+1`. 
+If an element is not at its correct index after sorting, it indicates that the number (i+1) is missing from the array.
+
+Algorithm Steps:
+1. Use Cycle Sort to place each number at its correct index (value - 1).
+2. After sorting, traverse the array:
+   - If `arr[i] != i+1`, then number `(i+1)` is missing.
+
+Complexities:
+-------------
+Time Complexity: O(N) — Each element is moved at most once during sorting and then a single traversal.
+Space Complexity: O(1) — Ignoring the space used for the output list; sorting is done in-place.
+
+Dry Run Example:
+----------------
+Input: [4,3,2,7,8,2,3,1]
+Cycle Sort:
+- 4 -> placed at index 3
+- 3 -> placed at index 2
+- 2 -> placed at index 1
+- 7 -> placed at index 6
+- 8 -> placed at index 7
+- Remaining elements already at correct or duplicate, move i
+Sorted Array: [1,2,3,4,3,2,7,8]
+
+Checking:
+- arr[0]=1 (ok)
+- arr[1]=2 (ok)
+- arr[2]=3 (ok)
+- arr[3]=4 (ok)
+- arr[4]=3 (wrong) → missing 5
+- arr[5]=2 (wrong) → missing 6
+
+Answer: [5,6]
+
+*/
+
+import java.util.*;
+
+class Solution {
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> list = new ArrayList<>(); // List to store missing numbers
+
+        cycleSort(nums); // Sort the array to place each number at its correct index
+
+        // Traverse the sorted array
+        for (int i = 0; i < nums.length; i++) {
+            /* 
+            After sorting, if the number at index i is not (i+1),
+            it means (i+1) is missing from the array.
+            */
+            if (nums[i] != i + 1) {
+                list.add(i + 1); // Add the missing number to the result list
+            }
+        }
+        return list;
+    }
+
+    // Function to perform Cycle Sort on the array
+    public static void cycleSort(int[] arr) {
+        int i = 0;
+
+        while (i < arr.length) {
+            int correctIndex = arr[i] - 1; // For 1-N numbers, correct index is (value - 1)
+
+            /* 
+            Swap if:
+            1. arr[i] is not at its correct index (arr[i] != arr[correctIndex]).
+            2. Note: No need to check bounds separately because all values are in [1,N].
+            */
+            if (arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex); // Swap current element to its correct position
+            } else {
+                i++; // Move to the next element if already at correct position
+            }
+        }
+    }
+
+    // Utility function to swap two elements in the array
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
+
+/*
+----------------------------------------------------------------------------------------
+Alternative Approach (Commented for Reference):
+----------------------------------------------------------------------------------------
+
+Another approach could be:
+- Mark the presence of a number by negating the value at corresponding index.
+- Traverse array again to find positive numbers' indices which indicate missing numbers.
+
+Example:
+    for (int i = 0; i < nums.length; i++) {
+        int index = Math.abs(nums[i]) - 1;
+        if (nums[index] > 0) nums[index] = -nums[index];
+    }
+    for (int i = 0; i < nums.length; i++) {
+        if (nums[i] > 0) list.add(i+1);
+    }
+
+Time Complexity: O(N)
+Space Complexity: O(1) (excluding output list)
+
+However, Cycle Sort approach is preferred when you want in-place rearrangement.
+*/
