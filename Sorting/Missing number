@@ -1,0 +1,104 @@
+https://leetcode.com/problems/missing-number/
+/*
+Approach Explanation:
+----------------------
+We are solving for the **Missing Number** problem using a variant of **Cycle Sort**. 
+The idea is to place each element at its correct index (i.e., element `i` at index `i`). 
+If after sorting an element is not at its correct index, then that index represents the missing number.
+
+Algorithm Steps:
+1. Use Cycle Sort to place elements at their correct index (for 0-N numbers).
+2. Traverse the array: the first index where arr[i] != i gives the missing number.
+3. If all elements are at their correct indices, the missing number is N.
+
+Complexities:
+-------------
+Time Complexity: O(N) — Each element is moved at most once during sorting and then a linear scan.
+Space Complexity: O(1) — Sorting is done in-place without using extra space.
+
+Dry Run Example:
+----------------
+Input: [3, 0, 1]
+Step 1: i=0, arr[0]=3 (out of bounds, move i++)
+Step 2: i=1, arr[1]=0, correctIndex=0, swap(1,0) -> [0,3,1]
+Step 3: i=1, arr[1]=3 (out of bounds, move i++)
+Step 4: i=2, arr[2]=1, correctIndex=1, swap(2,1) -> [0,1,3]
+Step 5: i=2, arr[2]=3 (out of bounds, move i++)
+After sorting: [0,1,3]
+Checking:
+- arr[0]=0 (correct)
+- arr[1]=1 (correct)
+- arr[2]=3 (incorrect) → Missing number is 2
+
+*/
+
+class Solution {
+    public int missingNumber(int[] nums) {
+        cycleSort(nums); // Sort the array so that each element is placed at its correct index
+
+        // Traverse the sorted array
+        for (int i = 0; i < nums.length; i++) {
+            /* 
+            If the element at index i is not i, 
+            then i is the missing number.
+            */
+            if (nums[i] != i) {
+                return i; // Return the missing number
+            }
+        }
+        
+        // If all elements are at their correct index, 
+        // then the missing number is nums.length
+        return nums.length;
+    }
+
+    // Function to perform Cycle Sort on the array
+    public void cycleSort(int[] nums) {
+        int i = 0;
+
+        while (i < nums.length) {
+            int correctIndex = nums[i]; // For 0-N numbers, the correct index is equal to the value
+
+            /* 
+            We swap if:
+            1. nums[i] is within the bounds of the array (i.e., less than nums.length)
+            2. nums[i] is not already at its correct index (to avoid unnecessary swaps).
+            */
+            if (nums[i] < nums.length && nums[i] != nums[correctIndex]) {
+                swap(nums, i, correctIndex); // Swap current element with its correct index
+            } else {
+                i++; // Move to next index if element is already correct
+            }
+        }
+    }
+
+    // Utility function to swap two elements in the array
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
+
+/*
+----------------------------------------------------------------------------------------
+Alternative Approach (Commented for Reference):
+----------------------------------------------------------------------------------------
+
+Instead of Cycle Sort, a simpler method would be:
+- Calculate expected sum of first N natural numbers: (N * (N+1)) / 2
+- Subtract actual sum of array elements from expected sum to find the missing number.
+
+Example:
+    int sum = 0;
+    for(int num : nums) {
+        sum += num;
+    }
+    int n = nums.length;
+    return (n * (n + 1)) / 2 - sum;
+
+Time Complexity: O(N)
+Space Complexity: O(1)
+
+However, Cycle Sort approach is preferred if modification of the array is allowed and in-place is required.
+*/
