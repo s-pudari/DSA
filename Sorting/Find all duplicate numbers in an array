@@ -1,0 +1,124 @@
+https://leetcode.com/problems/find-all-duplicates-in-an-array/
+/*
+Problem: Find all elements that appear twice in an array of integers where 1 ≤ a[i] ≤ n (n = size of array), without using extra space and in O(n) time.
+
+Approach Explanation:
+------------------------
+
+Optimized Approach (Cycle Sort Technique):
+- Rearrange elements so that each number is at its correct index (value - 1).
+- After sorting, if any element is not at its correct position, it means it has been duplicated (appears more than once).
+- Collect such elements into a list.
+
+Brute Force Approach (Commented):
+- Use a HashMap or an extra array to keep count of all elements.
+- If an element count is 2, it is a duplicate.
+
+Complexities:
+--------------
+Optimized Approach (Cycle Sort):
+- Time Complexity: O(N)
+- Space Complexity: O(1) (excluding output list)
+
+Brute Force Approach (HashMap):
+- Time Complexity: O(N)
+- Space Complexity: O(N)
+
+Dry Run Example:
+----------------
+Input: [4,3,2,7,8,2,3,1]
+
+After cycle sort:
+- Swap elements to their correct positions: [1,2,3,4,8,2,7,3]
+
+Checking:
+- At index 0: 1 → correct
+- At index 1: 2 → correct
+- At index 2: 3 → correct
+- At index 3: 4 → correct
+- At index 4: 8 → incorrect → duplicate 3
+- At index 5: 2 → incorrect → duplicate 2
+
+Output: [2,3]
+*/
+
+class Solution {
+
+    public List<Integer> findDuplicates(int[] nums) {
+
+        cycleSort(nums); // Rearrange elements to their correct positions
+        
+        List<Integer> list = new ArrayList<>(); // To store duplicates
+        
+        for (int i = 0; i < nums.length; i++) {
+            
+            /* 
+            After sorting, if the current element is not at its correct index,
+            it means the number appeared twice somewhere.
+            */
+            if (nums[i] != i + 1) {
+                list.add(nums[i]); // Add duplicate number to the list
+            }
+        }
+        return list; // Return the list of duplicates
+    }
+
+    // Function to perform Cycle Sort
+    public static void cycleSort(int[] arr) {
+        int i = 0;
+        
+        while (i < arr.length) {
+            int correctIndex = arr[i] - 1; // The correct index for current value
+            
+            /* 
+            Swap if:
+            - Current element is not at its correct position.
+            - Avoid unnecessary swaps if already in correct position (or duplicate).
+            */
+            if (arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex); // Swap to place value at correct index
+            } else {
+                i++; // Move to next index if already correct
+            }
+        }
+    }
+
+    // Utility function to swap two elements
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+    
+    /*
+    --------------------------------------------------------------------------------
+    Brute Force Approach (Commented)
+    --------------------------------------------------------------------------------
+
+    public List<Integer> findDuplicates(int[] nums) {
+        Map<Integer, Integer> countMap = new HashMap<>();
+        List<Integer> duplicates = new ArrayList<>();
+        
+        for (int num : nums) {
+            countMap.put(num, countMap.getOrDefault(num, 0) + 1); // Count occurrences
+        }
+        
+        for (Map.Entry<Integer, Integer> entry : countMap.entrySet()) {
+            if (entry.getValue() == 2) {
+                duplicates.add(entry.getKey()); // Element appearing exactly twice
+            }
+        }
+        
+        return duplicates;
+    }
+
+    Explanation:
+    ------------
+    - Count the frequency of each element using a HashMap.
+    - If any element's count is exactly 2, it's a duplicate.
+
+    Drawback:
+    ---------
+    - Extra space O(N) needed for the HashMap.
+    */
+}
