@@ -1,0 +1,91 @@
+import java.util.*;
+
+class Main {
+
+    /*
+    =============================================
+    Recursive Bubble Sort - Explanation
+    =============================================
+    - Idea: 
+      Instead of using nested loops like traditional bubble sort,
+      we use recursion to mimic the two loops:
+        - One recursion level for traversing the unsorted part.
+        - Another recursion call to reduce the unsorted portion by 1.
+
+    Time Complexity: O(N^2) (Same as iterative Bubble Sort)
+    Space Complexity: O(N) (due to recursion call stack)
+
+    Stability:
+    - Recursive Bubble Sort is stable because it only swaps adjacent elements when needed,
+      and preserves the order of equal elements.
+
+    Dry Run Example:
+    Input: [2, 9, 4, 8, 1, 2]
+
+    - First pass (largest number moves to the end):
+      [2, 4, 8, 1, 2, 9]
+    - Second pass:
+      [2, 4, 1, 2, 8, 9]
+    - Third pass:
+      [2, 1, 2, 4, 8, 9]
+    - Fourth pass:
+      [1, 2, 2, 4, 8, 9]
+    (Sorted array)
+
+    =============================================
+    */
+
+    public static void main(String[] args) {
+        int[] arr = {2, 9, 4, 8, 1, 2};
+
+        // Sort the array using Recursive Bubble Sort
+        bubbleSortRec(arr, 0, arr.length - 1);
+
+        System.out.println("Sorted array: " + Arrays.toString(arr));
+    }
+
+    // Recursive Bubble Sort function
+    public static void bubbleSortRec(int[] arr, int i, int j) {
+        // Base case: if the size of the unsorted part becomes zero, array is sorted
+        if (j == 0) return;
+
+        // If current index i is less than j, continue bubbling the largest element to the end
+        if (i < j) {
+            if (arr[i] > arr[i + 1]) { //arr[i] < arr[i+1] for descending order
+                swap(arr, i, i + 1);
+            }
+            // Recursive call to process next pair in the current pass
+            bubbleSortRec(arr, i + 1, j);
+        } else {
+            /* 
+            Once a pass is completed, restart from the beginning
+            but reduce the range by one because the last element is already in correct place 
+            */
+            bubbleSortRec(arr, 0, j - 1);
+        }
+    }
+
+    // Utility function to swap two elements
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
+
+/*
+==================================================
+Brute-Force Bubble Sort (Iterative Version):
+==================================================
+- Use two nested loops to repeatedly swap adjacent elements if they are in wrong order.
+
+Time Complexity: O(N^2)
+Space Complexity: O(1)
+
+Stability: Yes, Bubble Sort is stable.
+
+Dry Run:
+- Compare each adjacent pair and swap if needed in every pass.
+- After each pass, the largest unsorted element "bubbles" to its correct position at the end.
+==================================================
+*/
