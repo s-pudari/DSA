@@ -1,0 +1,123 @@
+import java.util.*;
+
+class Main {
+
+    /*
+    ===============================
+    Recursive Selection Sort Approach
+    ===============================
+    - Idea:
+      - Instead of using loops (iterative way), recursion is used to find the maximum element
+        and swap it with the last unsorted element.
+
+    - Flow:
+      1. Find the maximum element's index recursively.
+      2. Swap it with the last element of the current unsorted part.
+      3. Recur for the remaining unsorted array.
+
+    - Stability: 
+      - **Not stable**.
+      - Because during swaps, equal elements might change their relative order.
+      (Example: Two '2's at different positions might get swapped.)
+
+    Time Complexity: O(N^2)
+    Space Complexity: O(N) (because of recursion stack)
+
+    ===============================
+    Dry Run Example:
+    Input: [2, 9, 4, 8, 1, 2]
+
+    Call: selectionSortRec(arr, 0, 6, 0)
+
+    Step 1:
+    - Find max between index 0-5 => 9 at index 1
+    - Swap 9 with element at index 5 (2)
+    Result: [2, 2, 4, 8, 1, 9]
+
+    Step 2:
+    - Find max between index 0-4 => 8 at index 3
+    - Swap 8 with index 4 (1)
+    Result: [2, 2, 4, 1, 8, 9]
+
+    Step 3:
+    - Find max between index 0-3 => 4 at index 2
+    - Swap 4 with index 3 (1)
+    Result: [2, 2, 1, 4, 8, 9]
+
+    Step 4:
+    - Find max between index 0-2 => 2 at index 0
+    - Swap 2 with index 2 (1)
+    Result: [1, 2, 2, 4, 8, 9]
+
+    Step 5:
+    - Find max between index 0-1 => 2 at index 1
+    - Swap 2 with index 1 (2) => No change
+
+    Output: [1, 2, 2, 4, 8, 9]
+    ===============================
+    */
+
+    public static void main(String[] args) {
+        int[] arr = {2, 9, 4, 8, 1, 2};
+
+        // Recursive Selection Sort call
+        selectionSortRec(arr, 0, arr.length, 0);
+
+        System.out.println("Sorted Array (Ascending): " + Arrays.toString(arr));
+    }
+
+    // Recursive Selection Sort Function
+    public static void selectionSortRec(int[] arr, int i, int j, int max) {
+
+        // Base condition: if size becomes 0, array is fully sorted
+        if (j == 0) return;
+
+        if (i < j) {
+            // If current element is greater than the current max, update max
+            if (arr[i] > arr[max]) {
+                selectionSortRec(arr, i + 1, j, i);
+            } else {
+                // Otherwise continue searching
+                selectionSortRec(arr, i + 1, j, max);
+            }
+        } else {
+            /*
+            Once a pass is complete (i == j),
+            swap the maximum found element with the last element of the unsorted part.
+            */
+            swap(arr, i - 1, max);
+
+            /*
+            Important:
+            - After swapping, restart from beginning (i=0) for next (j-1) elements.
+            - Setting 'max' back to 0 ensures correct behavior if duplicates are present.
+            */
+            selectionSortRec(arr, 0, j - 1, 0);
+        }
+    }
+
+    // Swap function to swap two elements of the array
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
+
+/*
+===============================================================
+Brute-force Recursive Selection Sort
+===============================================================
+- Idea:
+  - Simply use recursion to find max element and swap for every pass.
+  - No optimization like early stopping even if array becomes sorted.
+
+- Stability:
+  - Recursive Selection Sort is also **NOT STABLE** for the same reason:
+    swapping may disturb the relative order of equal elements.
+
+Time Complexity: O(N^2)
+Space Complexity: O(N) due to recursive call stack.
+
+===============================================================
+*/
