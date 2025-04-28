@@ -1,4 +1,3 @@
-https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-gfg-160/problem/merge-k-sorted-linked-lists
 import java.util.*;
 
 class Node {
@@ -11,53 +10,104 @@ class Node {
 }
 
 class Solution {
+
+    /*
+    -------------------------
+    Brief Explanation:
+
+    Optimized Approach (Divide and Conquer):
+    - Merge K sorted linked lists by pairing and merging them two at a time.
+    - Recursively divide the list of linked lists into halves until one list remains.
+    - At each merge step, merge two sorted lists into one.
+
+    Brute-force Approach (Using Min Heap / Priority Queue):
+    - Insert all nodes from all linked lists into a min-heap based on their data values.
+    - Extract nodes one by one from the heap to form the final merged sorted list.
+
+    -------------------------
+    Time and Space Complexity:
+
+    Optimized Approach (Divide and Conquer):
+    - Time: O(N log K), where N is total nodes and K is number of lists
+    - Space: O(1) (Ignoring recursion stack)
+
+    Brute-force Approach (Min Heap):
+    - Time: O(N log K)
+    - Space: O(K) (heap stores up to K nodes)
+
+    -------------------------
+    Dry Run Example:
+
+    Input:
+    List 1: 1 -> 4 -> 5
+    List 2: 1 -> 3 -> 4
+    List 3: 2 -> 6
+
+    Optimized Approach:
+    - Divide lists:
+      Merge List1 and List2 -> [1,1,3,4,4,5]
+      Then merge result with List3 -> [1,1,2,3,4,4,5,6]
+
+    Brute-force Approach:
+    - Push all nodes into min-heap:
+      Heap: [1,1,2,3,4,4,5,6]
+    - Pop one by one to form final list:
+      Result: 1 -> 1 -> 2 -> 3 -> 4 -> 4 -> 5 -> 6
+
+    -------------------------
+    */
+
     /**
-     * Function to merge K sorted linked lists.
+     * Function to merge K sorted linked lists using Divide and Conquer.
      * @param arr - List of head nodes representing K sorted linked lists
-     * @return Merged sorted linked list
+     * @return Head node of merged sorted linked list
      */
     Node mergeKLists(List<Node> arr) {
-        // Edge case: If no lists are present, return null.
+        /* 
+        Edge case: If no lists are present, simply return null.
+        */
         if (arr.size() == 0) return null;
 
-        // Start recursive merging of lists
+        // Start recursive merging from index 0 to last index (arr.size() - 1)
         return mergeRec(0, arr.size() - 1, arr);
     }
 
     /**
-     * Recursive function to divide and merge lists using divide and conquer.
+     * Recursive function to divide and merge lists.
      * @param i - Start index
      * @param j - End index
      * @param arr - List of sorted linked lists
-     * @return Head node of merged linked list
+     * @return Merged sorted linked list
      */
     Node mergeRec(int i, int j, List<Node> arr) {
-        // Base case: If only one list remains, return it
+        /* 
+        Base case: If only one list remains in the range, return it.
+        */
         if (i == j) return arr.get(i);
 
-        // Find mid-point
+        // Find the middle index to divide the range
         int mid = i + (j - i) / 2;
 
-        // Recursively merge left and right halves
+        // Recursively merge left half and right half
         Node head1 = mergeRec(i, mid, arr);
         Node head2 = mergeRec(mid + 1, j, arr);
 
-        // Merge the two sorted linked lists
+        // Merge two sorted linked lists and return the merged head
         return merge(head1, head2);
     }
 
     /**
-     * Function to merge two sorted linked lists.
+     * Function to merge two sorted linked lists into one.
      * @param head1 - First sorted linked list
      * @param head2 - Second sorted linked list
-     * @return Merged sorted linked list
+     * @return Head node of merged linked list
      */
     Node merge(Node head1, Node head2) {
-        // Dummy node to simplify merging
+        // Create a dummy node to simplify edge cases during merging
         Node dummy = new Node(-1);
         Node temp = dummy;
 
-        // Merge nodes from both lists in sorted order
+        // Compare nodes from both lists and attach the smaller one
         while (head1 != null && head2 != null) {
             if (head1.data <= head2.data) {
                 temp.next = head1;
@@ -69,12 +119,59 @@ class Solution {
             temp = temp.next;
         }
 
-        // Append the remaining nodes
+        /* 
+        After one list is exhausted, directly connect the remaining nodes
+        of the other list to the merged list.
+        */
         if (head1 != null) temp.next = head1;
         else temp.next = head2;
 
-        return dummy.next; // Return merged list starting from the next of dummy
+        // Return merged list starting from the node next to dummy
+        return dummy.next;
     }
+
+    /*
+    ------------------------------------------
+    Brute-force Approach (Commented Out):
+
+    This approach uses a Min Heap (Priority Queue) to merge the lists.
+
+    Steps:
+    1. Insert the first node of each list into the heap.
+    2. Extract the node with the smallest value from the heap.
+    3. Attach it to the merged list.
+    4. Insert the next node from the same list into the heap (if exists).
+    5. Repeat until the heap is empty.
+
+    public Node mergeKLists(List<Node> arr) {
+        // Edge case: No lists
+        if (arr.size() == 0) return null;
+
+        // Create a priority queue (min-heap) that compares nodes based on data value
+        PriorityQueue<Node> pq = new PriorityQueue<>((a, b) -> a.data - b.data);
+
+        // Add the head of each list into the priority queue
+        for (Node head : arr) {
+            if (head != null) pq.offer(head);
+        }
+
+        // Dummy node to simplify merged list construction
+        Node dummy = new Node(-1);
+        Node temp = dummy;
+
+        while (!pq.isEmpty()) {
+            Node curr = pq.poll(); // Remove node with the smallest value
+            temp.next = curr; // Attach it to the result list
+            temp = temp.next; // Move pointer forward
+
+            // If there is another node in the list, push it into the heap
+            if (curr.next != null) pq.offer(curr.next);
+        }
+
+        return dummy.next; // Return merged list
+    }
+    ------------------------------------------
+    */
 
     // Utility function to print linked list
     static void printList(Node head) {
@@ -89,6 +186,7 @@ class Solution {
     public static void main(String[] args) {
         List<Node> arr = new ArrayList<>();
         
+        // Creating multiple sorted linked lists
         arr.add(new Node(1));
         arr.get(0).next = new Node(4);
         arr.get(0).next.next = new Node(5);
