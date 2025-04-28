@@ -1,3 +1,4 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-gfg-160/problem/merge-k-sorted-linked-lists
 import java.util.*;
 
 class Node {
@@ -135,7 +136,7 @@ class Solution {
     Brute-force Approach (Commented Out):
 
     This approach uses a Min Heap (Priority Queue) to merge the lists.
-
+  refer to this link for explaination -> https://chatgpt.com/canvas/shared/680f85523a148191ad017874e8a7cecc
     Steps:
     1. Insert the first node of each list into the heap.
     2. Extract the node with the smallest value from the heap.
