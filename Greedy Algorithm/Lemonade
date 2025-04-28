@@ -1,0 +1,107 @@
+https://leetcode.com/problems/lemonade-change/
+/*
+Question: Lemonade Change (LeetCode / GFG)
+
+Problem Statement:
+-------------------
+- Each customer buys lemonade for $5.
+- Customers pay with $5, $10, or $20 bills.
+- You must provide correct change (using the bills you have so far).
+- Initially, you have no change (no bills).
+- Return true if you can provide every customer with correct change; otherwise, return false.
+
+---
+Optimized Approach:
+-------------------
+Idea:
+- Keep counters for how many $5, $10, and $20 bills you have.
+- Process each customer:
+    - If $5 bill: simply collect it.
+    - If $10 bill: give back a $5 bill if available.
+    - If $20 bill:
+        - Prefer to give one $10 and one $5 bill (best change combination),
+        - Else, give three $5 bills.
+        - If neither possible, return false.
+
+Time Complexity: O(N) — one pass through the array  
+Space Complexity: O(1) — only three counters needed
+
+---
+Brute-force Approach (Not implemented here):
+--------------------------------------------
+Idea:
+- Keep an actual list or multiset of bills and simulate giving change by removing bills from the list.
+
+Time Complexity: O(N)  
+Space Complexity: O(N) (to store all bills individually)
+
+---
+Dry Run Example:
+Input: arr = [5, 5, 5, 10, 20]
+
+Step 1: $5 → collect → five=1
+Step 2: $5 → collect → five=2
+Step 3: $5 → collect → five=3
+Step 4: $10 → give $5 change → five=2, ten=1
+Step 5: $20 → prefer $10+$5 → give $10+$5 → five=1, ten=0
+
+All customers satisfied → return true
+
+---
+*/
+
+import java.util.*;
+
+class Solution {
+    // Optimized Greedy Approach
+    public boolean lemonadeChange(int[] arr) {
+        
+        int five = 0, ten = 0, twenty = 0; // Counters for each bill type
+        
+        for (int i = 0; i < arr.length; i++) {
+
+            if (arr[i] == 5) {
+                // Customer pays with $5 → No change needed
+                five++;
+            } 
+            else if (arr[i] == 10) {
+                /* 
+                Customer pays with $10 → Needs $5 change
+                */
+                if (five > 0) {
+                    five--; // Give one $5 bill as change
+                    ten++;  // Collect the $10 bill
+                } 
+                else {
+                    // No $5 bill to give as change
+                    return false;
+                }
+            } 
+            else { // arr[i] == 20
+                /*
+                Customer pays with $20 → Needs $15 change
+                Prefer to give 1x $10 + 1x $5 for optimal use of bills
+                */
+                if (ten > 0 && five > 0) {
+                    ten--; // Give one $10 bill
+                    five--; // Give one $5 bill
+                    twenty++; // Collect the $20 bill (tracking not needed actually)
+                } 
+                else if (five >= 3) {
+                    /* 
+                    If no $10 available, give three $5 bills
+                    */
+                    five -= 3;
+                    twenty++; // Collect the $20 bill (tracking not needed actually)
+                } 
+                else {
+                    // Cannot give $15 change
+                    return false;
+                }
+            }
+        }
+        
+        // If all customers are processed successfully
+        return true;
+    }
+}
