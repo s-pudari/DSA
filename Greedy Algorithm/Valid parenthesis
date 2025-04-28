@@ -1,0 +1,147 @@
+https://leetcode.com/problems/valid-parenthesis-string/
+/*
+Question: Valid Parenthesis String (LeetCode #678)
+
+Problem Statement:
+-------------------
+- Given a string `s` containing only '(', ')' and '*', where:
+    - '(' : open bracket
+    - ')' : close bracket
+    - '*' : can be treated as '(', ')' or an empty string.
+- Return true if the string is valid, otherwise return false.
+- A string is valid if:
+    - Open brackets must be closed by the same type of brackets.
+    - Open brackets must be closed in the correct order.
+
+---
+Optimized Approach (Greedy using Range):
+----------------------------------------
+Idea:
+- Maintain two counters: `min` and `max` representing the **range of open brackets** possible at each point.
+    - `min`: minimum possible open brackets
+    - `max`: maximum possible open brackets
+- Rules:
+    - If '(': increment both `min` and `max`
+    - If ')': decrement both `min` and `max`
+    - If '*': can act as '(', ')' or '', so:
+        - decrement `min` (assuming '*' is ')')
+        - increment `max` (assuming '*' is '(')
+- Important:
+    - If `min` goes below 0, reset it to 0 (cannot have negative open brackets).
+    - If `max` goes below 0, string is invalid.
+
+Time Complexity: O(N)  
+Space Complexity: O(1)
+
+---
+Brute-force Approach (Recursive DP):
+-------------------------------------
+Idea:
+- Recursively check all possibilities for each '*':
+    - Treat '*' as '(' or ')' or empty and check.
+- Use memoization (DP table) to avoid recomputation.
+- State: (current index, current open bracket count)
+
+Time Complexity: O(N^2)  
+Space Complexity: O(N^2) (due to DP array)
+
+---
+Dry Run Example:
+Input: s = "(*))"
+
+1. i=0, ch='(' → min=1, max=1
+2. i=1, ch='*' → min=0, max=2 (since '*' can be '(' or ')' or '')
+3. i=2, ch=')' → min=-1 → reset to 0, max=1
+4. i=3, ch=')' → min=-1 → reset to 0, max=0
+
+At the end, min == 0 → Valid.
+
+---
+*/
+
+class Solution {
+    
+    // Approach 2: Optimized Greedy using Range
+    public boolean checkValidString(String s) {
+        int min = 0, max = 0; // Range: min = minimum opens possible, max = maximum opens possible
+        
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            if (ch == '(') {
+                /*
+                '(' increases both min and max (more open brackets)
+                */
+                min++;
+                max++;
+            } 
+            else if (ch == ')') {
+                /*
+                ')' decreases both min and max (close an open bracket)
+                */
+                min--;
+                max--;
+            } 
+            else { 
+                /*
+                '*' can act as '(' or ')' or '' (empty string)
+                - Decrease min (assuming '*' as ')')
+                - Increase max (assuming '*' as '(')
+                */
+                min--;
+                max++;
+            }
+
+            /*
+            If min becomes negative, reset to 0
+            Because we cannot have negative number of open brackets
+            */
+            if (min < 0) min = 0;
+
+            /*
+            If max becomes negative, too many closing brackets appeared → Invalid
+            */
+            if (max < 0) return false;
+        }
+
+        /*
+        Finally, if min==0, then all brackets are matched properly
+        */
+        return (min == 0);
+    } 
+    
+
+    // Approach 1: Brute-force using Recursive DP (Commented)
+    /*
+    public boolean checkValidString(String s) {
+        int c = 0; // Open bracket count
+        int idx = 0; // Current index
+        
+        boolean[][] dp = new boolean[s.length()][s.length()]; // Memoization DP table
+        // Each dp[idx][c] represents: Is it possible to validate string starting from idx with c open brackets?
+
+        return check(s, idx, c, dp);
+    }
+
+    public boolean check(String s, int idx, int c, boolean[][] dp) {
+
+        if (c < 0) 
+            return false; // Cannot have more ')' than '(' at any point
+
+        if (idx == s.length()) 
+            return (c == 0); // Valid if open brackets are all closed
+
+        if (dp[idx][c]) 
+            return dp[idx][c]; // Return memoized result
+
+        if (s.charAt(idx) == '(') 
+            return dp[idx][c] = check(s, idx + 1, c + 1, dp); // '(' increases open count
+
+        if (s.charAt(idx) == ')') 
+            return dp[idx][c] = check(s, idx + 1, c - 1, dp); // ')' decreases open count
+
+        // '*' can be treated as '(', ')' or empty ''
+        return dp[idx][c] = (check(s, idx + 1, c + 1, dp) || check(s, idx + 1, c - 1, dp) || check(s, idx + 1, c, dp));
+    }
+    */
+}
