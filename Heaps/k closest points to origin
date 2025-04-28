@@ -1,0 +1,125 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-gfg-160/problem/k-closest-points-to-origin--172242
+class Solution {
+    
+    /*
+    ------------------------- 
+    Brief Explanation:
+    
+    Optimized Approach (using Max-Heap):
+    - Use a max heap of size k to keep track of the k closest points.
+    - For each point, if the heap has less than k points, add it directly.
+    - Otherwise, compare the point's distance with the maximum distance (root of heap).
+    - If it's closer, remove the farthest and insert the new point.
+    - At the end, heap contains k closest points.
+
+    Brute-force Approach (using Sorting):
+    - Calculate the square of distance for each point from the origin.
+    - Sort all points based on this distance.
+    - Pick the first k points from the sorted list.
+
+    -------------------------
+    Time and Space Complexity:
+
+    Optimized Approach (Max-Heap):
+    - Time: O(n log k)
+    - Space: O(k)
+
+    Brute-force Approach (Sorting):
+    - Time: O(n log n)
+    - Space: O(log n) (space used by the sorting algorithm)
+
+    -------------------------
+    Dry Run Example:
+
+    Input:
+    points = [[1,3],[-2,2],[5,8],[0,1]], k = 2
+
+    Distances (square):
+    [1,3] -> 10
+    [-2,2] -> 8
+    [5,8] -> 89
+    [0,1] -> 1
+
+    Optimized Approach:
+    - Insert [1,3] -> heap = [[1,3]]
+    - Insert [-2,2] -> heap = [[1,3], [-2,2]]
+    - Insert [5,8] -> [5,8] has distance 89 > current max 10, so skip
+    - Insert [0,1] -> 1 < max (10), remove [1,3] and insert [0,1]
+    Final heap -> [[-2,2],[0,1]]
+
+    Brute-force Approach:
+    - After sorting by distance -> [[0,1],[-2,2],[1,3],[5,8]]
+    - Take first 2 points -> [[0,1],[-2,2]]
+
+    -------------------------
+    */
+
+    // Helper function to calculate the square of the distance from origin
+    public static int squareDis(int[] point) {
+        return point[0] * point[0] + point[1] * point[1];
+    }
+
+    // Optimized Approach (using Max-Heap)
+    public int[][] kClosest(int[][] points, int k) {
+
+        /* 
+        Create a max-heap (priority queue) that stores points based on their distance.
+        We reverse the normal comparison (b - a) to make it a max-heap by distance.
+        */
+        PriorityQueue<int[]> maxHeap = new PriorityQueue<>((a, b) -> squareDis(b) - squareDis(a));
+
+        for (int[] point : points) {
+            if (maxHeap.size() < k) {
+                // If heap has less than k points, directly add
+                maxHeap.offer(point);
+            } else {
+                /*
+                If the heap already has k points, check if the current point is closer
+                than the farthest point in heap (which is at the root).
+                */
+                if (squareDis(point) < squareDis(maxHeap.peek())) {
+                    maxHeap.poll(); // Remove the farthest point
+                    maxHeap.offer(point); // Add the current closer point
+                }
+            }
+        }
+
+        // Prepare the result array
+        int[][] res = new int[k][2];
+        int i = 0;
+        while (!maxHeap.isEmpty()) {
+            res[i++] = maxHeap.poll(); // Poll elements from heap into result
+        }
+        return res;
+    }
+
+    /*
+    ------------------------------------------
+    Brute-force Approach (Commented Out):
+
+    This is a simpler, but less optimized method, especially for large datasets.
+
+    Steps:
+    1. Sort all points based on their distance from the origin.
+    2. Pick the first k points from the sorted list.
+    3. Return those k points as the result.
+
+    public int[][] kClosest(int[][] points, int k) {
+        
+        // Sort the points array based on squared distance from origin
+        Arrays.sort(points, (a, b) -> squareDis(a) - squareDis(b));
+        
+        // Create a new array to store the result
+        int[][] res = new int[k][2];
+        
+        // Copy first k points to result
+        for (int i = 0; i < k; i++) {
+            res[i][0] = points[i][0];
+            res[i][1] = points[i][1];
+        }
+        
+        return res;
+    }
+    ------------------------------------------
+    */
+}
