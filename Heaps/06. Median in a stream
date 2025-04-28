@@ -1,0 +1,153 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/heap-gfg-160/problem/find-median-in-a-stream-1587115620
+/*
+Question: Running Median of a Stream (GFG)
+
+We are given a stream of numbers (an array). After every new number, 
+we need to print the median of all numbers received so far.
+
+---
+Optimized Approach (Using Two Heaps):
+-------------------------------------
+Idea:
+- Maintain two heaps:
+    1. `leftMax` (MaxHeap): Stores the smaller half of numbers
+    2. `rightMin` (MinHeap): Stores the larger half of numbers
+- Always balance them so that:
+    - Size(leftMax) >= Size(rightMin)
+    - All elements in leftMax <= all elements in rightMin
+
+Why Two Heaps?
+- `leftMax` lets us easily access the largest of the smaller half.
+- `rightMin` lets us easily access the smallest of the larger half.
+- Using them ensures O(logN) insertion and O(1) median retrieval.
+
+Steps:
+1. Insert new element into leftMax.
+2. Move the largest element from leftMax to rightMin.
+3. If leftMax.size() < rightMin.size(), move smallest from rightMin to leftMax.
+4. Find the median:
+    - If both heaps have same size: median = (leftMax.peek() + rightMin.peek()) / 2
+    - Else: median = leftMax.peek()
+
+Time Complexity: O(N log N)  
+Space Complexity: O(N)
+
+Dry Run Example (Optimized):
+Input: [5, 15, 1, 3]
+
+Step 1: Insert 5 → Median: 5  
+Step 2: Insert 15 → Medians: 5, 10.0  
+Step 3: Insert 1 → Medians: 5, 10.0, 5  
+Step 4: Insert 3 → Medians: 5, 10.0, 5, 4.0  
+
+---
+Brute-force Approach (Sort after every insert):
+------------------------------------------------
+Idea:
+- Maintain a list of elements inserted so far.
+- Sort the list after every insertion.
+- Find the middle element(s) to compute median.
+
+Time Complexity: O(N^2 log N)  
+Space Complexity: O(N)
+
+Dry Run Example (Brute-force):
+Input: [5, 15, 1, 3]
+
+Step 1: [5] → Median: 5  
+Step 2: [5, 15] → Sorted [5, 15] → Median: 10.0  
+Step 3: [5, 15, 1] → Sorted [1, 5, 15] → Median: 5  
+Step 4: [5, 15, 1, 3] → Sorted [1, 3, 5, 15] → Median: 4.0  
+
+---
+*/
+
+import java.util.*;
+
+class Solution {
+
+    // Optimized Approach: Using Two Heaps
+    public ArrayList<Double> getMedian(int[] arr) {
+        ArrayList<Double> ans = new ArrayList<>();
+
+        /* 
+        Create a MaxHeap for the left half (smaller numbers)
+        PriorityQueue with custom comparator to make it MaxHeap
+        */
+        PriorityQueue<Integer> leftMax = new PriorityQueue<>((a, b) -> b - a);
+
+        /* 
+        Create a MinHeap for the right half (larger numbers)
+        Default PriorityQueue is MinHeap
+        */
+        PriorityQueue<Integer> rightMin = new PriorityQueue<>();
+
+        for (int num : arr) {
+            // Step 1: Insert into leftMax (always insert into left first)
+            leftMax.offer(num);
+
+            // Step 2: Move the maximum from leftMax to rightMin
+            rightMin.offer(leftMax.poll());
+
+            // Step 3: Balance sizes, leftMax should have equal or 1 extra element
+            if (leftMax.size() < rightMin.size()) {
+                /* 
+                If leftMax has fewer elements than rightMin,
+                move smallest from rightMin to leftMax
+                */
+                leftMax.offer(rightMin.poll());
+            }
+
+            // Step 4: Calculate median
+            double median;
+            if (leftMax.size() == rightMin.size()) {
+                /* 
+                Even number of elements
+                Median is the average of tops of both heaps
+                */
+                median = (leftMax.peek() + rightMin.peek()) / 2.0;
+            } else {
+                // Odd number of elements
+                median = leftMax.peek();
+            }
+
+            ans.add(median); // Store the median after each insertion
+        }
+        return ans;
+    }
+
+    // Brute-force Approach: Using sorting after every insertion
+    /*
+    public ArrayList<Double> getMedian(int[] arr) {
+        ArrayList<Double> ans = new ArrayList<>();
+
+        ArrayList<Integer> temp = new ArrayList<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            temp.add(arr[i]); // Insert current number
+
+            Collections.sort(temp); // Sort the array after every insert
+
+            int n = temp.size();
+            double med;
+            if (n % 2 == 0) {
+                /* 
+                If even number of elements,
+                take the middle two and find average 
+                */
+                int a = n / 2;
+                int b = a - 1;
+                med = (temp.get(a) + temp.get(b)) / 2.0;
+            } else {
+                /* 
+                If odd number of elements,
+                take the middle element
+                */
+                med = temp.get(n / 2);
+            }
+            ans.add(med); // Store the median
+        }
+        return ans;
+    }
+    */
+}
