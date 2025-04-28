@@ -1,0 +1,88 @@
+https://leetcode.com/problems/assign-cookies/
+/*
+Question: Assign Cookies (Leetcode / GFG)
+
+We are given:
+- An array `g[]` where g[i] is the greed factor of the i-th child.
+- An array `s[]` where s[i] is the size of the i-th cookie.
+
+Goal:
+- Assign cookies to children such that the maximum number of children are content.
+- A child i will be content if s[j] >= g[i] (cookie size >= child's greed).
+
+---
+Optimized Approach (Greedy + Sorting):
+--------------------------------------
+Idea:
+- Sort both arrays: g[] (greed factors) and s[] (cookie sizes).
+- Use two pointers:
+    1. `l` → Pointer for children
+    2. `r` → Pointer for cookies
+- If current cookie satisfies the child's greed (`g[l] <= s[r]`), assign the cookie (increment l).
+- Always move to the next cookie (increment r).
+
+Time Complexity: O(N log N + M log M) → due to sorting  
+Space Complexity: O(1) → sorting in-place if allowed
+
+---
+Brute-force Approach (Not implemented here):
+--------------------------------------------
+Idea:
+- For every child, try every cookie to find a match.
+- Mark cookies as used.
+
+Time Complexity: O(N*M)  
+Space Complexity: O(M) → extra space for cookie usage tracking
+
+---
+Dry Run Example:
+Input:
+g = [1, 2, 3] (children greed factors)
+s = [1, 1] (cookie sizes)
+
+Step 1: Sort g → [1, 2, 3]
+Step 2: Sort s → [1, 1]
+
+l=0, r=0
+- g[0]=1, s[0]=1 → 1 <= 1 → child satisfied → l++, r++
+l=1, r=1
+- g[1]=2, s[1]=1 → 2 > 1 → cannot satisfy → only r++
+l=1, r=2 → end
+
+Total satisfied = l = 1
+
+---
+*/
+
+import java.util.*;
+
+class Solution {
+    // Optimized Greedy Approach
+    public int findContentChildren(int[] g, int[] s) {
+        int l = 0, r = 0; // l -> children pointer, r -> cookies pointer
+
+        Arrays.sort(g); // Sort greed factors (smallest greed first)
+        Arrays.sort(s); // Sort cookie sizes (smallest cookie first)
+
+        int n = g.length;
+        int m = s.length;
+
+        // Traverse both arrays
+        while (l < n && r < m) {
+            if (g[l] <= s[r]) {
+                /* 
+                If current cookie can satisfy the current child's greed,
+                assign cookie to child and move to next child
+                */
+                l++;
+            }
+            /* 
+            Move to next cookie in any case (whether assigned or not)
+            */
+            r++;
+        }
+
+        // l will store the number of content children
+        return l;
+    }
+}
