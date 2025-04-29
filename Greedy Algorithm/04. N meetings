@@ -1,0 +1,102 @@
+/*
+Question: N Meetings in One Room (Greedy - Classic Interview Problem)
+
+🧠 Problem Statement:
+----------------------
+Given `n` meetings with their start and end times, schedule the **maximum number of non-overlapping meetings** that can be conducted in one room.
+Return the list of meeting indices (1-based) in the order they were selected.
+
+---
+✅ Optimized Approach: Greedy
+------------------------------
+1. Store meetings as a triplet (start, end, index).
+2. Sort all meetings by their end time.
+3. Always pick the earliest finishing meeting that doesn't overlap with the previously selected one.
+
+📈 Time Complexity: O(N log N) — for sorting  
+📦 Space Complexity: O(N) — for storing meeting data
+
+---
+❌ Brute-force Approach (Not implemented here):
+-----------------------------------------------
+- Try all possible subsets of non-overlapping meetings → Exponential time (2^N).
+- Highly inefficient, not practical for large N.
+
+---
+📊 Dry Run:
+Input:
+start = [1, 3, 0, 5, 8, 5]
+end   = [2, 4, 6, 7, 9, 9]
+
+Step 1: Pair and sort by end time →
+Meetings: (1,2,1), (3,4,2), (0,6,3), (5,7,4), (5,9,6), (8,9,5)
+
+Step 2: Pick meeting 1 (1,2) → lastEndTime = 2  
+        Pick meeting 2 (3,4) → lastEndTime = 4  
+        Skip meeting 3 (0,6) → starts before 4  
+        Pick meeting 4 (5,7) → lastEndTime = 7  
+        Skip meeting 6 (5,9) → starts before 7  
+        Pick meeting 5 (8,9) → lastEndTime = 9
+
+Output: [1, 2, 4, 5] — Max 4 meetings
+---
+*/
+
+import java.util.*;
+
+class Solution {
+
+    // Internal class to store meeting data
+    static class Meeting {
+        int start, end, index;
+
+        Meeting(int s, int e, int i) {
+            start = s;
+            end = e;
+            index = i; // Store the original 1-based index
+        }
+    }
+
+    public static List<Integer> maxMeetings(int[] start, int[] end) {
+        int n = start.length;
+        List<Meeting> meetings = new ArrayList<>();
+
+        // Step 1: Pair start, end, and index into Meeting objects
+        for (int i = 0; i < n; i++) {
+            meetings.add(new Meeting(start[i], end[i], i + 1)); // i+1 for 1-based indexing
+        }
+
+        // Step 2: Sort meetings based on their end times (greedy choice)
+        meetings.sort((a, b) -> a.end - b.end);
+
+        List<Integer> result = new ArrayList<>();
+        int lastEndTime = 0; // Keeps track of end time of last selected meeting
+
+        // Step 3: Iterate and select non-overlapping meetings
+        for (Meeting m : meetings) {
+            if (m.start > lastEndTime) {
+                /* 
+                Only select this meeting if it starts after the last one ended.
+                Ensures no overlapping.
+                */
+                result.add(m.index);
+                lastEndTime = m.end; // Update lastEndTime
+            }
+        }
+
+        return result; // List of selected meeting indices
+    }
+
+    // Sample usage
+    public static void main(String[] args) {
+        int[] start = {1, 3, 0, 5, 8, 5};
+        int[] end   = {2, 4, 6, 7, 9, 9};
+
+        List<Integer> order = maxMeetings(start, end);
+        System.out.println("Maximum number of meetings: " + order.size());
+        System.out.print("Order of meetings: ");
+        for (int idx : order) {
+            System.out.print(idx + " ");
+        }
+    }
+}
