@@ -1,0 +1,88 @@
+https://leetcode.com/problems/jump-game/
+/*
+    🧠 Problem Statement:
+    You are given an array of non-negative integers `nums`, where each element represents your maximum jump length at that position.
+    Return `true` if you can reach the last index starting from index 0, otherwise return `false`.
+
+    Example:
+    Input: nums = [2,3,1,1,4]
+    Output: true
+    Explanation: 
+      - Start at index 0 (value = 2) → can jump to index 1 or 2
+      - From index 1 (value = 3) → can reach index 4 (the end)
+
+    🚀 Optimized Approach: Greedy
+    ➤ Idea: Track the farthest index we can reach while iterating.
+    ➤ If at any point the current index is greater than the farthest reachable index, return false.
+
+    Time Complexity: O(n)
+    Space Complexity: O(1)
+
+    Dry Run:
+    Input: nums = [2,3,1,1,4]
+    maxReach = 0
+    i = 0 → maxReach = max(0, 0+2) = 2
+    i = 1 → maxReach = max(2, 1+3) = 4
+    i = 2 → maxReach = max(4, 2+1) = 4
+    i = 3 → maxReach = max(4, 3+1) = 4
+    i = 4 → maxReach = max(4, 4+4) = 8
+    Since we completed the loop, return true
+*/
+
+class Solution {
+    public boolean canJump(int[] nums) {
+        int n = nums.length;
+
+        int maxIndex = 0; // farthest index we can currently reach
+
+        for (int i = 0; i < n; i++) {
+            // 🛑 If the current index is beyond the farthest reachable index, we can't move further
+            if (i > maxIndex) return false;
+
+            // ✅ Update the farthest reachable index from this position
+            maxIndex = Math.max(maxIndex, i + nums[i]);
+        }
+
+        // If we successfully loop through the array, it means we can reach the end
+        return true;
+    }
+
+    /*
+        💡 Brute-force Approach: Recursion (Backtracking)
+        ➤ Try every jump possible from each index.
+        ➤ For each index, recursively check if any jump can reach the last index.
+
+        Time Complexity: O(2^n) — Exponential in the worst case
+        Space Complexity: O(n) — Due to recursive call stack
+
+        Dry Run:
+        nums = [2,3,1,1,4]
+        Start at index 0 → jump 1 to index 1 → jump 3 to index 4 → reached!
+        OR → jump 2 to index 2 → jump 1 to index 3 → jump 1 to index 4 → reached!
+
+        Code:
+    
+        public boolean canJump(int[] nums) {
+            return canReach(nums, 0);
+        }
+
+        private boolean canReach(int[] nums, int pos) {
+            int n = nums.length;
+            
+            // ✅ Base case: if we reached or passed the last index
+            if (pos >= n - 1) return true;
+
+            int maxJump = nums[pos];
+
+            // 🔁 Try every possible jump length from 1 to maxJump
+            for (int jump = 1; jump <= maxJump; jump++) {
+                if (canReach(nums, pos + jump)) {
+                    return true;
+                }
+            }
+
+            // ❌ If none of the jumps work, return false
+            return false;
+        }
+    */
+}
