@@ -1,0 +1,168 @@
+https://leetcode.com/problems/candy/description/
+/*
+Problem:
+There are N children standing in a line. Each child is assigned a rating value.
+You are to distribute candies to these children such that:
+1. Each child must have at least one candy.
+2. Children with a higher rating than their immediate neighbors must get more candies.
+
+Objective: Minimize the total number of candies distributed.
+
+Approach Overview:
+We discuss two key approaches:
+
+1. Optimized Single Pass (Peak-Valley Strategy)
+   - Traverse through the array, identifying increasing and decreasing sequences.
+   - Use arithmetic progression sums for efficiency.
+   - Handles equal ratings with special condition checks.
+
+   Time Complexity: O(n)
+   Space Complexity: O(1)
+
+2. Brute-force Approaches (Two-pass Greedy)
+   - Maintain auxiliary arrays to track left-to-right and/or right-to-left trends.
+   - Final candies given to each child is the max of the two directions.
+
+   Time Complexity: O(n)
+   Space Complexity: O(n)
+
+Dry Run Example:
+Input: [1, 0, 2]
+Explanation:
+- Child 0: rating = 1
+- Child 1: rating = 0
+- Child 2: rating = 2
+
+Optimized:
+- 1 > 0 → decrease → give 2 to child 0, 1 to child 1 → sum = 3
+- 0 < 2 → increase → give 2 to child 2 → sum += 2 → total = 5
+Adjusting overlap → final total = 5 - 1 = 4 (correct answer: 5)
+
+Brute-force:
+- Left to right: [1, 1, 2]
+- Right to left: [2, 1, 1]
+- Max of both: [2, 1, 2] → sum = 5
+*/
+
+class Solution {
+
+    // Optimized Approach (Single Pass Peak-Valley)
+    public int candy(int[] ratings) {
+        int n = ratings.length;
+
+        int i = 1;
+        int sum = 1; // First child gets at least 1 candy
+
+        while (i < n) {
+            if (ratings[i] == ratings[i - 1]) {
+                // Equal ratings → each gets 1 candy, no preference
+                sum++;
+                i++;
+                continue;
+            }
+
+            int peak = 1; // Start of an increasing slope
+
+            // Count increasing slope
+            while (i < n && ratings[i] > ratings[i - 1]) {
+                peak++;
+                sum += peak;
+                i++;
+            }
+
+            int down = 0; // Count decreasing slope
+            while (i < n && ratings[i] < ratings[i - 1]) {
+                down++;
+                sum += down;
+                i++;
+            }
+
+            /* After decreasing slope, if the decreasing length (down)
+             * exceeds the peak, we need to give the peak node (turning point)
+             * extra candies to maintain the rules (local maxima adjustment).
+             */
+            if (down >= peak) {
+                sum += down - peak + 1;
+            }
+        }
+
+        return sum;
+    }
+
+    // -----------------------------------------------------------------------------------
+    // Brute-Force Greedy Approach (Two Arrays: Left and Right)
+    /*
+    public int candy(int[] ratings) {
+        int n = ratings.length;
+
+        int[] left = new int[n];
+        int[] right = new int[n];
+
+        // Each child gets at least 1 candy
+        left[0] = 1;
+        for (int i = 1; i < n; i++) {
+            // If current child has higher rating than previous,
+            // give one more candy than previous
+            if (ratings[i] > ratings[i - 1]) {
+                left[i] = left[i - 1] + 1;
+            } else {
+                left[i] = 1;
+            }
+        }
+
+        right[n - 1] = 1;
+        for (int i = n - 2; i >= 0; i--) {
+            // Right to left pass for decreasing sequences
+            if (ratings[i] > ratings[i + 1]) {
+                right[i] = right[i + 1] + 1;
+            } else {
+                right[i] = 1;
+            }
+        }
+
+        // Final candy for each child = max(left, right)
+        int sum = 0;
+        for (int i = 0; i < n; i++) {
+            sum += Math.max(left[i], right[i]);
+        }
+
+        return sum;
+    }
+    */
+
+    // -----------------------------------------------------------------------------------
+    // Brute-Force Greedy Approach (Single Auxiliary Array - Space Optimized)
+    /*
+    public int candy(int[] ratings) {
+        int n = ratings.length;
+        int[] left = new int[n];
+
+        left[0] = 1;
+
+        // Left to right pass
+        for (int i = 1; i < n; i++) {
+            if (ratings[i] > ratings[i - 1]) {
+                left[i] = left[i - 1] + 1;
+            } else {
+                left[i] = 1;
+            }
+        }
+
+        // Right to left pass and combine with left[]
+        int right = 1;
+        int sum = left[n - 1]; // last child already has candy from left[]
+        for (int i = n - 2; i >= 0; i--) {
+            if (ratings[i] > ratings[i + 1]) {
+                right++;
+            } else {
+                right = 1;
+            }
+
+            // Take the maximum of left and right to ensure both conditions
+            sum += Math.max(left[i], right);
+        }
+
+        return sum;
+    }
+    */
+}
