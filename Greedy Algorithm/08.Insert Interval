@@ -1,0 +1,123 @@
+https://leetcode.com/problems/insert-interval/
+/*
+Problem Statement:
+------------------
+You are given an array of non-overlapping intervals sorted by their start times and a new interval to insert.
+Insert the new interval in the correct position, and merge all overlapping intervals.
+
+Example:
+Input: intervals = [[1,3],[6,9]], newInterval = [2,5]
+Output: [[1,5],[6,9]]
+
+Goal:
+Efficiently insert and merge the new interval while preserving the sorted, non-overlapping structure.
+
+--------------------------------------------------
+Optimized Approach:
+-------------------
+Idea: 
+1. Add all intervals that end before the new interval starts.
+2. Merge overlapping intervals with the new interval.
+3. Add remaining intervals as-is.
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+Dry Run:
+---------
+intervals = [[1,3],[6,9]], newInterval = [2,5]
+Step 1: [1,3] overlaps with [2,5] ⇒ merged to [1,5]
+Step 2: [6,9] does not overlap ⇒ add as-is
+Result: [[1,5],[6,9]]
+*/
+
+class Solution {
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        List<int[]> ans = new ArrayList<>();
+        int i = 0, n = intervals.length;
+
+        // Step 1: Add intervals that end before newInterval starts
+        while (i < n && intervals[i][1] < newInterval[0]) {
+            ans.add(intervals[i]);
+            i++;
+        }
+
+        // Step 2: Merge overlapping intervals
+        while (i < n && intervals[i][0] <= newInterval[1]) {
+            /*
+             Overlap exists when interval's start <= newInterval's end.
+             Merge by taking min start and max end.
+            */
+            newInterval[0] = Math.min(intervals[i][0], newInterval[0]);
+            newInterval[1] = Math.max(intervals[i][1], newInterval[1]);
+            i++;
+        }
+
+        // Add the merged interval
+        ans.add(newInterval);
+
+        // Step 3: Add remaining intervals
+        while (i < n) {
+            ans.add(intervals[i]);
+            i++;
+        }
+
+        // Convert list to 2D array
+        return ans.toArray(new int[0][]);
+    }
+
+    /*
+    --------------------------------------------------
+    Brute-force Approach (Commented):
+    ----------------------------------
+    Idea:
+    1. Add the new interval into the list of intervals.
+    2. Sort all intervals based on start time.
+    3. Merge overlapping intervals in a standard way.
+
+    Time Complexity: O(n log n)  // Due to sorting
+    Space Complexity: O(n)
+
+    Dry Run:
+    ----------
+    intervals = [[1,3],[6,9]], newInterval = [2,5]
+    After inserting: [[1,3], [2,5], [6,9]]
+    After sorting: [[1,3], [2,5], [6,9]]
+    Merging:
+      - [1,3] & [2,5] ⇒ merge to [1,5]
+      - [6,9] ⇒ add as-is
+    Result: [[1,5],[6,9]]
+    
+    public int[][] insert(int[][] intervals, int[] newInterval) {
+        List<int[]> list = new ArrayList<>();
+
+        // Add all intervals + new interval to list
+        for (int[] interval : intervals) {
+            list.add(interval);
+        }
+        list.add(newInterval);
+
+        // Sort intervals by start time
+        list.sort((a, b) -> Integer.compare(a[0], b[0]));
+
+        List<int[]> merged = new ArrayList<>();
+
+        for (int[] interval : list) {
+            if (merged.isEmpty() || merged.get(merged.size() - 1)[1] < interval[0]) {
+                // No overlap ⇒ add directly
+                merged.add(interval);
+            } else {
+                /* 
+                 Overlapping case:
+                 Update the end time of last interval in merged list
+                 to include the current interval
+                */
+                merged.get(merged.size() - 1)[1] = 
+                    Math.max(merged.get(merged.size() - 1)[1], interval[1]);
+            }
+        }
+
+        return merged.toArray(new int[0][]);
+    }
+    */
+}
