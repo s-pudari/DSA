@@ -1,0 +1,130 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/greedy-gfg-160/problem/minimum-platforms-1587115620
+/*
+Problem Statement:
+------------------
+Given arrival and departure times of trains at a station, find the **minimum number of platforms** required so that **no train has to wait**.
+
+Input:
+  arr[] = {900, 940, 950, 1100, 1500, 1800}
+  dep[] = {910, 1200, 1120, 1130, 1900, 2000}
+
+Output:
+  3
+
+Explanation:
+  - At 950, 3 trains are at the station: [900-910], [940-1200], [950-1120]
+
+--------------------------------------------------
+Optimized Approach:
+-------------------
+Idea:
+1. Sort arrival and departure times separately.
+2. Use two pointers to simulate train arrivals and departures.
+3. If arrival is before or at departure ⇒ need a new platform.
+4. If departure is before next arrival ⇒ platform freed.
+
+Time Complexity: O(n log n) (due to sorting)
+Space Complexity: O(1)
+
+Dry Run:
+---------
+arr[] = {900, 940, 950, 1100, 1500, 1800}
+dep[] = {910, 1200, 1120, 1130, 1900, 2000}
+
+i = arrival pointer, j = departure pointer
+cnt = current platforms used
+res = max platforms needed
+
+Step-by-step:
+900 arrives (cnt=1), max=1
+940 arrives (cnt=2), max=2
+950 arrives (cnt=3), max=3
+910 departs (cnt=2)
+1100 arrives (cnt=3), max=3
+1120 departs (cnt=2)
+1130 departs (cnt=1)
+...
+
+Final result: 3
+*/
+
+class Solution {
+    // Function to find the minimum number of platforms required at the station
+    static int findPlatform(int arr[], int dep[]) {
+        int i = 0, j = 0;          // i = arrival pointer, j = departure pointer
+        int res = 0, cnt = 0;      // res = result (max platforms), cnt = current platforms in use
+
+        Arrays.sort(arr);          // Sort arrival times
+        Arrays.sort(dep);          // Sort departure times
+
+        // Traverse through all arrival and departure times
+        while (i < arr.length) {
+            if (arr[i] <= dep[j]) {
+                // If a train arrives before or at the same time as another departs,
+                // we need a new platform
+                cnt++;
+                i++;
+            } else {
+                // If a train departs before the next one arrives,
+                // we can free up a platform
+                cnt--;
+                j++;
+            }
+
+            // Update the result with the maximum platforms used so far
+            res = Math.max(res, cnt);
+        }
+
+        return res;
+    }
+
+    /*
+    --------------------------------------------------
+    Brute-force Approach (Commented):
+    ----------------------------------
+    Idea:
+    1. For each train, count how many other trains overlap with it (i.e., are at the station at the same time).
+    2. The maximum number of overlaps at any time is the answer.
+
+    Time Complexity: O(n^2)
+    Space Complexity: O(1)
+
+    Dry Run:
+    ----------
+    For train at 900–910:
+        Check overlap with others:
+        - 940–1200? No
+        - 950–1120? No
+    For train at 940–1200:
+        - 950–1120? Yes
+        - 1100–1130? Yes
+    Max overlap: 3
+
+    static int findPlatform(int arr[], int dep[]) {
+        int n = arr.length;
+        int maxPlatforms = 1;
+
+        for (int i = 0; i < n; i++) {
+            int platformsNeeded = 1;  // At least one for the current train
+
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+
+                // Check if jth train overlaps with ith train
+                if (arr[i] >= arr[j] && arr[i] <= dep[j]) {
+                    /*
+                     Train i arrives while train j is still at the station.
+                     Hence, they overlap and require another platform.
+                    */
+                    platformsNeeded++;
+                }
+            }
+
+            // Update maximum platforms required
+            maxPlatforms = Math.max(maxPlatforms, platformsNeeded);
+        }
+
+        return maxPlatforms;
+    }
+    */
+}
