@@ -1,0 +1,130 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/greedy-gfg-160/problem/activity-selection-1587115620
+
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * Given two arrays `start[]` and `finish[]` of equal length `n`, where:
+ * - `start[i]` indicates the start time of the i-th activity.
+ * - `finish[i]` indicates the end time of the i-th activity.
+ * 
+ * You need to select the **maximum number of activities** that can be performed by a single person,
+ * assuming that a person can only work on a **non-overlapping activity** at a time.
+ *
+ * ✅ GOAL:
+ * --------
+ * Return the maximum number of non-overlapping activities that can be selected.
+ *
+ * ===================================================
+ * ✅ OPTIMIZED APPROACH (Greedy Algorithm with Sorting)
+ * ===================================================
+ * 👇 Steps:
+ * 1. Pair each activity's start and finish time.
+ * 2. Sort the activities by their finish time (ending earlier = better).
+ * 3. Always pick the next activity that starts after the last selected one finishes.
+ *
+ * ✅ TIME COMPLEXITY: O(n log n) -> due to sorting
+ * ✅ SPACE COMPLEXITY: O(n) -> to store start-finish pairs
+ *
+ * 📌 DRY RUN (Example):
+ * ---------------------
+ * Input:
+ * start  = [1, 3, 0, 5, 8, 5]
+ * finish = [2, 4, 6, 7, 9, 9]
+ * After sorting by finish times:
+ * arr = [(1,2), (3,4), (0,6), (5,7), (8,9), (5,9)]
+ * Pick (1,2), next (3,4), skip (0,6), pick (5,7), pick (8,9)
+ * Total = 4 activities
+ */
+
+import java.util.*;
+
+class Solution {
+    public int activitySelection(int[] start, int[] finish) {
+        int n = start.length;
+
+        // Step 1: Pair start and finish times as 2D array
+        int[][] arr = new int[n][2];
+
+        for (int i = 0; i < n; i++) {
+            arr[i][0] = start[i];   // start time
+            arr[i][1] = finish[i];  // end time
+        }
+
+        // Step 2: Sort activities based on finish time
+        Arrays.sort(arr, Comparator.comparingInt(a -> a[1]));
+
+        // Step 3: Select the first activity
+        int count = 1;     // At least one activity (the first one) can always be selected
+        int last = 0;      // Index of the last selected activity
+
+        // Step 4: Traverse the rest of the activities
+        for (int i = 1; i < n; i++) {
+            /*
+             * If the start time of the current activity is greater than
+             * the finish time of the last selected activity, then select it.
+             */
+            if (arr[i][0] > arr[last][1]) {
+                count++;
+                last = i;  // Update last to current activity
+            }
+        }
+
+        return count;
+    }
+
+    /*
+     * ============================================================
+     * 💡 BRUTE-FORCE APPROACH (Recursive Backtracking - Conceptual)
+     * ============================================================
+     *
+     * ❗ This approach explores ALL combinations of activities to find the
+     *    maximum subset of non-overlapping ones.
+     * 
+     * ✅ TIME COMPLEXITY: O(2^n) -> every activity has 2 choices (pick or skip)
+     * ✅ SPACE COMPLEXITY: O(n) -> call stack during recursion
+     *
+     * ❌ Not efficient for large input sizes!
+     *
+     * 📌 DRY RUN:
+     * ----------
+     * Input: start = [1, 3, 0], finish = [2, 4, 6]
+     * Try all possible combinations like:
+     * - pick (1,2) -> try next that starts after 2
+     * - pick (3,4) -> repeat...
+     * and find max such combinations
+     */
+
+    /*
+    // Brute-force approach as commented code
+    public int bruteForce(int[] start, int[] finish) {
+        int n = start.length;
+        int[][] arr = new int[n][2];
+
+        for (int i = 0; i < n; i++) {
+            arr[i][0] = start[i];
+            arr[i][1] = finish[i];
+        }
+
+        return helper(arr, 0, 0);
+    }
+
+    private int helper(int[][] arr, int index, int currentTime) {
+        if (index == arr.length) return 0;
+
+        // Option 1: Skip current activity
+        int skip = helper(arr, index + 1, currentTime);
+
+        int take = 0;
+        /*
+         * Option 2: Take current activity only if its start time is
+         * >= currentTime (no overlap with previously selected)
+         */
+    /*
+        if (arr[index][0] >= currentTime) {
+            take = 1 + helper(arr, index + 1, arr[index][1]);
+        }
+
+        return Math.max(take, skip);
+    }
+    */
+}
