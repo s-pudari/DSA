@@ -15,6 +15,15 @@ class Main {
 
             matrix[a][b] = 1;
             matrix[b][a] = 1;
+
+
+        // for a directed graph just -->  matrix[a][b] = 1;
+        /* for a weighted graph 
+           int weight=sc.nextInt();
+           matrix[a][b] = weight;
+            matrix[b][a] = weight;
+        */
+         
         }
 
         System.out.println(matrix[1][2]);
