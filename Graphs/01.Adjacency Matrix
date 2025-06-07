@@ -1,0 +1,24 @@
+import java.util.*;
+class Main {
+    public static void main(String[] args) {
+        Scanner sc=new Scanner(System.in);
+
+        int n=sc.nextInt(); // Number of vertices
+        int m=sc.nextInt(); // Number of edges
+
+        int[][] matrix=new int[n+1][n+1]; // Adjacency matrix for n vertices (1-based)
+
+        // Read m edges
+        for(int i=0; i<m; i++){
+            int a=sc.nextInt();
+            int b=sc.nextInt();
+
+            matrix[a][b] = 1;
+            matrix[b][a] = 1;
+        }
+
+        System.out.println(matrix[1][2]);
+        // Avoid accessing zero-based index if graph vertices start from 1
+        // You can print others as needed
+    }
+}
