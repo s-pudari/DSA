@@ -1,0 +1,40 @@
+//using oops
+
+import java.util.*;
+
+public class Main {
+    // Class to represent a weighted edge (neighbor, weight)
+    static class Edge {
+        int to;
+        int weight;
+        Edge(int to, int weight) {
+            this.to = to;
+            this.weight = weight;
+        }
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        int n = sc.nextInt();
+        int m = sc.nextInt();
+
+        // Adjacency list of weighted edges
+        ArrayList<Edge>[] adj = new ArrayList[n + 1];
+        for (int i = 1; i <= n; i++) {
+            adj[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < m; i++) {
+            int u = sc.nextInt();
+            int v = sc.nextInt();
+            int w = sc.nextInt();  // weight of the edge
+
+            // Since undirected, add both directions
+            adj[u].add(new Edge(v, w));
+            adj[v].add(new Edge(u, w));
+        }
+
+        sc.close();
+    }
+}
