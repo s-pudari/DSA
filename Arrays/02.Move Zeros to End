@@ -1,0 +1,87 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/move-all-zeroes-to-end-of-array0751
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * Given an array `arr[]` of integers, **move all the 0s to the end** of the array,
+ * while maintaining the relative order of the non-zero elements.
+ *
+ * ✅ GOAL:
+ * --------
+ * Do this in-place if possible (no extra array) with minimal operations.
+ *
+ * ================================================================
+ * ✅ OPTIMIZED APPROACH (In-place shifting using a two-pointer idea)
+ * ================================================================
+ * 👇 STEPS:
+ * 1. Traverse the array and copy non-zero elements to the front (`idx` keeps track of this).
+ * 2. After all non-zeros are shifted forward, fill the rest of the array with zeros.
+ *
+ * ✅ TIME COMPLEXITY: O(n) -> single pass to move non-zeros + pass to fill 0s
+ * ✅ SPACE COMPLEXITY: O(1) -> in-place
+ *
+ * 📌 DRY RUN (Example):
+ * ---------------------
+ * Input:  [0, 1, 0, 3, 12]
+ * Step 1: Move non-zero elements to front => [1, 3, 12, _, _]
+ * Step 2: Fill rest with 0 => [1, 3, 12, 0, 0]
+ */
+
+class Solution {
+    void pushZerosToEnd(int[] arr) {
+        int idx = 0; // Tracks position to place next non-zero element
+
+        // First pass: Move all non-zero elements to the front
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != 0) {
+                arr[idx++] = arr[i];
+                /*
+                 * We assign arr[i] to arr[idx], then increment idx.
+                 * This maintains the relative order of non-zero elements.
+                 */
+            }
+        }
+
+        // Second pass: Fill remaining positions with 0s
+        for (int i = idx; i < arr.length; i++) {
+            arr[i] = 0;
+            /*
+             * All positions from idx to end are filled with 0s
+             * because we've already handled non-zero values.
+             */
+        }
+    }
+
+    /*
+     * ===========================================================
+     * 💡 BRUTE-FORCE APPROACH (Using a temporary array)
+     * ===========================================================
+     * ✅ TIME COMPLEXITY: O(n)
+     * ✅ SPACE COMPLEXITY: O(n) -> uses extra array
+     *
+     * 👇 STEPS:
+     * 1. Copy all non-zero elements to a temporary array.
+     * 2. Fill the rest of the temporary array with zeros.
+     * 3. Copy the contents of the temporary array back to the original.
+     */
+
+    /*
+    void pushZerosToEnd(int[] arr) {
+        int[] temp = new int[arr.length]; // New array to hold result
+        int idx = 0;
+
+        // Copy non-zero elements to temp
+        for (int i = 0; i < arr.length; i++) {
+            if (arr[i] != 0) {
+                temp[idx++] = arr[i];
+            }
+        }
+
+        // Fill remaining positions with 0s (already initialized to 0 by default in Java)
+
+        // Copy temp array back to original array
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = temp[i];
+        }
+    }
+    */
+}
