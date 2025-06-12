@@ -1,0 +1,92 @@
+//https://leetcode.com/problems/best-time-to-buy-and-sell-stock/
+/**
+ * 🧠 PROBLEM: Best Time to Buy and Sell Stock (Maximum Profit)
+ * ------------------------------------------------------------
+ * You are given an array `prices[]` where prices[i] represents the stock price on day i.
+ * You are allowed to choose a **single** day to buy one stock and a **different** day to sell it.
+ * Return the maximum profit you can achieve from this transaction. If no profit, return 0.
+ *
+ * 🔍 EXAMPLE:
+ * ----------
+ * Input:  prices = [7, 1, 5, 3, 6, 4]
+ * Output: 5
+ * ✅ Explanation: Buy on day 1 (price=1) and sell on day 4 (price=6), profit = 6-1 = 5.
+ *
+ * Input: prices = [7,6,4,3,1]
+ * Output: 0
+ * ✅ Explanation: No transaction is done; profit = 0.
+ *
+ * ---------------------------------------------------------------------
+ * ✅ APPROACH 2: OPTIMIZED (Kadane-style logic for stock problem)
+ * ---------------------------------------------------------------------
+ * IDEA:
+ * - Track the **minimum price so far** while iterating.
+ * - At each step, calculate profit = currentPrice - minSofar.
+ * - Keep track of the **maximum profit**.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 📌 DRY RUN:
+ * prices = [7, 1, 5, 3, 6, 4]
+ * minSoFar = 7 → 1 → 1 → 1 → 1 → 1
+ * profit   = 0 → 0 → 4 → 2 → 5 → 3 → maxProfit = 5
+ */
+
+class Solution {
+    public int maximumProfit(int prices[]) {
+        int n = prices.length;
+
+        int minSofar = prices[0];  // 🌟 The lowest price seen so far (potential buying point)
+        int res = 0;               // 🌟 The maximum profit found so far
+
+        for (int i = 1; i < n; i++) {
+            /*
+             * ✅ Update minSofar if the current price is lower.
+             * This means we’ve found a better day to buy.
+             */
+            minSofar = Math.min(minSofar, prices[i]);
+
+            /*
+             * ✅ Calculate current potential profit if we sell today.
+             * Only update res if this profit is higher than previous.
+             */
+            res = Math.max(res, prices[i] - minSofar);
+        }
+
+        return res;  // Maximum achievable profit
+    }
+
+    /*
+     * ---------------------------------------------------------------------
+     * ✅ APPROACH 1: BRUTE-FORCE (Commented below)
+     * ---------------------------------------------------------------------
+     * IDEA:
+     * Try all possible pairs (i < j) and calculate prices[j] - prices[i].
+     * Track the maximum of all such profits.
+     *
+     * ✅ TIME COMPLEXITY: O(n²)
+     * ✅ SPACE COMPLEXITY: O(1)
+     *
+     * 🚫 Not suitable for large inputs.
+     */
+    /*
+    public int maximumProfit(int[] prices) {
+        int maxProfit = 0;
+
+        // Loop through every possible buy day
+        for (int i = 0; i < prices.length - 1; i++) {
+            // Loop through every possible sell day after i
+            for (int j = i + 1; j < prices.length; j++) {
+                int profit = prices[j] - prices[i];  // Profit if buy at i, sell at j
+
+                if (profit > maxProfit) {
+                    maxProfit = profit;  // Update max if better profit found
+                }
+            }
+        }
+
+        return maxProfit;
+    }
+    */
+}
