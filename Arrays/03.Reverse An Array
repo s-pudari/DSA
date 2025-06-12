@@ -1,0 +1,80 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/reverse-an-array
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * Given an array `arr[]`, reverse the array **in-place**, i.e., without using extra space.
+ *
+ * ✅ GOAL:
+ * --------
+ * Reverse the order of elements such that:
+ * Input:  [1, 2, 3, 4, 5]
+ * Output: [5, 4, 3, 2, 1]
+ *
+ * ================================================================
+ * ✅ OPTIMIZED APPROACH (Two-pointer in-place swap)
+ * ================================================================
+ * 👇 STEPS:
+ * 1. Use two pointers: one from the start, one from the end.
+ * 2. Swap elements at the two pointers and move them inward.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 📌 DRY RUN (Example):
+ * ---------------------
+ * Input: [10, 20, 30, 40]
+ * i = 0, j = 3 → swap(10, 40) → [40, 20, 30, 10]
+ * i = 1, j = 2 → swap(20, 30) → [40, 30, 20, 10]
+ * Done.
+ */
+
+class Solution {
+    public void reverseArray(int arr[]) {
+        int i = 0;                  // Start pointer
+        int j = arr.length - 1;     // End pointer
+
+        // Swap elements until the pointers meet in the middle
+        while (i < j) {
+            /*
+             * Swap arr[i] and arr[j] so that elements are moved to opposite ends.
+             */
+            int temp = arr[i];
+            arr[i] = arr[j];
+            arr[j] = temp;
+
+            // Move pointers towards center
+            i++;
+            j--;
+        }
+    }
+
+    /*
+     * =====================================================
+     * 💡 BRUTE-FORCE APPROACH (Using a temporary array)
+     * =====================================================
+     * ✅ TIME COMPLEXITY: O(n)
+     * ✅ SPACE COMPLEXITY: O(n) -> due to extra array
+     *
+     * 👇 STEPS:
+     * 1. Create a new array `temp` to store reversed elements.
+     * 2. Fill `temp` from the end of the original array.
+     * 3. Copy contents of `temp` back to `arr`.
+     */
+
+    /*
+    public void reverseArray(int arr[]) {
+        int[] temp = new int[arr.length]; // Create a new array
+        int idx = arr.length - 1;         // Start from the last element of original array
+
+        // Fill temp from end to start
+        for (int i = 0; i < arr.length; i++) {
+            temp[i] = arr[idx--];  // Copy elements in reverse order
+        }
+
+        // Copy reversed array back to original
+        for (int i = 0; i < arr.length; i++) {
+            arr[i] = temp[i];
+        }
+    }
+    */
+}
