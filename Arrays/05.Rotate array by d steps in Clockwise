@@ -1,0 +1,103 @@
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * Given an array `arr[]` of size `n` and an integer `d`,
+ * rotate the array **clockwise** by `d` steps.
+ *
+ * Example:
+ * --------
+ * Input:  arr = [1, 2, 3, 4, 5], d = 2
+ * Output: arr = [4, 5, 1, 2, 3]
+ *
+ * ✅ GOAL:
+ * --------
+ * Perform the rotation efficiently and in-place.
+ *
+ * ====================================================================
+ * ✅ OPTIMIZED APPROACH (Reversal Algorithm for clockwise rotation)
+ * ====================================================================
+ * 💡 Idea:
+ * --------
+ * Clockwise rotation by `d` steps is equivalent to:
+ * 1. Reverse the last `d` elements.
+ * 2. Reverse the first `n-d` elements.
+ * 3. Reverse the whole array.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 📌 DRY RUN:
+ * ----------
+ * Input:  arr = [1, 2, 3, 4, 5], d = 2
+ * Step 1: reverse(3,4)   => [1, 2, 3, 5, 4]
+ * Step 2: reverse(0,2)   => [3, 2, 1, 5, 4]
+ * Step 3: reverse(0,4)   => [4, 5, 1, 2, 3] ✅
+ */
+
+class Solution {
+    // Function to rotate an array by d elements in clockwise direction.
+    static void rotateClockwise(int arr[], int d) {
+        int n = arr.length;
+
+        /*
+         * If d > n, rotate by only (d % n) positions.
+         * This handles large values of d safely.
+         */
+        d = d % n;
+
+        // Step 1: Reverse last d elements
+        reverse(arr, n - d, n - 1);
+
+        // Step 2: Reverse the first n - d elements
+        reverse(arr, 0, n - d - 1);
+
+        // Step 3: Reverse the entire array
+        reverse(arr, 0, n - 1);
+    }
+
+    // Helper method to reverse elements from index `start` to `end`
+    static void reverse(int[] arr, int start, int end) {
+        while (start < end) {
+            // Swapping elements at start and end
+            int temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+
+            start++;
+            end--;
+        }
+    }
+
+    /*
+     * ==========================================================
+     * 💡 BRUTE-FORCE APPROACH (Rotate one element at a time)
+     * ==========================================================
+     * ✅ TIME COMPLEXITY: O(n * d)
+     * ✅ SPACE COMPLEXITY: O(1)
+     *
+     * 👇 STEPS:
+     * Repeat the following `d` times:
+     * 1. Save the last element in a temporary variable.
+     * 2. Shift all elements right by 1 position.
+     * 3. Put the saved element at the beginning.
+     */
+
+    /*
+    static void rotateClockwise(int arr[], int d) {
+        int n = arr.length;
+
+        // Repeat d times
+        for (int i = 1; i <= d; i++) {
+            int temp = arr[n - 1]; // Save last element
+
+            // Shift all elements right by one
+            for (int j = n - 1; j > 0; j--) {
+                arr[j] = arr[j - 1];
+            }
+
+            // Put the saved last element at the front
+            arr[0] = temp;
+        }
+    }
+    */
+}
