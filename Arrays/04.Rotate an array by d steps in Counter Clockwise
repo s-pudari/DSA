@@ -1,0 +1,102 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/rotate-array-by-n-elements-1587115621
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * Given an array `arr[]` of size `n` and an integer `d`,
+ * rotate the array **to the left** (counter-clockwise) by `d` elements.
+ *
+ * Example:
+ * --------
+ * Input:  arr = [1, 2, 3, 4, 5], d = 2
+ * Output: arr = [3, 4, 5, 1, 2]
+ *
+ * ✅ GOAL:
+ * --------
+ * Perform the rotation **in-place** if possible, and efficiently.
+ *
+ * =====================================================================
+ * ✅ OPTIMIZED APPROACH (Reversal Algorithm for array rotation)
+ * =====================================================================
+ * 💡 Idea:
+ * --------
+ * 1. Reverse the first `d` elements.
+ * 2. Reverse the remaining `n-d` elements.
+ * 3. Reverse the whole array.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 📌 DRY RUN:
+ * ----------
+ * Input:  arr = [1, 2, 3, 4, 5, 6], d = 2
+ * Step 1: reverse(0,1)   => [2, 1, 3, 4, 5, 6]
+ * Step 2: reverse(2,5)   => [2, 1, 6, 5, 4, 3]
+ * Step 3: reverse(0,5)   => [3, 4, 5, 6, 1, 2] ✅
+ */
+
+class Solution {
+    // Function to rotate an array by d elements in counter-clockwise direction.
+    static void rotateArr(int arr[], int d) {
+        int n = arr.length;
+
+        /*
+         * If d > n, we rotate only by d % n positions.
+         * Example: rotating 6 elements by 8 positions is same as rotating by 2.
+         */
+        d = d % n;
+
+        // Step 1: Reverse first d elements
+        reverse(arr, 0, d - 1);
+
+        // Step 2: Reverse remaining n-d elements
+        reverse(arr, d, n - 1);
+
+        // Step 3: Reverse entire array
+        reverse(arr, 0, n - 1);
+    }
+
+    // Helper function to reverse elements in arr[start...end]
+    static void reverse(int[] arr, int start, int end) {
+        while (start < end) {
+            // Swapping elements at start and end
+            int temp = arr[start];
+            arr[start] = arr[end];
+            arr[end] = temp;
+
+            start++;
+            end--;
+        }
+    }
+
+    /*
+     * =====================================================================
+     * 💡 BRUTE-FORCE APPROACH (Rotate one element at a time)
+     * =====================================================================
+     * ✅ TIME COMPLEXITY: O(n * d)
+     * ✅ SPACE COMPLEXITY: O(1)
+     *
+     * 👇 STEPS:
+     * 1. Repeat the following `d` times:
+     *    a. Store the first element in temp.
+     *    b. Shift all other elements one position to the left.
+     *    c. Put temp at the end of array.
+     */
+
+    /*
+    static void rotateArr(int arr[], int d) {
+        int n = arr.length;
+
+        // Repeat rotation d times
+        for (int i = 1; i <= d; i++) {
+            int temp = arr[0]; // Save first element
+
+            // Shift every element left by 1
+            for (int j = 1; j < n; j++) {
+                arr[j - 1] = arr[j];
+            }
+
+            arr[n - 1] = temp; // Place first element at the end
+        }
+    }
+    */
+}
