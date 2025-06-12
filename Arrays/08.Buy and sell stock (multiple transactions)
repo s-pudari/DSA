@@ -1,0 +1,93 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/stock-buy-and-sell2615
+
+/**
+ * 🧠 PROBLEM STATEMENT:
+ * ---------------------
+ * You're given an array `prices[]` where prices[i] represents the price of a stock on the ith day.
+ * You can buy and sell the stock multiple times.
+ * 
+ * Your goal is to maximize profit. But you can only hold **one stock at a time**, 
+ * meaning you must sell before buying again.
+ *
+ * 🧾 Example:
+ * ----------
+ * Input: prices = [1, 5, 3, 6, 4]
+ * Output: 7
+ * Explanation:
+ *  - Buy on day 0 (price = 1), sell on day 1 (price = 5), profit = 4
+ *  - Buy on day 2 (price = 3), sell on day 3 (price = 6), profit = 3
+ *  - Total profit = 4 + 3 = 7
+ *
+ * ✅ GOAL:
+ * --------
+ * Maximize the profit using multiple buy-sell operations.
+ *
+ * ====================================================================================
+ * ✅ APPROACH 2: Optimized Greedy – Add All Upward Profits
+ * ====================================================================================
+ * 💡 Idea:
+ * You gain profit whenever the next day's price is higher than today.
+ * Sum up all such increasing price differences.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 🔁 DRY RUN:
+ * ----------
+ * prices = [1, 5, 3, 6, 4]
+ * profit = (5 - 1) + (6 - 3) = 4 + 3 = 7
+ */
+
+class Solution {
+    public int maximumProfit(int prices[]) {
+        int n = prices.length;
+        int res = 0;
+
+        for (int i = 1; i < n; i++) {
+            // If today's price is higher than yesterday's, we can "buy yesterday, sell today"
+            if (prices[i] >= prices[i - 1]) {
+                res += (prices[i] - prices[i - 1]);
+            }
+        }
+
+        return res;
+    }
+
+    /*
+     * ====================================================================================
+     * ✅ APPROACH 1: Greedy Peak-Valley Method
+     * ====================================================================================
+     * 💡 Idea:
+     * Look for local minima (valleys) to buy and local maxima (peaks) to sell.
+     * This approach simulates the actual buying and selling points explicitly.
+     *
+     * ✅ TIME COMPLEXITY: O(n)
+     * ✅ SPACE COMPLEXITY: O(1)
+     */
+    /*
+    public int maximumProfit(int prices[]) {
+        int n = prices.length;
+        int i = 0;
+        int res = 0;
+
+        while (i < n - 1) {
+            // 🔽 Find the next local minima (buy point)
+            while (i < n - 1 && prices[i] >= prices[i + 1]) {
+                i++;
+            }
+            int lmin = prices[i];  // buy at lmin
+
+            // 🔼 Find the next local maxima (sell point)
+            while (i < n - 1 && prices[i] <= prices[i + 1]) {
+                i++;
+            }
+            int lmax = prices[i];  // sell at lmax
+
+            res += (lmax - lmin);  // add profit from this transaction
+        }
+
+        return res;
+    }
+    */
+}
+
