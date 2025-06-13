@@ -1,0 +1,110 @@
+https://leetcode.com/problems/maximum-subarray/
+
+/**
+ * ✅ PROBLEM: Maximum Subarray Sum (Kadane’s Problem)
+ * -----------------------------------------------------
+ * Given an integer array `arr[]`, find the **maximum sum of any contiguous subarray**.
+ * 
+ * 🧠 EXAMPLE:
+ * Input:  arr = [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+ * Output: 6
+ * ✅ Explanation: The subarray [4, -1, 2, 1] has the maximum sum = 6
+ * 
+ * ----------------------------------------
+ * ✅ APPROACH 1: Kadane’s Algorithm (Optimized)
+ * ----------------------------------------
+ * ▶️ Traverse the array while maintaining:
+ *   - `maxEnd` → Maximum subarray sum ending at current index
+ *   - `res`    → Global maximum subarray sum
+ *
+ * ✅ Time Complexity: O(n)
+ * ✅ Space Complexity: O(1)
+ *
+ * 🔁 DRY RUN:
+ * Input: [-2, 1, -3, 4, -1, 2, 1, -5, 4]
+ * Step-by-step maxEnd: -2 → 1 → -2 → 4 → 3 → 5 → 6 → 1 → 5
+ * Final result: 6
+ */
+
+class Solution {
+    int maxSubarraySum(int[] arr) {
+        // Initialize result with first element (in case all elements are negative)
+        int res = arr[0];
+        
+        // maxEnd keeps track of maximum sum ending at current index
+        int maxEnd = arr[0];
+        
+        for (int i = 1; i < arr.length; i++) {
+            /*
+             * 🔁 Either we:
+             * - Extend the previous subarray (maxEnd + arr[i])
+             * - Or start a new subarray from current element (arr[i])
+             */
+            maxEnd = Math.max(maxEnd + arr[i], arr[i]);
+            
+            // 🔁 Update result with max so far
+            res = Math.max(res, maxEnd);
+        }
+
+        return res;
+    }
+
+    /*
+     * --------------------------------------------
+     * ✅ APPROACH 2: Two Pointer (ONLY for +ve arrays)
+     * --------------------------------------------
+     * 🧠 IDEA:
+     * - Maintain a sliding window [start...end] such that:
+     *   - If sum becomes negative, reset window
+     * 
+     * ⚠️ NOTE: This only works correctly when array has **only positive elements and zeros**.
+     * ✅ TIME: O(n)
+     * ✅ SPACE: O(1)
+     */
+
+    /*
+    int maxSubarraySum(int[] arr) {
+        int left = 0;
+        int sum = 0;
+        int maxSum = Integer.MIN_VALUE;
+
+        for (int right = 0; right < arr.length; right++) {
+            sum += arr[right];
+
+            // Update max if current sum is greater
+            maxSum = Math.max(maxSum, sum);
+
+            // If sum < 0, reset window from next index
+            if (sum < 0) {
+                sum = 0;
+                left = right + 1;
+            }
+        }
+
+        return maxSum;
+    }
+    */
+
+    /*
+     * --------------------------------------------
+     * ✅ APPROACH 3: BRUTE FORCE (Commented)
+     * --------------------------------------------
+     * ▶️ Try all subarrays, calculate sum, track maximum.
+     * ✅ TIME COMPLEXITY: O(n^2)
+     * ✅ SPACE COMPLEXITY: O(1)
+     */
+
+    /*
+    int maxSubarraySum(int[] arr) {
+        int maxSum = Integer.MIN_VALUE;
+        for (int i = 0; i < arr.length; i++) {
+            int sum = 0;
+            for (int j = i; j < arr.length; j++) {
+                sum += arr[j];
+                maxSum = Math.max(maxSum, sum);
+            }
+        }
+        return maxSum;
+    }
+    */
+}
