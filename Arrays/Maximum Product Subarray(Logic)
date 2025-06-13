@@ -1,30 +1,93 @@
 //https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/maximum-product-subarray3604
+/**
+ * 🔍 PROBLEM: Maximum Product Subarray
+ * -------------------------------------
+ * Given an integer array `arr[]`, find the contiguous subarray within the array
+ * that has the **largest product**. Return the product of that subarray.
+ *
+ * ✅ EXAMPLE:
+ * Input: arr = [2, 3, -2, 4]
+ * Output: 6
+ * Explanation: Subarray [2,3] has max product = 6
+ *
+ * ---------------------------------------------
+ * ✅ APPROACH 2: Bidirectional Product Scan
+ * ---------------------------------------------
+ * 🔑 IDEA:
+ * - Traverse the array from **left to right** and **right to left** simultaneously.
+ * - Reset product when it becomes 0 (multiplying by 0 ruins future results).
+ * - Track the **maximum product** at every index from both directions.
+ *
+ * ✅ TIME COMPLEXITY: O(n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * ---------------------------------------------
+ * 📌 DRY RUN: arr = [2, 3, -2, 4]
+ * Left pass:
+ *   → 2 → 6 → -12 → -48
+ * Right pass:
+ *   ← 4 ← -8 ← -24 ← -48
+ * Max product = max(6, 4) = 6
+ */
+
 class Solution {
-    // Function to find maximum product subarray
     int maxProduct(int[] arr) {
-        // code here
-        int n=arr.length;
-        int res=Integer.MIN_VALUE;
-        
-        int leftToRight = 1;
-        int rightToLeft = 1;
-        
-        
-        for(int i=0;i<n;i++){
-            if(leftToRight==0){
-                leftToRight=1;
+        int res = Integer.MIN_VALUE; // 🔼 Holds the maximum product found so far
+        int n = arr.length;
+
+        int leftToRight = 1;  // ➡️ Running product from left
+        int rightToLeft = 1;  // ⬅️ Running product from right
+
+        for (int i = 0; i < n; i++) {
+            /*
+             * 💡 Reset the product if it's 0 — we don't want to carry a 0 forward.
+             * Think of this like starting a new subarray after a zero.
+             */
+            if (leftToRight == 0) {
+                leftToRight = 1;
             }
-            if(rightToLeft==0){
-                rightToLeft=1;
+
+            if (rightToLeft == 0) {
+                rightToLeft = 1;
             }
-            
+
+            // 🔄 Multiply with current element from both directions
             leftToRight *= arr[i];
-            
-        
-            rightToLeft *= arr[n-i-1];
-            
-            res=Math.max(res,Math.max(leftToRight,rightToLeft));
+            rightToLeft *= arr[n - 1 - i];
+
+            // 🔼 Update max product
+            res = Math.max(res, Math.max(leftToRight, rightToLeft));
         }
+
         return res;
     }
+
+    /*
+     * ---------------------------------------------
+     * ✅ APPROACH 1: Brute Force (Commented)
+     * ---------------------------------------------
+     * IDEA:
+     * - Try every possible subarray and calculate its product.
+     * - Keep track of the maximum product found.
+     *
+     * ✅ TIME COMPLEXITY: O(n²)
+     * ✅ SPACE COMPLEXITY: O(1)
+     */
+
+    /*
+    int maxProduct(int[] arr) {
+        int n = arr.length;
+        int maxProduct = Integer.MIN_VALUE;
+
+        for (int i = 0; i < n; i++) {
+            int product = 1;
+            for (int j = i; j < n; j++) {
+                product *= arr[j];       // 🔁 Calculate product of subarray arr[i..j]
+                maxProduct = Math.max(maxProduct, product);
+            }
+        }
+
+        return maxProduct;
+    }
+    */
 }
