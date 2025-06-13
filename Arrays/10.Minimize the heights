@@ -1,0 +1,119 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/arrays-gfg-160/problem/minimize-the-heights3351
+
+/**
+ * 🧠 PROBLEM: Minimize the Height Difference
+ * ------------------------------------------
+ * Given an array `arr[]` representing heights of towers and an integer `k`,
+ * we can either increase or decrease **each** element by **at most `k` only once**.
+ *
+ * Find the **minimum possible difference** between the highest and the lowest tower 
+ * after performing the operation on every element.
+ *
+ * 📌 Constraints:
+ * - After adding/subtracting `k`, the height must be non-negative.
+ *
+ * 🔍 EXAMPLE:
+ * Input:  arr = [1, 5, 8, 10], k = 2
+ * Output: 5
+ * ✅ Explanation:
+ * - Modified array: [1+2, 5-2, 8-2, 10-2] = [3, 3, 6, 8]
+ * - Max = 8, Min = 3 → Difference = 5
+ *
+ * ------------------------------------------------------------------------
+ * ✅ APPROACH 2: OPTIMIZED SORTING + GREEDY
+ * ------------------------------------------------------------------------
+ * IDEA:
+ * - Sort the array first.
+ * - Try to minimize the difference by adjusting smaller elements upward and larger elements downward.
+ * - Keep track of the max and min at each possible partition point.
+ *
+ * ✅ TIME COMPLEXITY: O(n log n)
+ * ✅ SPACE COMPLEXITY: O(1)
+ *
+ * 📌 DRY RUN:
+ * arr = [1, 5, 8, 10], k = 2 → Sorted
+ * Try different cut points, check [i] + k and [i+1] - k to calculate min and max.
+ * Result: Minimum Difference = 5
+ */
+
+class Solution {
+    int getMinDiff(int[] arr, int k) {
+        int n = arr.length;
+
+        // 🔃 Step 1: Sort the array so we can manage smallest/largest values easily
+        Arrays.sort(arr);
+
+        // 🌟 Initial difference without any modification
+        int ans = arr[n - 1] - arr[0];
+
+        // 🌟 These represent potential min and max after first adjustments
+        int smallest = arr[0] + k;
+        int largest = arr[n - 1] - k;
+
+        // 🔁 Try modifying each partition point in array
+        for (int i = 0; i < n - 1; i++) {
+            /*
+             * 🌟 arr[i] is increased by k (left side of partition)
+             * 🌟 arr[i+1] is decreased by k (right side of partition)
+             */
+            int max = Math.max(largest, arr[i] + k);     // Possible new max height
+            int min = Math.min(smallest, arr[i + 1] - k); // Possible new min height
+
+            // ⚠️ If min is negative, we skip because height cannot be negative
+            if (min < 0) continue;
+
+            // ✅ Update the answer if we found a smaller difference
+            ans = Math.min(ans, max - min);
+        }
+
+        return ans;  // 🔚 Return the minimized height difference
+    }
+
+    /*
+     * ------------------------------------------------------------------------
+     * ✅ APPROACH 1: BRUTE FORCE (Commented)
+     * ------------------------------------------------------------------------
+     * IDEA:
+     * - Try both +k and -k for each element, and generate all combinations.
+     * - For each combination, find min and max and compute their difference.
+     * - Return the minimum among all combinations.
+     * 
+     * ❌ Too slow: 2^n combinations for n elements
+     * ✅ TIME COMPLEXITY: O(2^n)
+     * ✅ SPACE COMPLEXITY: O(n)
+     * 
+     * Only for theoretical understanding.
+     */
+
+    /*
+    int getMinDiff(int[] arr, int k) {
+        int n = arr.length;
+        int[] modified = new int[n];
+        return dfs(arr, modified, k, 0);
+    }
+
+    int dfs(int[] arr, int[] modified, int k, int idx) {
+        if (idx == arr.length) {
+            int max = Integer.MIN_VALUE, min = Integer.MAX_VALUE;
+            for (int val : modified) {
+                max = Math.max(max, val);
+                min = Math.min(min, val);
+            }
+            return max - min;
+        }
+
+        // Try +k
+        modified[idx] = arr[idx] + k;
+        int opt1 = dfs(arr, modified, k, idx + 1);
+
+        // Try -k
+        modified[idx] = arr[idx] - k;
+        int opt2 = Integer.MAX_VALUE;
+        if (modified[idx] >= 0) {
+            opt2 = dfs(arr, modified, k, idx + 1);
+        }
+
+        return Math.min(opt1, opt2);
+    }
+    */
+}
