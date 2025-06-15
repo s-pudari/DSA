@@ -1,0 +1,135 @@
+/*
+🔥 PROBLEM STATEMENT 🔥
+-----------------------
+Given a lowercase string `s`, return the **first non-repeating character** in it.
+If there's no such character, return `'$'`.
+
+Examples:
+----------
+✅ Input : s = "geeksforgeeks"
+✅ Output: 'f'
+
+✅ Input : s = "aabb"
+✅ Output: '$' (all characters repeat)
+
+---
+
+💡 APPROACH OVERVIEW 💡
+=======================
+
+✅ Optimized Approach (Using Indexed Frequency Array):
+------------------------------------------------------
+- Use a fixed-size array `vis[26]` to track **indexes of first appearances**.
+- Mark:
+  - `-1` if character **hasn’t appeared yet**
+  - `index` of first occurrence
+  - `-2` if character **appears more than once**
+- Traverse the array to find the **smallest non -1 and non -2 index**.
+
+🕒 Time Complexity : O(n + 26) → **O(n)**
+🧠 Space Complexity: O(1) → fixed array size for 26 lowercase letters
+
+✅ Brute-Force Approach (Commented Below):
+------------------------------------------
+- For each character, check if it appears again in the string.
+- Return the **first one that doesn’t**.
+
+🕒 Time Complexity : O(n²)
+🧠 Space Complexity: O(1)
+
+---
+
+🔍 Dry Run Example:
+-------------------
+Input: "geeksforgeeks"
+
+1st Pass:
+----------
+vis = [g→0, e→-2, k→5, s→6, f→7, o→8, r→9]
+(after tracking first and repeated indices)
+
+2nd Pass:
+----------
+Smallest index in vis[] with value >= 0 is 7 ('f')
+
+✅ Output: 'f'
+*/
+
+import java.util.*;
+
+class Solution {
+    static char nonRepeatingChar(String s) {
+
+        int max = 26; // Only lowercase letters a-z
+        int[] vis = new int[max]; // Index of first appearance or repeated flag
+        Arrays.fill(vis, -1); // -1 means not seen yet
+
+        // Step 1: Mark the first or repeated occurrence of each character
+        for (int i = 0; i < s.length(); i++) {
+            int idx = s.charAt(i) - 'a'; // Convert 'a'..'z' to 0..25
+
+            if (vis[idx] == -1) {
+                // First time we see this character, store its index
+                vis[idx] = i;
+            } else {
+                // Character has already appeared → mark as repeated
+                vis[idx] = -2;
+            }
+        }
+
+        int minIndex = -1;
+
+        // Step 2: Find the smallest index of any non-repeating character
+        for (int i = 0; i < max; i++) {
+            /* 
+            We're looking for:
+            - Characters that appeared only once → vis[i] >= 0
+            - And among those, the one with the **smallest index**
+            */
+            if (vis[i] >= 0 && (minIndex == -1 || vis[i] < vis[minIndex])) {
+                minIndex = i;
+            }
+        }
+
+        // Step 3: Return result
+        return minIndex == -1 ? '$' : s.charAt(vis[minIndex]);
+    }
+}
+
+
+/*
+💭 BRUTE-FORCE APPROACH (Commented Below)
+=========================================
+
+This method checks each character manually for repeats.
+
+static char nonRepeatingChar(String s) {
+    int n = s.length();
+
+    for (int i = 0; i < n; i++) {
+        char ch = s.charAt(i);
+        boolean found = false;
+
+        for (int j = 0; j < n; j++) {
+            // Skip checking the character against itself
+            if (i != j && ch == s.charAt(j)) {
+                found = true; // Duplicate found
+                break;
+            }
+        }
+
+        // If no duplicates found, this is our answer
+        if (!found) {
+            return ch;
+        }
+    }
+
+    // If all characters repeat
+    return '$';
+}
+
+⚠️ Why this is inefficient?
+----------------------------
+- Nested loops → O(n²) time → slow for large strings
+- Better to use character tracking with extra space (like vis[] array)
+*/
