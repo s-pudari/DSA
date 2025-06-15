@@ -1,63 +1,59 @@
 https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-gfg-160/problem/add-binary-strings3805
+
 /*
-Problem:
+🔥 PROBLEM STATEMENT 🔥
+-----------------------
+You're given two **binary strings** (e.g., "1010", "1011"). Return their **sum**, also as a binary string.
+
+Example:
 ---------
-Given two binary strings `s1` and `s2`, return their sum as a binary string.
-
-For example:
-Input: s1 = "1010", s2 = "1011"
+Input : s1 = "1010", s2 = "1011"
 Output: "10101"
-Explanation: 1010 (10) + 1011 (11) = 10101 (21)
+Explanation: 10 (decimal) + 11 (decimal) = 21 (decimal) → "10101" (binary)
 
-Goal:
------
-Simulate binary addition (like how we do in decimal) but for base-2.
+🎯 Goal:
+Simulate **binary addition** manually, character by character, managing **carry** just like in grade-school addition.
 
-Approach Overview:
-===================
+---
 
-Optimized Approach:
---------------------
-- Traverse both strings from right to left, adding corresponding bits and keeping track of the carry.
-- Use a StringBuilder to build the result.
-- If one string is shorter, treat the missing bits as '0'.
-- Time Complexity: O(max(n, m)) — because we traverse the longer of the two strings once.
-- Space Complexity: O(max(n, m)) — for storing the result in a StringBuilder.
+💡 APPROACH OVERVIEW 💡
+=======================
 
-Brute-force Approach (Commented Below):
----------------------------------------
-- Convert binary strings to decimal using `Integer.parseInt(s, 2)`
-- Add the two integers.
-- Convert the sum back to binary using `Integer.toBinaryString()`.
-- Time Complexity: O(n + m), but constrained by integer overflow (not suitable for very large inputs).
-- Space Complexity: O(1) for logic, but not safe for large binaries due to int size limits.
+✅ Optimized Approach:
+----------------------
+- Traverse both strings from **right to left**.
+- Add corresponding bits and keep track of the **carry**.
+- If strings are unequal in length, pad the shorter one implicitly.
+- Build result in a **StringBuilder** (efficient reverse building).
+- Reverse at the end for correct order.
 
-Dry Run Example (Optimized):
------------------------------
+🕒 Time Complexity : O(max(n, m))
+🧠 Space Complexity: O(max(n, m))
+
+🔍 Dry Run Example:
+-------------------
 s1 = "1010"
 s2 = "1011"
 
-Right to left:
-i=3: 0 (from s1) + 1 (from s2) + 0 (carry) = 1 → result = "1", carry = 0
-i=2: 1 + 1 + 0 = 2 → result = "0", carry = 1
-i=1: 0 + 0 + 1 = 1 → result = "01", carry = 0
-i=0: 1 + 1 + 0 = 2 → result = "001", carry = 1
+Right to Left:
+---------------
+i=3: 0 (s1) + 1 (s2) + 0 (carry) = 1 → result = "1", carry = 0  
+i=2: 1 + 1 + 0 = 2 → bit = 0, carry = 1 → result = "01"  
+i=1: 0 + 0 + 1 = 1 → bit = 1, carry = 0 → result = "101"  
+i=0: 1 + 1 + 0 = 2 → bit = 0, carry = 1 → result = "0101"
 
-Append carry → result = "1001", then reverse → "10100"
-
-Strip leading zeros if any (not applicable here).
-Final output = "10101"
+Append carry → "10101" ✅
 */
 
 class Solution {
     public String addBinary(String s1, String s2) {
 
-        // Step 1: Ensure s1 is the longer string (to simplify logic)
+        // Step 1: Make sure s1 is the longer string to simplify the loop
         int n = s1.length();
         int m = s2.length();
 
         if (n < m) {
-            // Swap to make sure s1 is always longer or equal in length
+            // If s2 is longer, swap them so s1 is always the longer one
             String temp = s1;
             s1 = s2;
             s2 = temp;
@@ -67,70 +63,69 @@ class Solution {
             m = tempLen;
         }
 
-        int carry = 0; // Initialize carry
-        StringBuilder result = new StringBuilder(); // To build the binary result
-        int j = m - 1; // Pointer for s2 (shorter string)
+        int carry = 0; // Keeps track of carry between additions
+        StringBuilder result = new StringBuilder(); // Efficient for string appending
+        int j = m - 1; // Pointer for shorter string (s2)
 
-        // Step 2: Traverse s1 from right to left
+        // Step 2: Traverse s1 (guaranteed longer or equal) from right to left
         for (int i = n - 1; i >= 0; i--) {
-            int bit1 = s1.charAt(i) - '0'; // Convert char to int (e.g., '1' → 1)
-            int bitSum = bit1 + carry;     // Add carry from previous step
+
+            int bit1 = s1.charAt(i) - '0';  // Convert char to int
+            int bitSum = bit1 + carry;      // Start with s1's bit and carry
 
             if (j >= 0) {
-                int bit2 = s2.charAt(j) - '0'; // Only add from s2 if index is valid
+                // If s2 has a bit left, add it
+                int bit2 = s2.charAt(j) - '0';
                 bitSum += bit2;
-                j--;
+                j--; // Move left in s2
             }
 
-            int bit = bitSum % 2;  // If sum is 0 or 2 → 0; if 1 or 3 → 1
-            carry = bitSum / 2;    // Carry is 1 if sum >= 2
-            result.append(bit);   // Append current bit to result
+            int bit = bitSum % 2;   // Actual bit to append (0 or 1)
+            carry = bitSum / 2;     // Update carry for next iteration
+
+            result.append(bit);     // Append current bit to result (in reverse)
         }
 
-        // Step 3: If there's any carry left, append it
+        // Step 3: If any carry is left after full traversal, append it
         if (carry > 0) {
             result.append(carry);
         }
 
-        // Step 4: Reverse the result since we built it backwards
+        // Step 4: Reverse the result to get correct order
         String finalRes = result.reverse().toString();
 
-        // Step 5: Remove leading zeros
+        // Step 5: Remove leading zeros (like "00010101" → "10101")
         int idx = 0;
         while (idx < finalRes.length() && finalRes.charAt(idx) == '0') {
             idx++;
         }
 
-        // If entire result was zeros (e.g., "0000"), return "0"
+        // If the whole string is zeros, return "0"
         return (idx == finalRes.length()) ? "0" : finalRes.substring(idx);
     }
 }
 
-
 /*
-===============================================================
-Brute-force Approach (only for small binary strings)
-===============================================================
+💭 BRUTE-FORCE APPROACH (Commented Out Below)
+=============================================
+
+This version uses built-in conversion functions — simple but not safe for large binaries.
 
 public String addBinary(String s1, String s2) {
-    
-    // Note: This approach uses built-in conversion functions.
-    // It will fail for very large binary strings due to overflow limits of int/long.
 
-    // Step 1: Convert binary strings to decimal integers
-    int num1 = Integer.parseInt(s1, 2);  // "1010" → 10
-    int num2 = Integer.parseInt(s2, 2);  // "1011" → 11
+    // Step 1: Convert binary strings to integers
+    int num1 = Integer.parseInt(s1, 2); // e.g., "1010" → 10
+    int num2 = Integer.parseInt(s2, 2); // e.g., "1011" → 11
 
-    // Step 2: Add the two integers
-    int sum = num1 + num2;              // 10 + 11 = 21
+    // Step 2: Add them
+    int sum = num1 + num2; // 10 + 11 = 21
 
-    // Step 3: Convert sum back to binary string
+    // Step 3: Convert result back to binary
     return Integer.toBinaryString(sum); // 21 → "10101"
 }
 
-Why not preferred?
-------------------
-• Limited to 32-bit/64-bit integer range.
-• Fails for very large binary strings (like 1000-bit numbers).
-• Optimized solution handles arbitrarily large inputs without overflow.
+⚠️ Why this is not ideal:
+- `Integer.parseInt()` and `Integer.toBinaryString()` are easy to use...
+- ...but break for inputs larger than 32-bit/64-bit integers (e.g., huge binaries).
+- Interviewers prefer manual implementation to test your logic and attention to detail.
 */
