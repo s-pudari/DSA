@@ -1,0 +1,150 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-bonus-problems/problem/camelcase-pattern-matching2259
+/*
+🔥 PROBLEM STATEMENT 🔥
+-----------------------
+You're given:
+  - An array of words in CamelCase notation (e.g., "HiTechCity").
+  - A pattern `pat` (e.g., "HTC").
+
+Goal:
+Return a list of all words where the **uppercase letters** form a **subsequence** of the given pattern `pat`.
+
+💡 Intuition:
+You need to check if the `pat` matches the capital letters in each CamelCase word — in order.
+
+---
+
+💡 APPROACH OVERVIEW 💡
+=======================
+
+✅ Optimized Approach (Greedy Matching with Two Pointers):
+----------------------------------------------------------
+- For each word, use two pointers `i` and `j`:
+  - `i` traverses the word, and `j` tracks how many characters of `pat` we've matched so far.
+- Skip lowercase letters in the word.
+- If an uppercase letter matches the pattern → move both pointers.
+- If an uppercase letter doesn’t match → stop checking this word.
+- If we matched the whole pattern (`j == pat.length()`), add the word to result.
+
+🕒 Time Complexity : O(n * m),  
+where n = number of words, and m = average word length.
+
+🧠 Space Complexity: O(k),  
+where k = number of matching words stored in result list.
+
+✅ Brute-Force Approach (Commented Below):
+------------------------------------------
+- Extract capital letters from each word.
+- If those capital letters exactly equal the pattern, add to result.
+
+🕒 Time Complexity : O(n * m)
+🧠 Space Complexity: O(k)
+
+---
+
+🔍 DRY RUN EXAMPLE:
+-------------------
+Input:
+  arr = ["HiTechCity", "HiTechLab", "HighTechLab"]
+  pat = "HTC"
+
+Word: "HiTechCity"  
+Capital letters: H T C  
+→ Matches "HTC" → ✅ add
+
+Word: "HiTechLab"  
+Capital letters: H T L  
+→ Doesn't match → ❌ skip
+
+Word: "HighTechLab"  
+Capital letters: H T L  
+→ Doesn't match → ❌ skip
+
+Output: ["HiTechCity"]
+*/
+
+import java.util.*;
+
+class Solution {
+    public List<String> camelCase(String[] arr, String pat) {
+        
+        List<String> ans = new ArrayList<>();
+
+        for (String word : arr) {
+
+            int i = 0; // Pointer for characters in the word
+            int j = 0; // Pointer for characters in the pattern
+
+            while (i < word.length() && j < pat.length()) {
+
+                char wChar = word.charAt(i);
+
+                if (Character.isLowerCase(wChar)) {
+                    /*
+                    If current character is lowercase, it’s irrelevant
+                    to our pattern — just move forward.
+                    */
+                    i++;
+                }
+                else if (wChar != pat.charAt(j)) {
+                    /*
+                    If it’s uppercase but doesn't match current pattern character,
+                    the pattern cannot match this word.
+                    */
+                    break;
+                }
+                else {
+                    /*
+                    When there's a match between word's uppercase char
+                    and pattern's char → move both pointers forward.
+                    */
+                    i++;
+                    j++;
+                }
+            }
+
+            // If entire pattern is matched, add word to result
+            if (j == pat.length()) {
+                ans.add(word);
+            }
+        }
+
+        return ans;
+    }
+}
+
+
+/*
+💭 BRUTE-FORCE APPROACH (Commented Below)
+=========================================
+
+Idea:
+- Extract uppercase letters from each word.
+- If that string equals the pattern exactly → add to result.
+
+public List<String> camelCase(String[] arr, String pat) {
+    List<String> ans = new ArrayList<>();
+
+    for (String word : arr) {
+        StringBuilder capitals = new StringBuilder();
+
+        for (char c : word.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                capitals.append(c);
+            }
+        }
+
+        if (capitals.toString().equals(pat)) {
+            ans.add(word);
+        }
+    }
+
+    return ans;
+}
+
+⚠️ Why not preferred?
+---------------------
+- Fails if pattern is a *subsequence* not full match.
+  E.g., pattern = "HT" should match "HiTechCity", but this only accepts full "HTC".
+- Optimized version handles **subsequence** logic.
+*/
