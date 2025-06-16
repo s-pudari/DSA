@@ -1,0 +1,130 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-bonus-problems/problem/string-palindromic-ignoring-spaces4723
+/*
+🔥 PROBLEM STATEMENT 🔥
+-----------------------
+Check if the given string is a **palindrome**, *ignoring*:
+  - non-alphanumeric characters (like spaces, punctuation),
+  - and character case.
+
+📌 Palindrome means:
+The string reads the same forward and backward (e.g., "Madam" → valid).
+
+🧪 Examples:
+------------
+Input  : "A man, a plan, a canal: Panama"
+Output : true
+
+Input  : "No lemon, no melon"
+Output : true
+
+Input  : "Hello, World!"
+Output : false
+
+---
+
+💡 APPROACH OVERVIEW 💡
+=======================
+
+✅ Optimized Approach (Two Pointers):
+-------------------------------------
+- Use two pointers: one starting from the beginning (`i`), and one from the end (`j`).
+- Skip characters that are **not alphanumeric**.
+- Compare characters at both ends after converting to **lowercase**.
+- If mismatch → not a palindrome.
+- If all match → valid palindrome.
+
+🕒 Time Complexity : O(n) → single pass through the string
+🧠 Space Complexity: O(1) → no extra space except pointers
+
+✅ Brute-Force Approach (Commented Below):
+------------------------------------------
+- Filter the string into a lowercase-only, alphanumeric-only version.
+- Reverse it and check if it's equal to the original cleaned string.
+
+🕒 Time Complexity : O(n)
+🧠 Space Complexity: O(n) → uses StringBuilder
+
+---
+
+🔍 DRY RUN EXAMPLE:
+-------------------
+Input: "A man, a plan, a canal: Panama"
+
+Filtered version: "amanaplanacanalpanama"  
+- Compare 'a' with 'a', 'm' with 'm', ..., all match → ✅ true
+
+Input: "race a car"
+Filtered: "raceacar"
+- 'r' ≠ 'r', 'a' ≠ 'a', ..., 'e' ≠ 'c' → ❌ false
+*/
+
+import java.util.*;
+
+class Solution {
+
+    public boolean sentencePalindrome(String s) {
+
+        int i = 0; // Start pointer
+        int j = s.length() - 1; // End pointer
+
+        while (i < j) {
+
+            // Skip non-alphanumeric characters from the front
+            if (!Character.isLetterOrDigit(s.charAt(i))) {
+                i++;
+            }
+
+            // Skip non-alphanumeric characters from the end
+            else if (!Character.isLetterOrDigit(s.charAt(j))) {
+                j--;
+            }
+
+            // If both characters are alphanumeric, compare them
+            else if (Character.toLowerCase(s.charAt(i)) == Character.toLowerCase(s.charAt(j))) {
+                /*
+                Matching characters → move both pointers inward
+                */
+                i++;
+                j--;
+            }
+
+            else {
+                /*
+                Mismatch → not a palindrome
+                */
+                return false;
+            }
+        }
+
+        // All matched → valid palindrome
+        return true;
+    }
+
+    /*
+    💭 BRUTE-FORCE APPROACH (Commented Below)
+    =========================================
+
+    Idea:
+    - Use a StringBuilder to store only lowercase alphanumeric characters.
+    - Reverse the cleaned string and compare with original.
+
+    public boolean sentencePalindrome(String s) {
+        StringBuilder sb = new StringBuilder();
+
+        for (char ch : s.toCharArray()) {
+            if (Character.isLetterOrDigit(ch)) {
+                sb.append(Character.toLowerCase(ch));
+            }
+        }
+
+        StringBuilder rev = new StringBuilder(sb);
+        rev.reverse();
+
+        return sb.toString().equals(rev.toString());
+    }
+
+    ⚠️ Drawback:
+    - Requires O(n) extra space for cleaned and reversed strings.
+    - Still linear time, but not constant space.
+    */
+}
