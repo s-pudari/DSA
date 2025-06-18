@@ -1,0 +1,141 @@
+https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-bonus-problems/problem/minimum-times-a-has-to-be-repeated-such-that-b-is-a-substring-of-it--170645
+/*
+🔥 PROBLEM STATEMENT 🔥
+-----------------------
+You are given two strings `s1` and `s2`.
+
+Your task is to determine the **minimum number of times** you must **repeat `s1`** so that `s2` becomes a **substring** of the repeated string.
+
+📌 Return:
+- Minimum count of repetitions of `s1` so that `s2` is a substring.
+- If impossible, return -1.
+
+---
+
+💡 APPROACH OVERVIEW 💡
+=======================
+
+✅ Optimized Approach (Greedy Expansion with indexOf):
+-------------------------------------------------------
+- Start with `repeated = s1` and count = 1.
+- Keep appending `s1` to `repeated` until its length ≥ length of `s2`.
+- If `s2` is found in `repeated`, return count.
+- Try one more append (to handle overlaps like "abcdabcd" for s2="cdab").
+- If still not found, return -1.
+
+🕒 Time Complexity : O(n * m)  
+Where `n` = s1.length() and `m` = s2.length()
+
+🧠 Space Complexity: O(n * m)  
+Due to repeated string creation
+
+---
+
+🔍 DRY RUN EXAMPLE:
+--------------------
+Input:
+  s1 = "abcd"
+  s2 = "cdabcdab"
+
+Step-by-step:
+  repeated = "abcd"        → too short
+  repeated = "abcdabcd"    → still not found
+  repeated = "abcdabcdabcd" → contains "cdabcdab" ✅
+  
+Output: 3
+
+---
+
+✅ Brute-Force Approach (Manual Character Matching):
+---------------------------------------------------
+- Try starting from each index in s1.
+- Simulate matching s2 by cycling through s1 repeatedly.
+- Track how many full repeats are required.
+- If characters mismatch, skip to next start index.
+- If match completes, return repeat count.
+- If no match found, return -1.
+
+🕒 Time Complexity: O(n * m)  
+🧠 Space Complexity: O(1)
+*/
+
+class Solution {
+    static int minRepeats(String s1, String s2) {
+
+        StringBuilder repeated = new StringBuilder(s1); // Start with one copy of s1
+        int cnt = 1; // Count of repetitions
+
+        // Keep appending s1 until length becomes ≥ s2
+        while (repeated.length() < s2.length()) {
+            repeated.append(s1);
+            cnt++;
+        }
+
+        // First check if s2 is already a substring
+        if (repeated.indexOf(s2) != -1) {
+            return cnt;
+        }
+
+        /*
+        One extra append handles cases like:
+        s1 = "abcd", s2 = "cdab"
+        → Needs extra overlap
+        */
+        repeated.append(s1);
+        cnt++;
+
+        if (repeated.indexOf(s2) != -1) {
+            return cnt;
+        }
+
+        // If still not found, return -1
+        return -1;
+    }
+
+    /*
+    💭 BRUTE-FORCE APPROACH (Commented Below)
+    =========================================
+
+    Idea:
+    - Try to start matching s2 from every index in s1.
+    - Walk through s2 using s1 repeatedly.
+    - Count how many times s1 was used during match.
+    - If mismatch occurs, try next index.
+
+    static int minRepeats(String s1, String s2) {
+        int n = s1.length();
+        int m = s2.length();
+
+        for (int i = 0; i < n; i++) {
+            int idx1 = i; // index in s1
+            int rep = 1;  // how many times s1 is used
+            boolean found = true;
+
+            for (int idx2 = 0; idx2 < m; idx2++) {
+                if (s1.charAt(idx1) != s2.charAt(idx2)) {
+                    found = false; // mismatch
+                    break;
+                }
+
+                idx1++; // move in s1
+
+                if (idx1 == n) {
+                    idx1 = 0; // cycle back to start of s1
+
+                    if (idx2 != m - 1) {
+                        rep++; // full s1 used, increase repeat count
+                    }
+                }
+            }
+
+            if (found) return rep;
+        }
+
+        return -1; // s2 couldn't be formed
+    }
+
+    ⚠️ Why not preferred?
+    - Slower due to nested iteration.
+    - Doesn't leverage built-in substring checking.
+    */
+}
