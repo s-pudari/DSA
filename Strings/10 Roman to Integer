@@ -1,0 +1,118 @@
+//https://leetcode.com/problems/roman-to-integer/
+/*
+🔥 PROBLEM: Roman to Integer 🔥
+-------------------------------
+Given a Roman numeral string `s`, convert it to its corresponding integer.
+
+📌 Roman Numeral Basics:
+- Symbol values: 
+    I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1000
+- Special subtraction rules (when smaller comes before larger):
+    IV = 4, IX = 9, XL = 40, XC = 90, CD = 400, CM = 900
+
+---
+
+✅ OPTIMIZED APPROACH (Greedy with subtraction logic)
+------------------------------------------------------
+💡 Idea:
+- Traverse the Roman string left to right.
+- If current value < next value, subtract it (e.g., 'I' before 'V' → 4)
+- Else, just add it.
+
+🕒 Time Complexity: O(n) — single pass over string  
+🧠 Space Complexity: O(1) — constant-size HashMap
+
+---
+
+🔍 DRY RUN EXAMPLE
+--------------------
+Input: "MCMXCIV"
+
+Index | Char | Action                | Value Added | Total
+------|------|------------------------|-------------|------
+  0   | M    | M < C? No → +1000      |     1000    | 1000
+  1   | C    | C < M? Yes → -100      |     -100    | 900
+  2   | M    | M < X? No → +1000      |     1000    | 1900
+  3   | X    | X < C? Yes → -10       |     -10     | 1890
+  4   | C    | C < I? No → +100       |     100     | 1990
+  5   | I    | I < V? Yes → -1        |     -1      | 1989
+  6   | V    | Last → +5              |     5       | 1994
+
+*/
+
+class Solution {
+    public int romanToInt(String s) {
+
+        // Step 1: Create a mapping of Roman characters to their values
+        HashMap<Character, Integer> hs = new HashMap<>();
+        hs.put('I', 1);
+        hs.put('V', 5);
+        hs.put('X', 10);
+        hs.put('L', 50);
+        hs.put('C', 100);
+        hs.put('D', 500);
+        hs.put('M', 1000);
+
+        int count = 0; // Final result to store the total value
+
+        // Step 2: Traverse the string from left to right
+        for (int i = 0; i < s.length(); i++) {
+
+            /* Step 3: If current numeral is less than the next one,
+               subtract its value (handles cases like IV, IX, etc.) */
+            if (i < s.length() - 1 && hs.get(s.charAt(i)) < hs.get(s.charAt(i + 1))) {
+                count -= hs.get(s.charAt(i));
+            } else {
+                // Otherwise, just add its value
+                count += hs.get(s.charAt(i));
+            }
+        }
+
+        return count;
+    }
+
+
+    /*
+    🧠 ALTERNATE APPROACH (Pattern Replacement)
+    ---------------------------------------------
+    💡 Idea:
+    - Replace special patterns like "IV" with placeholders ('a' for 4, etc.).
+    - Then iterate and use a switch-case to sum their values.
+    
+    🕒 Time Complexity: O(n)
+    🧠 Space Complexity: O(1)
+    
+    Code:*/
+
+    int cnt = 0;
+
+    // Replace all subtractive combinations with placeholders
+    s = s.replace("IV", "a");
+    s = s.replace("IX", "b");
+    s = s.replace("XL", "c");
+    s = s.replace("XC", "d");
+    s = s.replace("CD", "e");
+    s = s.replace("CM", "f");
+
+    // Evaluate the replaced string using switch
+    for (char ch : s.toCharArray()) {
+        switch (ch) {
+            case 'I': cnt += 1; break;
+            case 'V': cnt += 5; break;
+            case 'X': cnt += 10; break;
+            case 'L': cnt += 50; break;
+            case 'C': cnt += 100; break;
+            case 'D': cnt += 500; break;
+            case 'M': cnt += 1000; break;
+            case 'a': cnt += 4; break;
+            case 'b': cnt += 9; break;
+            case 'c': cnt += 40; break;
+            case 'd': cnt += 90; break;
+            case 'e': cnt += 400; break;
+            case 'f': cnt += 900; break;
+        }
+    }
+
+    return cnt;
+   
+}
