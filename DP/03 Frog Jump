@@ -61,7 +61,7 @@ class Solution {
 
     /*
     // Brute-force Approach (Recursive with Memoization)
-    // This approach uses top-down dynamic programming.
+    // This approach uses top-down dynamic programming. */
     
     int fun(int i, int[] height, int[] dp) {
         // Base case: starting stone has zero cost
@@ -92,5 +92,5 @@ class Solution {
         int[] dp = new int[n];
         return fun(n - 1, height, dp);
     }
-    */
+    
 }
