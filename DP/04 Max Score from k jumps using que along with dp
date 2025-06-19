@@ -63,7 +63,7 @@ class Solution {
         return dp[0]; // Return the best score starting from index 0
 
         /*
-        // Brute-force Approach:
+        // Brute-force Approach: */
         int[] dp = new int[n];
         dp[n - 1] = arr[n - 1];
 
@@ -79,6 +79,6 @@ class Solution {
         }
 
         return dp[0];
-        */
+        
     }
 }
