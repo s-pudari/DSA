@@ -1,0 +1,132 @@
+//https://leetcode.com/problems/climbing-stairs/
+/*
+📌 PROBLEM: Count Ways to Reach the N-th Stair
+-----------------------------------------------------
+You are climbing stairs. You can either take 1 step or 2 steps at a time.
+Given `n`, return the number of **distinct ways** to reach the top.
+
+This is identical to the Fibonacci sequence:
+  ways(n) = ways(n-1) + ways(n-2)
+
+-----------------------------------------------------
+💡 OPTIMIZED APPROACH (Bottom-up Space Optimized)
+-----------------------------------------------------
+Instead of using extra space (DP array), we use two variables to store the last two values.
+
+🧠 Space Complexity: O(1)
+🕒 Time Complexity: O(n)
+
+🔍 DRY RUN:
+n = 5
+ways: 
+  f(0) = 1
+  f(1) = 1
+  f(2) = f(1)+f(0) = 2
+  f(3) = f(2)+f(1) = 3
+  f(4) = f(3)+f(2) = 5
+  f(5) = f(4)+f(3) = 8 → ✅ answer
+
+*/
+
+class Solution {
+
+    // ✅ OPTIMIZED APPROACH (Bottom-Up with O(1) space)
+    int countWays(int n) {
+        // Base cases: if n is 0 or 1, only 1 way exists (no step or 1 step)
+        if (n == 0 || n == 1) return 1;
+
+        // prev0 = ways to reach step i-2
+        // prev1 = ways to reach step i-1
+        int prev0 = 1;
+        int prev1 = 1;
+        int curr = 0;
+
+        // Start from step 2 to step n
+        for (int i = 2; i <= n; i++) {
+            curr = prev0 + prev1; // Total ways to reach step i
+            prev0 = prev1;        // Update previous values for next iteration
+            prev1 = curr;
+        }
+
+        return curr;
+    }
+
+    /*
+    -----------------------------------------
+    🧪 APPROACH 3: Tabulation (Bottom-Up DP)
+    -----------------------------------------
+    🔹 Build the solution from the bottom by filling a dp[] array.
+    
+    🧠 Space: O(n) 
+    🕒 Time: O(n)
+
+    🔍 DRY RUN:
+    n = 5 → dp = [1,1,2,3,5,8] → dp[n] = 8 ✅ */
+
+    int countWays(int n) {
+        int[] dp = new int[n+1];
+        dp[0] = 1;
+        dp[1] = 1;
+
+        for (int i = 2; i <= n; i++) {
+            dp[i] = dp[i-1] + dp[i-2];
+        }
+
+        return dp[n];
+    }
+    
+
+    /*
+    -----------------------------------------
+    🧪 APPROACH 2: Top-Down with Memoization
+    -----------------------------------------
+    🔹 Use recursion + memoization to avoid recomputation.
+    
+    🧠 Space: O(n) for recursion stack and dp[]
+    🕒 Time: O(n) since each subproblem is solved once
+
+    🔍 DRY RUN:
+    n = 4
+    recDP(4) → recDP(3) + recDP(2)
+             → (recDP(2)+recDP(1)) + (recDP(1)+recDP(0))
+             → All results stored in dp[] to avoid re-calls */
+
+    int countWays(int n) {
+        int[] dp = new int[n + 1];
+        Arrays.fill(dp, -1);
+        return recDP(n, dp);
+    }
+
+    int recDP(int n, int[] dp) {
+        if (n == 0 || n == 1) return 1;
+
+        if (dp[n] != -1) return dp[n]; // Use cached result
+
+        return dp[n] = recDP(n - 1, dp) + recDP(n - 2, dp);
+    }
+    
+
+    /*
+    -----------------------------------------
+    🚫 APPROACH 1: Pure Recursion (Brute Force)
+    -----------------------------------------
+    🔹 Try all possibilities recursively without caching results
+
+    🧠 Space: O(n) (recursion stack depth)
+    🕒 Time: O(2^n) — exponential due to repeated subproblems
+
+    🔍 DRY RUN:
+    n = 3 → rec(3) = rec(2) + rec(1)
+                 = (rec(1)+rec(0)) + 1
+                 = 1 + 1 + 1 = 3 ✅ */
+
+    int countWays(int n) {
+        return rec(n);
+    }
+
+    int rec(int n) {
+        if (n == 0 || n == 1) return 1;
+        return rec(n - 1) + rec(n - 2);
+    }
+    
+}
