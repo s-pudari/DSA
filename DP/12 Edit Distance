@@ -78,7 +78,7 @@ class Solution {
      *   => recDP(3,2), recDP(4,1), recDP(3,1)
      *   ... continues recursively ...
      */
-    /*
+    
     public int editDistance(String s1, String s2) {
         int n = s1.length();
         int m = s2.length();
@@ -109,7 +109,7 @@ class Solution {
             );
         }
     }
-    */
+    
     // ----------------------------------------------------------------------------------------
 
     /*
@@ -123,7 +123,7 @@ class Solution {
      * rec(3,2) => (s,s) match -> rec(2,1)
      * ... continues recursively ...
      */
-    /*
+    
     public int editDistance(String s1, String s2) {
         int n = s1.length();
         int m = s2.length();
@@ -144,5 +144,5 @@ class Solution {
             );
         }
     }
-    */
+    
 }
