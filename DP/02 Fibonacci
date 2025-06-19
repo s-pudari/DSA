@@ -47,7 +47,7 @@ class Main {
 //   - It directly applies the definition: F(n) = F(n-1) + F(n-2).
 //   - It makes many redundant function calls, leading to exponential time complexity.
 // - Time Complexity: O(2^n) - Each call makes two more calls.
-// - Space Complexity: O(n)   - Maximum depth of the recursion tree.
+// - Space Complexity: O(n)   - Maximum depth of the recursion tree.*/
 
 public static int fibonacci(int n) {
     if (n <= 1) {
@@ -55,7 +55,7 @@ public static int fibonacci(int n) {
     }
     return fibonacci(n - 1) + fibonacci(n - 2); // Recursive call
 }
-*/
+
 
 // Dry Run Example for Optimized Approach (fibDp):
 // Let's say n = 4.
