@@ -1,0 +1,119 @@
+//https://leetcode.com/problems/compare-version-numbers/
+/*
+📌 PROBLEM: Compare Version Numbers (Leetcode 165)
+---------------------------------------------------
+You're given two version numbers as strings: version1 and version2.
+
+🔹 Each version number consists of **dot-separated revision numbers** (e.g., "1.01.3").
+🔹 Your task is to **compare** the two versions and return:
+    - 1 if version1 > version2
+    - -1 if version1 < version2
+    - 0 if both versions are equal
+
+⚠️ Leading zeros in revision numbers should be ignored (e.g., "01" == "1").
+
+---------------------------------------------------
+💡 OPTIMIZED APPROACH (Two-Pointer Style):
+---------------------------------------------------
+1. Split both version strings by `"."` into arrays of revisions.
+2. Traverse the arrays up to the longer length.
+3. Convert each part to integer (missing parts are treated as 0).
+4. Compare corresponding revision numbers.
+
+🧠 Space Complexity: O(N + M)
+    - For storing split arrays (where N and M are lengths of version1 and version2)
+
+🕒 Time Complexity: O(max(N, M))
+    - We loop through the maximum number of revisions in either version
+
+---------------------------------------------------
+🔍 DRY RUN EXAMPLE:
+
+version1 = "1.01.2"
+version2 = "1.1.3"
+
+Split:
+  s1 = ["1", "01", "2"]
+  s2 = ["1", "1", "3"]
+
+Loop through:
+- i = 0: rev1 = 1, rev2 = 1 → equal
+- i = 1: rev1 = 1, rev2 = 1 → equal
+- i = 2: rev1 = 2, rev2 = 3 → 2 < 3 → return -1
+
+✅ Final output: -1 (version1 < version2)
+
+*/
+
+class Solution {
+    public int compareVersion(String version1, String version2) {
+        // Split version strings by "."
+        String[] s1 = version1.split("\\.");
+        String[] s2 = version2.split("\\.");
+
+        // Lengths of both version arrays
+        int n = s1.length;
+        int m = s2.length;
+
+        // Loop through up to the maximum length of the two arrays
+        int len = Math.max(n, m);
+
+        for (int i = 0; i < len; i++) {
+            /*
+             If a version has fewer revisions, treat the missing ones as 0
+             (e.g., "1.0" and "1.0.0" are equal)
+            */
+            int rev1 = (i < n) ? Integer.parseInt(s1[i]) : 0;
+            int rev2 = (i < m) ? Integer.parseInt(s2[i]) : 0;
+
+            // If revision from version1 is less, return -1
+            if (rev1 < rev2) return -1;
+
+            // If revision from version1 is more, return 1
+            if (rev1 > rev2) return 1;
+        }
+
+        // All revisions were equal
+        return 0;
+    }
+
+
+    /*
+    --------------------------------------------
+    ❌ BRUTE-FORCE-LIKE IDEA (LESS OPTIMAL)
+    --------------------------------------------
+    1. Pad the shorter version with ".0" until both versions have equal lengths.
+    2. Then simply compare each part after splitting.
+
+    🧠 Space: O(max(N, M)) for padding + array storage
+    🕒 Time: O(max(N, M))
+
+    Example:
+    version1 = "1.2"
+    version2 = "1.2.0.0"
+
+    Pad version1 → "1.2.0.0"
+
+    Then just split both and compare each integer
+
+    // BRUTE-FORCE IMPLEMENTATION (Commented) */
+
+    public int compareVersion(String version1, String version2) {
+        while (version1.length() < version2.length()) version1 += ".0";
+        while (version2.length() < version1.length()) version2 += ".0";
+
+        String[] s1 = version1.split("\\.");
+        String[] s2 = version2.split("\\.");
+
+        for (int i = 0; i < s1.length; i++) {
+            int a = Integer.parseInt(s1[i]);
+            int b = Integer.parseInt(s2[i]);
+
+            if (a < b) return -1;
+            if (a > b) return 1;
+        }
+
+        return 0;
+    }
+    
+}
