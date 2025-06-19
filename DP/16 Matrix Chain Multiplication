@@ -79,7 +79,7 @@ class Solution {
     // -----------------------------------------
     // Brute-force approach (Pure recursion)
     // -----------------------------------------
-    /*
+    
     static int matrixMultiplication(int arr[]) {
         int n = arr.length;
         return rec(1, n - 1, arr);
@@ -100,5 +100,5 @@ class Solution {
 
         return min;
     }
-    */
+    
 }
