@@ -90,7 +90,7 @@ class Solution {
     // -------------------------------------------------------------
     // Approach 2: Top-Down DP with Memoization
     // -------------------------------------------------------------
-    /*
+    
     static int minCostClimbingStairs(int[] cost) {
         int n = cost.length;
 
@@ -118,12 +118,12 @@ class Solution {
          */
         return dp[n] = cost[n] + Math.min(recDP(n - 1, cost, dp), recDP(n - 2, cost, dp));
     }
-    */
+    
 
     // -------------------------------------------------------------
     // Approach 1: Brute-force Recursive (No Memoization)
     // -------------------------------------------------------------
-    /*
+    
     static int minCostClimbingStairs(int[] cost) {
         int n = cost.length;
 
@@ -142,5 +142,5 @@ class Solution {
          */
         return cost[n] + Math.min(rec(n - 1, cost), rec(n - 2, cost));
     }
-    */
+    
 }
