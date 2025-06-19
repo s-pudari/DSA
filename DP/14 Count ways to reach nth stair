@@ -50,7 +50,7 @@ class Solution {
     // -------------------------------------------------------------
     // Approach 3: Bottom-Up Tabulation (DP Array)
     // -------------------------------------------------------------
-    /*
+    
     int countWays(int n) {
         if (n == 0 || n == 1) return 1;
 
@@ -64,12 +64,12 @@ class Solution {
 
         return dp[n]; // total ways to reach step n
     }
-    */
+    
 
     // -------------------------------------------------------------
     // Approach 2: Top-Down DP with Memoization
     // -------------------------------------------------------------
-    /*
+    
     int countWays(int n) {
         int[] dp = new int[n + 1];
 
@@ -96,12 +96,12 @@ class Solution {
          */
         return dp[n] = recDP(n - 1, dp) + recDP(n - 2, dp);
     }
-    */
+    
 
     // -------------------------------------------------------------
     // Approach 1: Brute-force Recursive (No Memoization)
     // -------------------------------------------------------------
-    /*
+    
     int countWays(int n) {
         return rec(n);
     }
@@ -114,6 +114,6 @@ class Solution {
         // Two recursive calls to compute ways from previous two steps
         return rec(n - 1) + rec(n - 2);
     }
-    */
+    
 }
 
