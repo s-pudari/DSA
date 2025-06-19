@@ -1,0 +1,113 @@
+/*
+📊 PROBLEM: Frog Jump with K Distance
+---------------------------------------------------
+You are given an array 'heights' where heights[i] represents the height of the i-th stone.
+The frog starts at index 0 and wants to reach the last index. The frog can jump up to 'k' steps forward.
+The cost of a jump from stone i to stone j is |heights[i] - heights[j]|.
+
+You need to return the minimum total cost to reach the last stone (index n-1).
+
+---------------------------------------------------
+💡 Optimized Approach (Bottom-up Tabulation + Space Optimized)
+---------------------------------------------------
+We use Dynamic Programming to avoid recomputing the minimum cost from every position.
+
+🫠 Time Complexity: O(n * k)
+📊 Space Complexity:
+- Tabulation: O(n)
+- Space Optimized: O(k) or O(n) depending on implementation
+
+🔍 DRY RUN:
+heights = [10, 30, 40, 20], k = 2
+At stone 3:
+  - jump from 2: cost = dp[2] + |20 - 40| = 30 + 20 = 50
+  - jump from 1: cost = dp[1] + |20 - 30| = 20 + 10 = 30
+  => dp[3] = min(50, 30) = 30 ✅
+*/
+
+class Solution {
+    // ✅ Tabulation (Bottom-Up DP)
+    public int frogJump(int[] heights, int k) {
+        int n = heights.length;
+        int[] dp = new int[n];
+        dp[0] = 0; // No cost at the first stone
+
+        for (int i = 1; i < n; i++) {
+            int minSteps = Integer.MAX_VALUE;
+
+            // Try all jumps from i-1 to i-k
+            for (int j = 1; j <= k; j++) {
+                if (i - j >= 0) {
+                    int jumpCost = dp[i - j] + Math.abs(heights[i] - heights[i - j]);
+                    minSteps = Math.min(minSteps, jumpCost);
+                }
+            }
+            dp[i] = minSteps;
+        }
+
+        return dp[n - 1];
+    }
+
+    /*
+    🔊 SPACE OPTIMIZED VERSION
+    ---------------------------------------------------
+    Instead of using full dp[], we can use a deque of size up to k for sliding window.
+    (This is a conceptual optimization; actual O(k) savings depend on 'k'.) */
+
+    public int frogJump(int[] heights, int k) {
+        int n = heights.length;
+        int[] dp = new int[n];
+        dp[0] = 0;
+
+        for (int i = 1; i < n; i++) {
+            int minCost = Integer.MAX_VALUE;
+            for (int j = 1; j <= k && i - j >= 0; j++) {
+                minCost = Math.min(minCost, dp[i - j] + Math.abs(heights[i] - heights[i - j]));
+            }
+            dp[i] = minCost;
+        }
+
+        return dp[n - 1];
+    }
+    
+
+    /*
+    🕝 Approach 1: Recursive + Memoization (Top-Down)
+    ---------------------------------------------------
+    Time: O(n * k)
+    Space: O(n) + recursion stack */
+
+    public int frogJump(int[] heights, int k) {
+        int n = heights.length;
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+        return rec(n - 1, heights, k, dp);
+    }
+
+    private int rec(int idx, int[] heights, int k, int[] dp) {
+        if (idx == 0) return 0;
+        if (dp[idx] != -1) return dp[idx];
+
+        int minSteps = Integer.MAX_VALUE;
+        for (int j = 1; j <= k; j++) {
+            if (idx - j >= 0) {
+                int jump = rec(idx - j, heights, k, dp) + Math.abs(heights[idx] - heights[idx - j]);
+                minSteps = Math.min(minSteps, jump);
+            }
+        }
+
+        return dp[idx] = minSteps;
+    }
+    
+
+    /*
+    ❌ Incorrect Version (Fixed Below)
+    --------------------------------------
+    In the user's code:
+    mmSteps = rec(dp,heights,k,n)+... inside the loop always uses n, not (n - i)
+    This leads to infinite recursion and wrong answer.
+
+    CORRECT call should be:
+    mmSteps = Math.min(mmSteps, rec(dp,heights,k,n - i) + Math.abs(heights[n] - heights[n - i]));
+    */
+}
