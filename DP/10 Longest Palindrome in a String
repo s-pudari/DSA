@@ -72,7 +72,7 @@ class Solution {
     // ------------------------------------------------------------
     // Approach 1: Brute-Force with Palindrome Check
     // ------------------------------------------------------------
-    /*
+
     static String longestPalindrome(String s) {
         int n = s.length();
 
@@ -110,5 +110,5 @@ class Solution {
         }
         return true;
     }
-    */
+    
 }
