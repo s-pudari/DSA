@@ -72,7 +72,7 @@ class Solution {
     /*
     Brute-Force Approach (Unoptimized Recursive):
     ---------------------------------------------
-    This approach checks all combinations of subsequences recursively.
+    This approach checks all combinations of subsequences recursively. */
 
     public int longestCommonSubsequence(String text1, String text2) {
         return bruteForce(text1.length() - 1, text2.length() - 1, text1, text2);
@@ -98,5 +98,5 @@ class Solution {
             bruteForce(idx1, idx2 - 1, s1, s2)
         );
     }
-    */
+    
 }
