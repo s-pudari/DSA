@@ -80,7 +80,7 @@ class Solution {
     prod(3, ...) → prod(2, ...) → prod(1, ...) ... 
     computes max and min at each index, updates global max as needed.
 
-    Uncomment to test:
+    Uncomment to test: */
 
     static int globalMax;
 
@@ -105,5 +105,5 @@ class Solution {
 
         prod(i - 1, arr, currMin, currMax); // recursive call
     }
-    */
+    
 }
