@@ -1,0 +1,58 @@
+//https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/description/
+/*
+🔥 PROBLEM: strStr (Implement indexOf) 🔥
+-----------------------------------------
+Given two strings `haystack` and `needle`, return the **index of the first occurrence** of `needle` in `haystack`. 
+If it does not exist, return -1.
+
+💡 Optimized Idea:
+Use Java's built-in `StringBuilder.indexOf()` to directly search for the substring.
+
+🕒 Time Complexity: O(N * M) in the worst case
+🧠 Space Complexity: O(N) — due to creating StringBuilder from haystack
+Where:
+- N = length of haystack
+- M = length of needle
+
+Java internally uses efficient string search algorithms (like Boyer-Moore or similar).
+
+*/
+
+class Solution {
+    public int strStr(String haystack, String needle) {
+        // Step 1: Convert haystack to StringBuilder for easy manipulation (not necessary but acceptable)
+        StringBuilder ans = new StringBuilder(haystack);
+
+        // Step 2: Use built-in indexOf method
+        int idx = ans.indexOf(needle);
+
+        // Step 3: Return result accordingly
+        return (idx == -1) ? -1 : idx;
+
+
+        /*
+        ❌ Brute Force Approach (Manual search using substring)
+        --------------------------------------------------------
+        🕒 Time Complexity: O(N * M)
+        🧠 Space Complexity: O(1)
+        
+        Where:
+        - N = length of haystack
+        - M = length of needle
+
+        Logic:
+        - Slide a window of length `needle.length()` over `haystack`
+        - Compare substrings at each position*/
+
+        int m = haystack.length();
+        int n = needle.length();
+
+        for (int i = 0; i <= m - n; i++) {
+            if (haystack.substring(i, i + n).equals(needle)) {
+                return i;
+            }
+        }
+        return -1;
+        
+    }
+}
