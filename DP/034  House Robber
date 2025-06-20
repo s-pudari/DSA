@@ -1,0 +1,117 @@
+/* https://leetcode.com/problems/house-robber/
+🔥 PROBLEM: House Robber
+------------------------
+You are a professional robber planning to rob houses along a street. Each house has a certain amount of money stashed. 
+However, adjacent houses have security systems connected — so robbing two directly-adjacent houses triggers the alarm.
+
+🧠 GOAL:
+Return the maximum amount of money you can rob tonight **without alerting the police**.
+
+=======================================
+✅ Optimized Approach (Space Optimized DP)
+=======================================
+We use two variables (prev1 and prev2) to track max amounts robbable without storing entire DP array.
+
+🔁 Time Complexity: O(n) — We visit each house once.
+🧠 Space Complexity: O(1) — Only constant space used.
+
+🧪 Dry Run:
+Input: [2,7,9,3,1]
+Step-by-step:
+i=0: prev2 = 2
+i=1: prev1 = max(2, 7) = 7
+i=2: curr = max(7, 2 + 9) = 11 → prev2=7, prev1=11
+i=3: curr = max(11, 7+3) = 11 → prev2=11, prev1=11
+i=4: curr = max(11, 11+1) = 12 → Final answer = 12
+
+*/
+
+class Solution {
+    // ✅ Approach 3: Space Optimized DP
+    public int rob(int[] nums) {
+        int n = nums.length;
+
+        // If only one house, rob it
+        if (n == 1) return nums[0];
+
+        // prev2 → max amount up to house i-2
+        int prev2 = nums[0];
+
+        // prev1 → max amount up to house i-1
+        int prev1 = Math.max(nums[0], nums[1]);
+
+        int curr = 0;
+
+        for (int i = 2; i < n; i++) {
+            // Decide whether to rob current house or skip it
+            curr = Math.max(prev1, prev2 + nums[i]);
+
+            // Slide the window for next iteration
+            prev2 = prev1;
+            prev1 = curr;
+        }
+
+        return prev1;
+    }
+
+    /*
+    =======================
+    ✅ Approach 2: Tabulation
+    =======================
+    🔁 Time Complexity: O(n)
+    🧠 Space Complexity: O(n)
+
+    We store results for each index in dp[] to avoid recomputation.
+    */
+    
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+
+        int[] dp = new int[n];
+        dp[0] = nums[0];
+        dp[1] = Math.max(nums[0], nums[1]);
+
+        for (int i = 2; i < n; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[i]);
+        }
+
+        return dp[n - 1];
+    }
+    
+
+    /*
+    ===========================
+    ❌ Brute-force: Recursion + Memoization
+    ===========================
+    🔁 Time Complexity: O(n)
+    🧠 Space Complexity: O(n) (recursion stack + dp array)
+
+    We try both options at each index: rob or skip, and memoize results.
+    */
+    
+    public int rob(int[] nums) {
+        int n = nums.length;
+
+        // DP array initialized to -1
+        int[] dp = new int[n];
+        Arrays.fill(dp, -1);
+
+        return rec(n - 1, nums, dp);
+    }
+
+    public int rec(int i, int[] nums, int[] dp) {
+        // Base Case: No houses left
+        if (i < 0) return 0;
+
+        // Base Case: Only one house
+        if (i == 0) return nums[0];
+
+        // Return memoized result
+        if (dp[i] != -1) return dp[i];
+
+        // Rob current or skip
+        return dp[i] = Math.max(rec(i - 1, nums, dp), rec(i - 2, nums, dp) + nums[i]);
+    }
+    
+}
