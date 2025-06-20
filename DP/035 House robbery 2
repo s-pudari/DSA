@@ -1,0 +1,147 @@
+/* https://leetcode.com/problems/house-robber-ii/
+🔥 PROBLEM: House Robber II
+----------------------------
+You are a professional robber planning to rob houses arranged **in a circle**. Each house has some money. 
+You **cannot rob two adjacent houses**, and the first and last house are **also adjacent**.
+
+🧠 GOAL:
+Return the maximum amount you can rob **without triggering the alarm**.
+
+--------------------------------
+🔑 Key Difference from House Robber I:
+- Since the first and last houses are adjacent, we cannot include both in a single robbery plan.
+- Therefore, we split the array into two cases:
+   1. Rob from house 0 to n-2 (exclude last house)
+   2. Rob from house 1 to n-1 (exclude first house)
+- Solve both as regular House Robber I and take the maximum.
+
+========================================
+✅ Approach 3: Space Optimized Dynamic Programming
+========================================
+We optimize DP to use only constant space by maintaining two variables:
+- `prev1`: max rob amount up to house i-1
+- `prev2`: max rob amount up to house i-2
+
+🔁 Time Complexity: O(n)
+🧠 Space Complexity: O(1)
+
+🧪 Dry Run:
+Input: [2,3,2]
+Case 1: Rob [2,3] → max = 3
+Case 2: Rob [3,2] → max = 3
+Return max(3, 3) = 3
+*/
+
+class Solution {
+    // ✅ Approach 3: Space Optimized DP for both ranges
+    public int rob(int[] nums) {
+        int n = nums.length;
+
+        if (n == 1) return nums[0]; // Only one house, rob it
+
+        // Case 1: Rob houses 0 to n-2
+        int case1 = robLinear(0, n - 2, nums);
+
+        // Case 2: Rob houses 1 to n-1
+        int case2 = robLinear(1, n - 1, nums);
+
+        return Math.max(case1, case2);
+    }
+
+    // Helper for linear robbing (House Robber I problem)
+    public int robLinear(int start, int end, int[] nums) {
+        int prev2 = 0; // max up to i-2
+        int prev1 = 0; // max up to i-1
+
+        for (int i = start; i <= end; i++) {
+            int curr = Math.max(prev1, prev2 + nums[i]); // rob or skip
+            prev2 = prev1;
+            prev1 = curr;
+        }
+
+        return prev1;
+    }
+
+    /*
+    ==========================
+    ✅ Approach 2: Tabulation
+    ==========================
+    We use a DP array to store max rob amounts up to each house index.
+
+    🔁 Time Complexity: O(n)
+    🧠 Space Complexity: O(n)
+    */
+    
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+
+        int case1 = robLinear(nums, 0, n - 2); // exclude last
+        int case2 = robLinear(nums, 1, n - 1); // exclude first
+
+        return Math.max(case1, case2);
+    }
+
+    public int robLinear(int[] nums, int start, int end) {
+        int len = end - start + 1;
+
+        if (len == 0) return 0;
+        if (len == 1) return nums[start];
+
+        int[] dp = new int[len];
+        dp[0] = nums[start];
+        dp[1] = Math.max(nums[start], nums[start + 1]);
+
+        for (int i = 2; i < len; i++) {
+            dp[i] = Math.max(dp[i - 1], dp[i - 2] + nums[start + i]);
+        }
+
+        return dp[len - 1];
+    }
+    
+
+    /*
+    ================================
+    ✅ Approach 1: Recursion + Memoization
+    ================================
+    A brute-force solution with memoization to avoid recomputation.
+
+    🔁 Time Complexity: O(n)
+    🧠 Space Complexity: O(n) (Recursion stack + memo array)
+    */
+    
+    public int rob(int[] nums) {
+        int n = nums.length;
+        if (n == 1) return nums[0];
+
+        int res1 = recLinear(nums, 0, n - 2); // Exclude last
+        int res2 = recLinear(nums, 1, n - 1); // Exclude first
+
+        return Math.max(res1, res2);
+    }
+
+    // Setup memoization array and initiate recursive rob
+    public int recLinear(int[] nums, int start, int end) {
+        int len = end - start + 1;
+        int[] dp = new int[len];
+        Arrays.fill(dp, -1);
+        return recRob(nums, end, start, dp);
+    }
+
+    // Recursive rob function using start as base index
+    public int recRob(int[] nums, int i, int base, int[] dp) {
+        if (i < base) return 0;
+
+        int idx = i - base; // Adjust index relative to base
+
+        if (dp[idx] != -1) return dp[idx];
+
+        // Option 1: Skip current
+        // Option 2: Rob current + move to i-2
+        return dp[idx] = Math.max(
+            recRob(nums, i - 1, base, dp),
+            recRob(nums, i - 2, base, dp) + nums[i]
+        );
+    }
+    
+}
