@@ -1,0 +1,145 @@
+/* https://leetcode.com/problems/coin-change/
+🔥 PROBLEM: Minimum Coins (Coin Change)
+--------------------------------------
+Given a set of coin denominations and a target sum, return the **minimum number of coins** required to form that sum.
+- If it is not possible to form the sum using any combination of coins, return -1.
+
+⚠️ You can use **unlimited coins** of each type.
+
+========================================
+✅ Approach 1: Recursion + Memoization (Top-Down DP)
+========================================
+🔁 Time Complexity: O(n * sum)  
+🧠 Space Complexity: O(n * sum) — due to memoization table
+
+👶 Dry Run Example:
+Coins = [1, 2, 3], sum = 5
+
+- We try all combinations:
+  - Using 3s: 3 + 2 → 2 coins
+  - Using 2s: 2 + 2 + 1 → 3 coins
+  - Using 1s: 1+1+1+1+1 → 5 coins
+
+✔️ Optimal answer: 2
+
+*/
+
+class Solution {
+
+    // ✅ Recursive Memoization Approach (Top-Down)
+    public int minCoins(int[] coins, int sum) {
+        int n = coins.length;
+
+        // Initialize memoization table with -1
+        int[][] dp = new int[n][sum + 1];
+        for (int i = 0; i < n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        int res = rec(coins, sum, n - 1, dp);
+
+        // If result is Integer.MAX_VALUE, that means no solution exists
+        return (res == Integer.MAX_VALUE) ? -1 : res;
+    }
+
+    // Recursive helper function
+    public int rec(int[] coins, int sum, int i, int[][] dp) {
+        // If sum becomes zero, no more coins needed
+        if (sum == 0) return 0;
+
+        // If no coins left or sum < 0, no solution from this path
+        if (i < 0 || sum < 0) return Integer.MAX_VALUE;
+
+        // Return memoized result if already computed
+        if (dp[i][sum] != -1) return dp[i][sum];
+
+        // Option 1: Do not take the current coin
+        int notTake = rec(coins, sum, i - 1, dp);
+
+        // Option 2: Take the current coin (only if it doesn't overshoot)
+        int take = Integer.MAX_VALUE;
+        if (coins[i] <= sum) {
+            int subRes = rec(coins, sum - coins[i], i, dp); // Try again with same coin (unlimited supply)
+            if (subRes != Integer.MAX_VALUE) take = subRes + 1; // +1 for taking current coin
+        }
+
+        // Memoize and return the minimum of taking or not taking the coin
+        return dp[i][sum] = Math.min(take, notTake);
+    }
+
+    /*
+    ========================
+    ✅ Tabulation (Bottom-Up DP)
+    ========================
+    🔁 Time Complexity: O(n * sum)  
+    🧠 Space Complexity: O(n * sum)
+
+    We build the dp table where dp[i][t] = min coins to make 't' using coins[0..i]
+    */
+    /*
+    public int minCoins(int[] coins, int sum) {
+        int n = coins.length;
+        int[][] dp = new int[n][sum + 1];
+
+        // Initialize
+        for (int i = 0; i < n; i++) {
+            for (int t = 0; t <= sum; t++) {
+                if (t == 0) dp[i][t] = 0; // No coins needed for sum = 0
+                else dp[i][t] = Integer.MAX_VALUE;
+            }
+        }
+
+        // Fill first row (using only coin[0])
+        for (int t = 1; t <= sum; t++) {
+            if (t % coins[0] == 0) {
+                dp[0][t] = t / coins[0];
+            }
+        }
+
+        // Build DP table
+        for (int i = 1; i < n; i++) {
+            for (int t = 1; t <= sum; t++) {
+                int notTake = dp[i - 1][t];
+                int take = Integer.MAX_VALUE;
+
+                if (coins[i] <= t && dp[i][t - coins[i]] != Integer.MAX_VALUE) {
+                    take = dp[i][t - coins[i]] + 1;
+                }
+
+                dp[i][t] = Math.min(take, notTake);
+            }
+        }
+
+        return (dp[n - 1][sum] == Integer.MAX_VALUE) ? -1 : dp[n - 1][sum];
+    }
+    */
+
+    /*
+    ====================================
+    ✅ Space Optimized Tabulation (1D DP)
+    ====================================
+    🔁 Time Complexity: O(n * sum)  
+    🧠 Space Complexity: O(sum)
+
+    We only store previous row (or current) since we only need previous results.
+    */
+    /*
+    public int minCoins(int[] coins, int sum) {
+        int n = coins.length;
+        int[] dp = new int[sum + 1];
+
+        Arrays.fill(dp, Integer.MAX_VALUE);
+        dp[0] = 0; // Base case: 0 coins to make sum = 0
+
+        for (int i = 0; i < n; i++) {
+            for (int t = coins[i]; t <= sum; t++) {
+                if (dp[t - coins[i]] != Integer.MAX_VALUE) {
+                    dp[t] = Math.min(dp[t], dp[t - coins[i]] + 1);
+                }
+            }
+        }
+
+        return (dp[sum] == Integer.MAX_VALUE) ? -1 : dp[sum];
+    }
+    */
+}
