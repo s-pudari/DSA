@@ -1,0 +1,154 @@
+/* https://www.geeksforgeeks.org/batch/gfg-160-problems/track/dynamic-programming-gfg-160/problem/coin-change2448
+🔥 PROBLEM: Coin Change – Count Number of Ways
+----------------------------------------------
+Given an array `coins[]` of size `n`, representing denominations, and a value `sum`, 
+find the total number of ways to make the amount `sum` using **any number of coins** (including repeated coins).
+
+🧠 Infinite supply of each coin is allowed.
+📌 Order of coins does NOT matter (combinations, not permutations).
+
+========================================
+✅ Approach 1: Recursion + Memoization (Top-Down DP)
+========================================
+🔁 Time Complexity: O(n * sum)
+🧠 Space Complexity: O(n * sum) due to the 2D dp array
+
+👶 Dry Run Example:
+-------------------
+coins[] = {1, 2, 3}, sum = 4
+
+Ways to get sum=4:
+- 1+1+1+1
+- 1+1+2
+- 2+2
+- 1+3
+
+Total = 4
+
+*/
+
+class Solution {
+
+    // ✅ Top-Down DP (Recursion + Memoization)
+    public int count(int coins[], int sum) {
+        int n = coins.length;
+
+        // Memoization table, dp[i][j] = number of ways to make 'j' using coins[0..i]
+        int[][] dp = new int[n + 1][sum + 1];
+
+        // Initialize with -1 to mark uncomputed states
+        for (int i = 0; i <= n; i++) {
+            Arrays.fill(dp[i], -1);
+        }
+
+        // Start from last index (n), full sum
+        return rec(coins, n, sum, dp);
+    }
+
+    public int rec(int[] coins, int n, int sum, int[][] dp) {
+        // Base Case 1: sum == 0 → 1 valid way (take nothing)
+        if (sum == 0) return 1;
+
+        // Base Case 2: sum < 0 or no coins left → 0 ways
+        if (sum < 0 || n == 0) return 0;
+
+        // Check memoization table
+        if (dp[n][sum] != -1) return dp[n][sum];
+
+        /*
+        We have 2 choices:
+        - Include the coin: stay on same coin (unlimited supply), reduce sum
+        - Exclude the coin: move to previous coin, same sum
+        */
+        int include = rec(coins, n, sum - coins[n - 1], dp);
+        int exclude = rec(coins, n - 1, sum, dp);
+
+        // Total ways is sum of both choices
+        return dp[n][sum] = include + exclude;
+    }
+
+    /*
+    ================================
+    ✅ Approach 2: Bottom-Up DP (Tabulation)
+    ================================
+    🔁 Time Complexity: O(n * sum)
+    🧠 Space Complexity: O(n * sum)
+
+    dp[i][j] = #ways to make sum j using first i coins
+    */
+    /*
+    public int count(int coins[], int sum) {
+        int n = coins.length;
+        int[][] dp = new int[n + 1][sum + 1];
+
+        // Base Case: There is 1 way to make sum = 0 (choose nothing)
+        for (int i = 0; i <= n; i++) {
+            dp[i][0] = 1;
+        }
+
+        // Fill the table
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= sum; j++) {
+
+                // Exclude current coin
+                dp[i][j] = dp[i - 1][j];
+
+                // Include current coin if possible
+                if (coins[i - 1] <= j) {
+                    dp[i][j] += dp[i][j - coins[i - 1]];
+                }
+            }
+        }
+
+        return dp[n][sum];
+    }
+    */
+
+    /*
+    ============================================
+    ✅ Optional: Space Optimized DP (1D array)
+    ============================================
+    🔁 Time Complexity: O(n * sum)
+    🧠 Space Complexity: O(sum)
+
+    You only need current row, not the full 2D table.
+    */
+    /*
+    public int count(int coins[], int sum) {
+        int[] dp = new int[sum + 1];
+
+        // Base Case: 1 way to make sum 0 (pick none)
+        dp[0] = 1;
+
+        for (int coin : coins) {
+            for (int j = coin; j <= sum; j++) {
+                dp[j] += dp[j - coin];
+            }
+        }
+
+        return dp[sum];
+    }
+    */
+
+    /*
+    ==========================================================
+    ✅ Brute-force Recursion (No Memoization) — For Understanding Only
+    ==========================================================
+    🔁 Time Complexity: Exponential O(2^sum)
+    🧠 Space Complexity: O(sum) — due to call stack
+
+    Very inefficient for large inputs!
+    */
+    /*
+    public int count(int coins[], int sum) {
+        return rec(coins, coins.length, sum);
+    }
+
+    public int rec(int[] coins, int n, int sum) {
+        if (sum == 0) return 1;
+        if (sum < 0 || n == 0) return 0;
+
+        return rec(coins, n, sum - coins[n - 1]) + rec(coins, n - 1, sum);
+    }
+    */
+}
