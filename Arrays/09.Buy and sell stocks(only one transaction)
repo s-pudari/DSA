@@ -70,7 +70,7 @@ class Solution {
      *
      * 🚫 Not suitable for large inputs.
      */
-    /*
+
     public int maximumProfit(int[] prices) {
         int maxProfit = 0;
 
@@ -88,5 +88,5 @@ class Solution {
 
         return maxProfit;
     }
-    */
+    
 }
