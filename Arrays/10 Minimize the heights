@@ -85,7 +85,7 @@ class Solution {
      * Only for theoretical understanding.
      */
 
-    /*
+    
     int getMinDiff(int[] arr, int k) {
         int n = arr.length;
         int[] modified = new int[n];
@@ -115,5 +115,5 @@ class Solution {
 
         return Math.min(opt1, opt2);
     }
-    */
+    
 }
