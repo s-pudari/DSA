@@ -82,7 +82,7 @@ class Solution {
      * 3. Put the saved element at the beginning.
      */
 
-    /*
+    
     static void rotateClockwise(int arr[], int d) {
         int n = arr.length;
 
@@ -99,5 +99,5 @@ class Solution {
             arr[0] = temp;
         }
     }
-    */
+    
 }
