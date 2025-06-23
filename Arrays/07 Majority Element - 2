@@ -128,7 +128,7 @@ class Solution {
      *
      * 🚫 Not efficient for large arrays.
      */
-    /*
+    
     public List<Integer> findMajority(int[] nums) {
         List<Integer> list = new ArrayList<>();
         int threshold = nums.length / 3;
@@ -151,5 +151,5 @@ class Solution {
         Collections.sort(list); // Optional: to return sorted list
         return list;
     }
-    */
+    
 }
