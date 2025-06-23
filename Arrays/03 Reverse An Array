@@ -61,7 +61,7 @@ class Solution {
      * 3. Copy contents of `temp` back to `arr`.
      */
 
-    /*
+    
     public void reverseArray(int arr[]) {
         int[] temp = new int[arr.length]; // Create a new array
         int idx = arr.length - 1;         // Start from the last element of original array
@@ -76,5 +76,5 @@ class Solution {
             arr[i] = temp[i];
         }
     }
-    */
+    
 }
