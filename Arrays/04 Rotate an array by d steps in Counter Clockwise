@@ -82,7 +82,7 @@ class Solution {
      *    c. Put temp at the end of array.
      */
 
-    /*
+    
     static void rotateArr(int arr[], int d) {
         int n = arr.length;
 
@@ -98,5 +98,5 @@ class Solution {
             arr[n - 1] = temp; // Place first element at the end
         }
     }
-    */
+    
 }
