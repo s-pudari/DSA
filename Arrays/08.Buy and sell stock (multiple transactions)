@@ -64,7 +64,7 @@ class Solution {
      * ✅ TIME COMPLEXITY: O(n)
      * ✅ SPACE COMPLEXITY: O(1)
      */
-    /*
+    
     public int maximumProfit(int prices[]) {
         int n = prices.length;
         int i = 0;
@@ -88,6 +88,6 @@ class Solution {
 
         return res;
     }
-    */
+    
 }
 
