@@ -65,7 +65,7 @@ class Solution {
      * ✅ SPACE: O(n)
      */
 
-    /*
+    
     public int missingNumber(int[] arr) {
         int n = arr.length;
         boolean[] seen = new boolean[n + 1];
@@ -87,7 +87,7 @@ class Solution {
         // If all numbers 1..n are present
         return n + 1;
     }
-    */
+    
 
     /*
      * ------------------------------------------------------------
@@ -97,7 +97,7 @@ class Solution {
      * ✅ SPACE: O(1) if sorting in-place
      */
 
-    /*
+    
     public int missingNumber(int[] arr) {
         Arrays.sort(arr);  // 🔄 Sort array
         int smallest = 1;
@@ -110,5 +110,5 @@ class Solution {
 
         return smallest;
     }
-    */
+    
 }
