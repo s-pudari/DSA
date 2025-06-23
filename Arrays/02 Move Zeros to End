@@ -64,7 +64,7 @@ class Solution {
      * 3. Copy the contents of the temporary array back to the original.
      */
 
-    /*
+    
     void pushZerosToEnd(int[] arr) {
         int[] temp = new int[arr.length]; // New array to hold result
         int idx = 0;
@@ -83,5 +83,5 @@ class Solution {
             arr[i] = temp[i];
         }
     }
-    */
+    
 }
