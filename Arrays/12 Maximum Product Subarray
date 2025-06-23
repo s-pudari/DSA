@@ -74,7 +74,7 @@ class Solution {
      * ✅ SPACE COMPLEXITY: O(1)
      */
 
-    /*
+    
     int maxProduct(int[] arr) {
         int n = arr.length;
         int maxProduct = Integer.MIN_VALUE;
@@ -89,5 +89,5 @@ class Solution {
 
         return maxProduct;
     }
-    */
+    
 }
