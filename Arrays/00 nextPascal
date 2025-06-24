@@ -1,0 +1,106 @@
+/*
+🧮 PROBLEM: Pascal Triangle – Find Next Element in a Partial Row
+---------------------------------------------------------------
+You're given a **partial row** of Pascal's Triangle, i.e., a prefix of row `n`.
+
+Each element in Pascal's Triangle row `n` is a binomial coefficient:
+C(n, 0), C(n, 1), ..., C(n, n)
+
+You are to return the **next element** in the row if the input is not the full row.
+If the full row is already provided → return -1.
+
+⚠️ You can assume:
+- The row always starts with 1 (i.e., input is a prefix of Pascal's row)
+- The second element in the array is always `n` (i.e., C(n, 1) = n)
+
+-------------------------------------
+🧠 APPROACH (Optimized - Binomial Property):
+-------------------------------------
+We use Pascal's identity:
+➡ C(n, k+1) = C(n, k) * (n - k) / (k + 1)
+
+So given the last element C(n, k), we can compute C(n, k+1) in O(1).
+
+🔁 Time Complexity: O(1)
+🧠 Space Complexity: O(1)
+
+👶 Dry Run Example:
+--------------------
+Input: [1, 5, 10]
+→ arr[1] = 5 → n = 5
+→ Current length = 3 → Means we have C(5, 0), C(5, 1), C(5, 2)
+→ Want to compute C(5, 3)
+
+Use formula:
+C(5, 3) = C(5, 2) * (5 - 2) / (2 + 1) = 10 * 3 / 3 = 10 ✅
+
+Output: 10
+
+If input is full row: [1, 5, 10, 10, 5, 1], return -1
+*/
+
+public class PascalNext {
+
+    /**
+     * Returns the next Pascal triangle element if possible.
+     * If the full row is already given, return -1.
+     */
+    public static int nextElement(int[] arr) {
+        // ✅ Need at least two elements to determine `n`
+        if (arr.length < 2) return -1;
+
+        // arr[1] = C(n,1) → so n = arr[1]
+        int n = arr[1];
+
+        // A complete row has (n + 1) elements
+        int fullLength = n + 1;
+
+        // If current array already has full length, there's no "next" element
+        if (arr.length == fullLength) return -1;
+
+        // k is the index of the last known element (C(n, k))
+        int k = arr.length - 1;
+
+        // Compute next binomial coefficient using Pascal's identity
+        // Use long to avoid overflow
+        long next = (long) arr[k] * (n - k) / (k + 1);
+
+        return (int) next;
+    }
+
+    public static void main(String[] args) {
+        int[] partialRow = {1, 5, 10};         // Part of row 5: [1, 5, 10, 10, 5, 1]
+        int[] fullRow = {1, 5, 10, 10, 5, 1};  // Full row 5
+
+        System.out.println(nextElement(partialRow)); // Output: 10
+        System.out.println(nextElement(fullRow));    // Output: -1
+    }
+
+    /*
+    ---------------------------------------------------
+    💡 BRUTE FORCE (for learning): Generate Pascal row
+    ---------------------------------------------------
+    You can generate the full Pascal's Triangle row and pick the next element.
+
+    Time Complexity: O(n) → where n is derived from arr[1]
+    Space Complexity: O(n)
+
+    Example: */
+    public static int bruteForce(int[] arr) {
+        if (arr.length < 2) return -1;
+        int n = arr[1];
+        int fullLength = n + 1;
+        if (arr.length == fullLength) return -1;
+
+        int[] row = new int[fullLength];
+        row[0] = 1;
+
+        for (int i = 1; i <= n; i++) {
+            row[i] = (int)((long)row[i - 1] * (n - i + 1) / i);
+        }
+
+        return row[arr.length]; // next element after input prefix
+    }
+    
+}
+
