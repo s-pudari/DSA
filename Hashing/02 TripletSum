@@ -1,0 +1,137 @@
+//https://leetcode.com/problems/3sum/description/
+/*
+🎯 Problem: 3Sum (LeetCode 15)
+-----------------------------------------------------
+📝 Description:
+Given an integer array `nums`, return all the unique triplets `[nums[i], nums[j], nums[k]]` such that:
+  - i ≠ j, i ≠ k, and j ≠ k
+  - nums[i] + nums[j] + nums[k] == 0
+
+Return the solution set in **any order**, but **no duplicate triplets** allowed.
+
+-----------------------------------------------------
+✅ Optimized Approach: Sorting + Two Pointer
+-----------------------------------------------------
+🧠 Idea:
+1. Sort the array
+2. Loop through each element `i` from 0 to n-1
+3. Use two pointers `j` and `k` to find pairs such that arr[i] + arr[j] + arr[k] = 0
+4. Skip duplicates for `i`, `j`, and `k`
+
+🔍 Dry Run Example:
+Input: [-1, 0, 1, 2, -1, -4]
+Sorted: [-4, -1, -1, 0, 1, 2]
+Loop i = 0 → -4 → pair (-1, 2) too small → increase left
+...
+Triplets found: [-1, -1, 2], [-1, 0, 1]
+
+🕒 Time Complexity: O(n^2)
+🧠 Space Complexity: O(no. of triplets)
+*/
+
+class Solution {
+    public List<List<Integer>> threeSum(int[] arr) {
+        int n = arr.length;
+        Arrays.sort(arr); // Sort for two-pointer and duplicate handling
+
+        List<List<Integer>> li = new ArrayList<>();
+
+        for (int i = 0; i < n; i++) {
+            if (i > 0 && arr[i] == arr[i - 1]) continue; // Skip duplicates for i
+
+            int j = i + 1;
+            int k = n - 1;
+
+            while (j < k) {
+                int sum = arr[i] + arr[j] + arr[k];
+
+                if (sum < 0) {
+                    j++; // We need a bigger sum
+                } else if (sum > 0) {
+                    k--; // We need a smaller sum
+                } else {
+                    // Found valid triplet
+                    li.add(Arrays.asList(arr[i], arr[j], arr[k]));
+                    j++;
+                    k--;
+
+                    // Skip duplicates for j and k
+                    while (j < k && arr[j] == arr[j - 1]) j++;
+                    while (j < k && arr[k] == arr[k + 1]) k--;
+                }
+            }
+        }
+
+        return li;
+    }
+
+    /*
+    -----------------------------------------------------
+    🧱 Brute Force Approach (3 Loops)
+    -----------------------------------------------------
+    🧠 Idea:
+    Try every combination of three elements. Sort and add to set to avoid duplicates.
+
+    🕒 Time Complexity: O(n^3 * log(3))
+    🧠 Space Complexity: 2 * O(no. of triplets) → Set + Output list*/
+
+    public List<List<Integer>> threeSum(int[] nums) {
+        int n = nums.length;
+        HashSet<List<Integer>> hs = new HashSet<>();
+
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    if (nums[i] + nums[j] + nums[k] == 0) {
+                        List<Integer> li = Arrays.asList(nums[i], nums[j], nums[k]);
+                        Collections.sort(li); // To ensure set uniqueness
+                        hs.add(li);
+                    }
+                }
+            }
+        }
+        return new ArrayList<>(hs);
+    }
+    
+
+    /*
+    -----------------------------------------------------
+    🔁 HashMap-based Pair + Target Approach
+    -----------------------------------------------------
+    🧠 Idea:
+    - Fix two indices i, j
+    - Compute required sum = -(arr[i] + arr[j])
+    - Check if that number exists in map (and index is not i or j)
+
+    🔐 Use a Set to store sorted triplets and prevent duplicates
+
+    🕒 Time Complexity: O(n^2)
+    🧠 Space Complexity: O(n) + O(no. of triplets)*/
+
+    public List<List<Integer>> findTriplets(int[] arr) {
+        int n = arr.length;
+        List<List<Integer>> li = new ArrayList<>();
+        Set<List<Integer>> set = new HashSet<>();
+        if (n < 3) return li;
+
+        Map<Integer, Integer> hm = new HashMap<>();
+        for (int i = 0; i < n; i++) {
+            hm.put(arr[i], i);
+        }
+
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                int req = -(arr[i] + arr[j]);
+                if (hm.containsKey(req) && hm.get(req) != i && hm.get(req) != j) {
+                    List<Integer> temp = Arrays.asList(arr[i], arr[j], req);
+                    Collections.sort(temp);
+                    set.add(temp);
+                }
+            }
+        }
+
+        li.addAll(set);
+        return li;
+    }
+    
+}
