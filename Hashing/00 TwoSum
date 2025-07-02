@@ -1,0 +1,116 @@
+/*https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-gfg-160/problem/key-pair5616
+🎯 Problem: Two Sum
+
+You're given an integer array `arr[]` and a target sum `target`.
+Check whether there exist **two distinct elements** in the array whose sum is exactly equal to `target`.
+
+Return `true` if such a pair exists, otherwise return `false`.
+
+-----------------------------------------------------
+✅ Optimized Approach (Hashing) – Approach 3
+-----------------------------------------------------
+🧠 Idea:
+- Use a HashSet to store seen elements.
+- For each element `x`, check if `target - x` exists in the set.
+
+🔍 Dry Run:
+arr = [3, 5, 2, 8], target = 10
+
+i = 0 → x = 3, target - x = 7 ❌ not in set → add 3  
+i = 1 → x = 5, target - x = 5 ❌ not in set → add 5  
+i = 2 → x = 2, target - x = 8 ❌ not in set → add 2  
+i = 3 → x = 8, target - x = 2 ✅ found! return true
+
+🕒 Time Complexity: O(n)  
+🧠 Space Complexity: O(n)
+*/
+
+class Solution {
+    boolean twoSum(int arr[], int target) {
+        int n = arr.length;
+        if (n < 2) return false; // Edge case: need at least two elements
+
+        HashSet<Integer> hs = new HashSet<>();
+
+        for (int i = 0; i < n; i++) {
+            int complement = target - arr[i];
+
+            // Check if complement exists in the set
+            if (hs.contains(complement)) return true;
+
+            // Add current number to the set
+            hs.add(arr[i]);
+        }
+
+        return false; // No such pair found
+    }
+
+    /*
+    -----------------------------------------------------
+    ⏱️ Approach 2: Two Pointers (after sorting)
+    -----------------------------------------------------
+    🧠 Idea:
+    - Sort the array
+    - Use two pointers from both ends to check if any pair sums to the target
+
+    🔍 Dry Run:
+    arr = [2, 3, 5, 8], target = 10
+    After sorting: [2, 3, 5, 8]
+    l = 0, r = 3 → 2+8 = 10 ✅ return true
+
+    🕒 Time Complexity: O(n log n) (due to sorting)
+    🧠 Space Complexity: O(1)
+
+    Code:
+    ---------- */
+    boolean twoSum(int arr[], int target) {
+        int n = arr.length;
+        if (n < 2) return false;
+
+        Arrays.sort(arr);  // Sort the array
+
+        int l = 0, r = n - 1;
+
+        while (l < r) {
+            int sum = arr[l] + arr[r];
+
+            if (sum == target) return true;
+            else if (sum < target) l++; // Try increasing sum
+            else r--;                   // Try decreasing sum
+        }
+
+        return false;
+    }
+    
+
+    /*
+    -----------------------------------------------------
+    🐌 Approach 1: Brute Force
+    -----------------------------------------------------
+    🧠 Idea:
+    - Try every possible pair of elements and check if their sum equals the target.
+
+    🔍 Dry Run:
+    arr = [3, 5, 2, 8], target = 10
+    (3+5)=8 ❌, (3+2)=5 ❌, (3+8)=11 ❌, (5+2)=7 ❌, (5+8)=13 ❌, (2+8)=10 ✅ return true
+
+    🕒 Time Complexity: O(n²)
+    🧠 Space Complexity: O(1)
+
+    Code:
+    ---------- */
+    boolean twoSum(int arr[], int target) {
+        int n = arr.length;
+        if (n < 2) return false;
+
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (arr[i] + arr[j] == target) return true;
+            }
+        }
+
+        return false;
+    }
+    
+}
+
