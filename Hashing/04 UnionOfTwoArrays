@@ -1,0 +1,105 @@
+/*https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-gfg-160/problem/union-of-two-arrays3538
+🔍 Problem: Union of Two Arrays
+
+You are given two arrays `a[]` and `b[]`. You must return the **count of unique elements** present in either of the arrays.
+This is called the **union** of two arrays (i.e., all elements from both arrays without duplicates).
+
+📌 Example:
+a = [1, 2, 3, 4, 5]
+b = [1, 2, 3]
+→ Output: 5
+Explanation: Unique elements = {1, 2, 3, 4, 5} → count = 5
+
+---------------------------------------------------------
+🧠 Brute-force Approach:
+
+🔸 Idea:
+- Use an `ArrayList` to store elements.
+- Add all elements from `a[]` to the list only if they are not already present.
+- Repeat for `b[]`.
+- This ensures only unique elements are added.
+
+📈 Time Complexity: O((n + m) * k), where `k` is the time for `contains()` → worst case O(n²)
+📦 Space Complexity: O(n + m) for storing unique values in the list
+
+🔍 Dry Run:
+a = [1, 2, 2]
+b = [2, 3]
+→ li = []
+Add 1 → li = [1]
+Add 2 → li = [1, 2]
+Skip 2 (duplicate)
+b: Skip 2 (already in list)
+Add 3 → li = [1, 2, 3]
+→ Result = 3 */
+
+
+
+/* ------------------------- Brute-Force Approach -------------------------*/
+
+class Solution {
+    public static int findUnion(int a[], int b[]) {
+        ArrayList<Integer> li = new ArrayList<>();
+
+        // Add elements of 'a' to list if not already present
+        for (int j : a) {
+            if (!li.contains(j)) {
+                li.add(j);
+            }
+        }
+
+        // Add elements of 'b' to list if not already present
+        for (int i : b) {
+            if (!li.contains(i)) {
+                li.add(i);
+            }
+        }
+
+        return li.size(); // Return number of unique elements
+    }
+}
+
+/*---------------------------------------------------------
+✅ Optimized Approach (Using HashSet):
+
+🔸 Idea:
+- Use a HashSet which automatically handles duplicates.
+- Add all elements of `a[]` and `b[]` to the set.
+- Return the size of the set as the union count.
+
+📈 Time Complexity: O(n + m)
+📦 Space Complexity: O(n + m)
+
+🔍 Dry Run:
+a = [1, 2, 2]
+b = [2, 3]
+→ Set after a: {1, 2}
+→ Set after b: {1, 2, 3}
+→ Result = 3
+*/
+import java.util.*;
+
+class Solution {
+    public static int findUnion(int a[], int b[]) {
+        int n = a.length;
+        int m = b.length;
+
+        // HashSet to store unique elements from both arrays
+        HashSet<Integer> hs1 = new HashSet<>();
+
+        /* Add all elements of array 'a' to the HashSet.
+           Duplicates are automatically ignored. */
+        for (int num : a) {
+            hs1.add(num);
+        }
+
+        /* Add all elements of array 'b' to the HashSet. */
+        for (int num : b) {
+            hs1.add(num);
+        }
+
+        // Return the size of the set as the count of unique elements
+        return hs1.size();
+    }
+}
+
