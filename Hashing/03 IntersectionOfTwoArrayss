@@ -1,0 +1,115 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-gfg-160/problem/intersection-of-two-arrays-with-duplicate-elements
+/*
+🔍 Problem: Intersection of Two Arrays (Unique elements only in result)
+
+Given two integer arrays `a[]` and `b[]`, return a list of elements that are **common to both arrays**.
+The result should only contain **unique elements**, even if the input arrays have duplicates.
+
+📌 Example:
+a = [1, 2, 2, 1]
+b = [2, 2]
+→ Output: [2]
+
+---------------------------------------------------------
+🧠 Brute-force Approach (Nested Loops + contains check):
+
+🔸 Idea:
+- Compare each element in array `a` with each element in array `b`.
+- If both match and that element is not already in result, add it.
+- Use `li.contains()` to avoid adding duplicates.
+
+📈 Time Complexity: O(n * m)
+📦 Space Complexity: O(k), where `k` is number of unique common elements
+
+🔍 Dry Run:
+a = [1, 2, 2, 1]
+b = [2, 2]
+Result = []
+
+1 == 2 → no
+2 == 2 → yes → add 2 → Result = [2]
+2 == 2 → already in result → skip
+1 == 2 → no
+→ Final Result = [2]
+
+---------------------------------------------------------
+Optimized Approach (Using HashSet):
+
+🔸 Idea:
+- Use two hash sets to store unique elements of both arrays.
+- Then loop through one set and check which elements are present in the other.
+
+📈 Time Complexity: O(n + m)
+📦 Space Complexity: O(n + m)
+
+🔍 Dry Run:
+a = [1, 2, 2, 1] → hs1 = {1, 2}
+b = [2, 2] → hs2 = {2}
+Loop through hs1 → 1 (not in hs2), 2 (in hs2) → add 2 to result
+→ Final Result = [2]
+*/
+
+/* ------------------------- Brute-Force Approach -------------------------*/
+
+
+class Solution {
+    public ArrayList<Integer> intersectionWithDuplicates(int[] a, int[] b) {
+        ArrayList<Integer> li = new ArrayList<>();
+
+        for (int i : a) {
+            for (int j : b) {
+                // Check if elements match and are not already in the result
+                if (i == j && !li.contains(i)) {
+                    li.add(i); // Add only unique common elements
+                    break; // Move to next element in 'a' once a match is found
+                }
+            }
+        }
+
+        return li;
+    }
+}
+
+
+/* ------------------------- Optimized Approach ------------------------- */
+
+import java.util.*;
+
+class Solution {
+    public ArrayList<Integer> intersectionWithDuplicates(int[] a, int[] b) {
+        int n = a.length;
+        int m = b.length;
+
+        // HashSet to store unique elements from array 'a'
+        HashSet<Integer> hs1 = new HashSet<>();
+
+        // HashSet to store unique elements from array 'b'
+        HashSet<Integer> hs2 = new HashSet<>();
+
+        // Resultant list to store common unique elements
+        ArrayList<Integer> li = new ArrayList<>();
+
+        /* Add all elements of array 'a' to hs1.
+           Since HashSet only stores unique elements,
+           duplicates are automatically removed. */
+        for (int num : a) {
+            hs1.add(num);
+        }
+
+        /* Similarly, add all elements of array 'b' to hs2 */
+        for (int num : b) {
+            hs2.add(num);
+        }
+
+        /* Loop through hs1 and check which elements exist in hs2.
+           These will be the common elements. */
+        for (int num : hs1) {
+            if (hs2.contains(num)) {
+                li.add(num); // Add to result if present in both sets
+            }
+        }
+
+        return li; // Return final list containing intersection elements
+    }
+}
+
