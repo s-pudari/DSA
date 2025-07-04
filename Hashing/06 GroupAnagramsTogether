@@ -1,0 +1,120 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-gfg-160/problem/print-anagrams-together
+/*
+🔍 Problem: Group Anagrams (Also known as "Print Anagrams Together")
+
+🧾 Given an array of strings, group all anagrams together. 
+Two strings are anagrams if they contain the same characters in the same frequency but possibly in different orders.
+
+📌 Example:
+Input: ["act", "god", "cat", "dog", "tac"]
+Output: [["act", "cat", "tac"], ["god", "dog"]]
+
+Note: Output order of groups or strings inside groups does not matter.
+
+-------------------------------------------------------------------------------
+🧠 Approach 1: Brute-force using HashMap with manual index tracking
+
+🔸 Idea:
+- For each string, sort its characters to generate a "key".
+- Use a HashMap to store a mapping from sorted key → index in result list.
+- If the key is not already in the map, create a new list and add it to `res`.
+
+📈 Time Complexity: O(n * k log k)  
+  Where `n` = number of strings, `k` = average string length (sorting each string).  
+📦 Space Complexity: O(n * k)  
+  For storing anagrams in groups and keys in the HashMap.
+
+🔍 Dry Run:
+Input: ["act", "god", "cat", "dog", "tac"]  
+→ Sorted key map: {act → [act, cat, tac], dgo → [god, dog]}  
+→ Output: [[act, cat, tac], [god, dog]]
+*/
+
+/* ------------------------- Brute-force Approach--------------------------*/
+
+class Solution {
+    public ArrayList<ArrayList<String>> anagrams(String[] arr) {
+        ArrayList<ArrayList<String>> res = new ArrayList<>();
+        HashMap<String, Integer> hm = new HashMap<>();
+
+        for (String s : arr) {
+            // Sort the string to use as key for anagrams
+            char[] ch = s.toCharArray();
+            Arrays.sort(ch);
+            String key = new String(ch);
+
+            // If key not present, add new group to result list and map key to index
+            if (!hm.containsKey(key)) {
+                hm.put(key, res.size());  // Map this sorted key to next index in result list
+                res.add(new ArrayList<>());
+            }
+
+            // Add original string to its correct group
+            res.get(hm.get(key)).add(s);
+
+            /* 🔄 Alternate version of adding to result:
+            int index = hm.get(key); // get the index of the list
+            ArrayList<String> targetList = res.get(index); // get that group list
+            targetList.add(s); // add the current word to that group
+            // No need to re-put in res, as we're modifying the existing reference.
+            */
+        }
+        return res;
+    }
+}
+
+/*---------------------------------------------------------------------------------------
+✅ Approach 2: Optimized using HashMap directly mapping key → List<String>
+
+🔸 Idea:
+- Use a `HashMap<String, List<String>>` where the key is the sorted string.
+- No need to track index separately.
+- Build groups on the fly and extract them at the end.
+
+📈 Time Complexity: O(n * k log k)  
+📦 Space Complexity: O(n * k)
+
+🔍 Dry Run:
+Input: ["act", "god", "cat", "dog", "tac"]
+Sorted keys:
+→ "act" → ["act", "cat", "tac"]
+→ "dgo" → ["god", "dog"]
+*/
+
+import java.util.*;
+
+class Solution {
+    public ArrayList<ArrayList<String>> anagrams(String[] arr) {
+
+        // HashMap to store sorted key → group of anagrams
+        Map<String, ArrayList<String>> hm = new HashMap<>();
+
+        for (String str : arr) {
+            // Sort characters of string to form the key
+            char[] ch = str.toCharArray();
+            Arrays.sort(ch);
+            String key = new String(ch); // this is our anagram group identifier
+
+            /* If key does not exist, create a new group.
+               putIfAbsent() adds key only if it's not already present. */
+            hm.putIfAbsent(key, new ArrayList<>());
+
+            // Add original string to the corresponding anagram group
+            hm.get(key).add(str);
+
+            /* 🔄 Alternate way to do the same:
+            ArrayList<String> group = hm.get(key);
+            group.add(str);  // No need to re-put in hm, as we're modifying the existing reference.
+
+            */
+        }
+
+        // Collect all groups of anagrams into the result list
+        ArrayList<ArrayList<String>> res = new ArrayList<>();
+        for (ArrayList<String> group : hm.values()) {
+            res.add(group);
+        }
+
+        return res;
+    }
+}
