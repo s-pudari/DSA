@@ -1,0 +1,110 @@
+/*
+🎯 Problem: Count the number of subarrays with sum equal to `k`
+
+You're given an integer array `arr[]` and an integer `k`.  
+Your task is to count the number of **continuous subarrays** whose elements sum up to `k`.
+
+🧪 Example:
+Input: arr = [1, 2, 3], k = 3  
+Output: 2  
+Explanation: The subarrays [1,2] and [3] have sum = 3.
+
+---------------------------------------------------------
+🧠 Approach 1: Brute-force (Nested Loops) 🔁
+
+🔸 Idea:
+- Check all possible subarrays using two loops.
+- For each subarray, calculate the sum and check if it's equal to `k`.
+
+📈 Time Complexity: O(n²)  
+📦 Space Complexity: O(1)
+
+🧪 Dry Run:
+arr = [1, 2, 3], k = 3  
+Subarrays checked:
+[1] → 1  
+[1,2] → 3 ✅  
+[1,2,3] → 6  
+[2] → 2  
+[2,3] → 5  
+[3] → 3 ✅  
+→ count = 2
+*/
+
+------------------ Brute-Force Approach (Commented) ------------------*/
+
+class Solution {
+    public int countSubarrays(int[] arr, int k) {
+        int cnt = 0;
+
+        // Outer loop for the starting index of subarray
+        for (int i = 0; i < arr.length; i++) {
+            int sum = arr[i];
+
+            // If the single element matches k, increment count
+            if (sum == k) cnt++;
+
+            // Inner loop to expand subarray from i to j
+            for (int j = i + 1; j < arr.length; j++) {
+                sum += arr[j];
+
+                // If sum equals k, valid subarray found
+                if (sum == k) {
+                    cnt++;
+                }
+            }
+        }
+        return cnt;
+    }
+}
+
+/* ------------------ Optimized Approach Using Prefix Sum + HashMap ------------------ 
+✅ Approach 2: Optimized using HashMap and Prefix Sum
+
+🔸 Idea:
+- Maintain a running `currSum`.
+- Use a HashMap to store how many times each prefix sum has occurred.
+- If at index `i`, the sum from 0 to i is `currSum`, and if `currSum - k` is seen before,  
+  it means a subarray exists ending at `i` with sum `k`.
+
+📈 Time Complexity: O(n)  
+📦 Space Complexity: O(n)
+
+🧪 Dry Run:
+arr = [1, 2, 3], k = 3  
+prefixSum map evolves as:  
+→ i=0, currSum=1 → no match  
+→ i=1, currSum=3 → matches `k` → count = 1  
+→ i=2, currSum=6 → `6 - 3 = 3` is in map → count += 1  
+→ Total count = 2
+*/
+
+import java.util.*;
+
+class Solution {
+    public int countSubarrays(int[] arr, int k) {
+        // HashMap to store the frequency of prefix sums
+        HashMap<Integer, Integer> prefixSum = new HashMap<>();
+
+        int currSum = 0;  // running prefix sum
+        int cnt = 0;      // count of valid subarrays
+
+        for (int i = 0; i < arr.length; i++) {
+            currSum += arr[i];  // Update the running sum
+
+            // If running sum is exactly equal to k, that’s one valid subarray (from start to i)
+            if (currSum == k) cnt++;
+
+            /* If (currSum - k) is found in the prefix sum map,
+               it means there’s a subarray ending at i with sum = k */
+            if (prefixSum.containsKey(currSum - k)) {
+                cnt += prefixSum.get(currSum - k); // add the frequency of that sum
+            }
+
+            /* Update the frequency of the current prefix sum */
+            prefixSum.put(currSum, prefixSum.getOrDefault(currSum, 0) + 1);
+        }
+
+        return cnt;
+    }
+}
