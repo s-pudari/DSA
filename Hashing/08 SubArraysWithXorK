@@ -1,0 +1,123 @@
+/*
+🎯 Problem: Count the number of subarrays with XOR equal to `k`
+
+Given an integer array `arr[]` and an integer `k`, you need to return the **count of subarrays** such that the XOR of all elements in the subarray is equal to `k`.
+
+🔍 Key Points:
+- Subarray means a **contiguous** part of the array.
+- XOR (^) operation follows the property: a^a = 0 and a^0 = a.
+- Useful XOR property: If `A ^ B = C`, then `A = B ^ C` and `B = A ^ C`.
+
+---------------------------------------------------------
+🧪 Example:
+Input: arr = [4, 2, 2, 6, 4], k = 6
+
+Subarrays with XOR = 6:
+- [4,2] → 4^2 = 6
+- [2,2,6] → 2^2^6 = 6
+- [6] → 6
+- [4,2,2,6] → 4^2^2^6 = 6
+
+✅ Output: 4
+
+---------------------------------------------------------
+🧠 Brute-force Approach (Approach 1):
+
+🔸 Idea:
+- Use two nested loops to consider all subarrays.
+- For each subarray, compute XOR and check if it equals `k`.
+
+📈 Time Complexity: O(n²)  
+📦 Space Complexity: O(1)
+
+🧪 Dry Run (arr = [4, 2, 2, 6, 4], k = 6)
+i = 0 → j = 0 → XOR = 4  
+       j = 1 → XOR = 4^2 = 6 ✅ → count++
+       j = 2 → XOR = 6^2 = 4  
+       j = 3 → XOR = 4^6 = 2  
+       j = 4 → XOR = 2^4 = 6 ✅ → count++
+
+Repeat for i = 1, 2... and count subarrays
+
+---------------------------------------------------------
+*/
+
+class Solution {
+    public long subarrayXor(int arr[], int k) {
+        // ------------------ Brute-force Approach ------------------
+        
+        int cnt = 0; // Counter for valid subarrays
+
+        // Outer loop: starting index of subarray
+        for (int i = 0; i < arr.length; i++) {
+            int prefXor = 0; // Initialize XOR for this subarray starting at i
+
+            // Inner loop: ending index of subarray
+            for (int j = i; j < arr.length; j++) {
+                /*
+                XOR from index i to j is calculated on the fly
+                */
+                prefXor ^= arr[j];
+
+                // If this subarray's XOR is equal to k, increment count
+                if (prefXor == k) cnt++;
+            }
+        }
+
+        return cnt;
+
+        /* 🔻 End of Brute-force. Optimized Approach is commented below. 🔻 */
+
+        /*
+        ---------------------------------------------------------
+        🧠 Optimized Approach (Approach 2): Prefix XOR + HashMap
+
+        🔸 Idea:
+        - Maintain a `prefix XOR` as you traverse.
+        - Use a HashMap to store frequency of prefix XORs seen so far.
+        - At each index `i`, check if (prefix XOR ^ k) is already in map:
+            → It means there's a subarray ending at `i` with XOR = k.
+
+        Why? From XOR properties:
+        If prefixXor(i) ^ prefixXor(j) == k → Then subarray(i+1 to j) has XOR = k
+
+        📈 Time Complexity: O(n)
+        📦 Space Complexity: O(n)
+
+        🧪 Dry Run (arr = [4, 2, 2, 6, 4], k = 6)
+        Step-by-step:
+        i=0 → currXor = 4 → not k, map updated
+        i=1 → currXor = 6 → match ✅ count++
+        i=2 → currXor = 4 → 4^6=2 found in map ✅ count++
+        i=3 → currXor = 2 → 2^6=4 found ✅ count++
+        i=4 → currXor = 6 → match ✅ count++
+
+        Total count = 4
+        ---------------------------------------------------------*/
+
+        int cnt = 0;
+
+        HashMap<Integer, Integer> prefXor = new HashMap<>();
+
+        int currXor = 0;
+
+        for (int num : arr) {
+            currXor ^= num; // Update running XOR
+
+            // Case 1: If XOR from 0 to current index is exactly k
+            if (currXor == k) cnt++;
+
+            // Case 2: Check if there exists a prefix with XOR such that:
+            // currXor ^ prevPrefix = k ⇒ prevPrefix = currXor ^ k
+            if (prefXor.containsKey(currXor ^ k)) {
+                cnt += prefXor.get(currXor ^ k); // Add all such subarrays count
+            }
+
+            // Update frequency of current prefix XOR in map
+            prefXor.put(currXor, prefXor.getOrDefault(currXor, 0) + 1);
+        }
+
+        return cnt;
+        
+    }
+}
