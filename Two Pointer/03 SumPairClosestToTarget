@@ -1,0 +1,124 @@
+/*
+🎯 Problem Statement:
+Given a **sorted integer array** `arr[]` and an integer `target`, find **two numbers** in the array such that their **sum is closest to the target**.
+Return the **pair of numbers** whose sum is closest to the target.
+
+Note:
+- The array may contain negative numbers.
+- If multiple such pairs exist, return the first one found.
+- Assume input array has at least 2 elements.
+
+--------------------------------------------------------------------------------------
+🧠 Brute-force Approach:
+
+🔸 Idea:
+- Use two nested loops to check all possible pairs.
+- Track the pair whose sum has the minimum difference from the target.
+
+📈 Time Complexity: O(n²)  
+📦 Space Complexity: O(1)
+
+🧪 Dry Run:
+arr = [1, 3, 4, 7], target = 10  
+Possible sums:  
+1+3=4, 1+4=5, 1+7=8, 3+4=7, 3+7=10, 4+7=11  
+Minimum difference from target = 0 → pair = (3,7)
+
+🔧 Code:
+*/
+
+class Solution {
+    public List<Integer> sumClosest(int[] arr, int target) {
+        int n = arr.length;
+        int minDiff = Integer.MAX_VALUE;
+        List<Integer> ans = new ArrayList<>();
+
+        // Try all possible pairs
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int sum = arr[i] + arr[j];
+                int diff = Math.abs(target - sum);
+
+                if (diff < minDiff) {
+                    minDiff = diff;
+                    ans.clear();
+                    ans.add(arr[i]);
+                    ans.add(arr[j]);
+                }
+            }
+        }
+        return ans;
+    }
+}
+
+
+/*
+--------------------------------------------------------------------------------------
+🧠 Optimized Approach (Two-pointer - Only works if array is sorted)
+
+🔸 Idea:
+- Sort the array if not already sorted.
+- Use two pointers: one at the start (`left`), one at the end (`right`).
+- Move the pointers based on the sum compared to the target:
+    - If sum is smaller, move left pointer to get closer to target.
+    - If sum is larger, move right pointer to reduce the sum.
+    - If sum exactly equals target, return that pair immediately.
+
+📈 Time Complexity: O(n log n) (for sorting) + O(n) (two-pointer traversal)  
+📦 Space Complexity: O(1) (ignoring output list)
+
+🧪 Dry Run:
+arr = [1, 3, 4, 7], target = 10 → sorted = [1, 3, 4, 7]  
+Start with l = 0, r = 3 → sum = 8 → diff = 2  
+l = 1, r = 3 → sum = 10 → diff = 0 → perfect match → return (3,7)
+
+🔧 Code:
+*/
+class Solution {
+    public List<Integer> sumClosest(int[] arr, int target) {
+        List<Integer> ans = new ArrayList<>();
+
+        // Sort the array to apply two-pointer technique
+        Arrays.sort(arr);
+
+        int left = 0, right = arr.length - 1;
+        int currClosestDiff = Integer.MAX_VALUE; // To track how close we are to the target
+
+        // Iterate until the two pointers meet
+        while (left < right) {
+            int sum = arr[left] + arr[right];
+            int diff = Math.abs(target - sum); // Current distance from the target
+
+            // If this pair is closer to the target than any previous pair
+            if (diff < currClosestDiff) {
+                currClosestDiff = diff;
+                ans.clear(); // Remove any older pair
+
+                ans.add(arr[left]);
+                ans.add(arr[right]);
+            }
+
+            // Move pointers based on the sum
+            if (sum < target) {
+                /*
+                 If current sum is less than target, move left pointer forward
+                 to try getting a larger sum (closer to target)
+                */
+                left++;
+            } else if (sum > target) {
+                /*
+                 If current sum is greater than target, move right pointer back
+                 to try getting a smaller sum
+                */
+                right--;
+            } else {
+                /*
+                 If we found the exact match, no need to search further
+                */
+                return ans;
+            }
+        }
+
+        return ans;
+    }
+}
