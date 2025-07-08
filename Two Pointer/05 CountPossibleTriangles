@@ -1,0 +1,119 @@
+//https://www.geeksforgeeks.org/batch/gfg-160-problems/track/two-pointer-technique-gfg-160/problem/count-possible-triangles-1587115620
+/*
+🎯 Problem: Count Possible Triangles
+
+Given an integer array `arr[]` representing lengths of rods, 
+return the number of triplets (i, j, k) that **can form a triangle**.
+
+🔺 Triangle Rule:
+For any 3 sides a, b, c to form a triangle:  
+    ➤ sum of any two sides must be greater than the third.
+    ➤ a + b > c, b + c > a, a + c > b
+
+📌 Since the array only contains positive values, 
+we can **sort it** and just check:
+    ➤ if arr[k] < arr[i] + arr[j]
+
+---
+
+🧠 Brute-Force Approach:
+
+🔸 Idea:
+- Use 3 nested loops to pick all triplets (i < j < k)
+- Check if arr[i] + arr[j] > arr[k] and similar conditions
+- Count such valid combinations
+
+📈 Time Complexity: O(n³)  
+📦 Space Complexity: O(1)
+
+🧪 Dry Run:
+arr = [4, 6, 3, 7]
+→ After sorting: [3, 4, 6, 7]
+Valid triangles:
+(3,4,6), (3,6,7), (4,6,7), (3,4,7) → count = 4
+
+🔧 Code:
+*/
+// Uncomment to test brute-force
+
+class Solution {
+    static int countTriangles(int arr[]) {
+        int n = arr.length;
+        int count = 0;
+
+        // Check every triplet
+        for (int i = 0; i < n - 2; i++) {
+            for (int j = i + 1; j < n - 1; j++) {
+                for (int k = j + 1; k < n; k++) {
+                    // Triangle condition
+                    if (arr[i] + arr[j] > arr[k] &&
+                        arr[j] + arr[k] > arr[i] &&
+                        arr[k] + arr[i] > arr[j]) {
+                        count++;
+                    }
+                }
+            }
+        }
+
+        return count;
+    }
+}
+
+
+/*
+-----------------------------------------------------------------------------------------
+🧠 Optimized Approach (Two Pointer + Sorting)
+
+🔸 Idea:
+- First sort the array in ascending order.
+- Fix the largest side (say at index i), and use two pointers to find valid smaller sides.
+- Since the array is sorted:
+    ➤ If arr[l] + arr[r] > arr[i], then all values from l to r−1 also satisfy the triangle condition.
+
+📈 Time Complexity: O(n²)  
+📦 Space Complexity: O(1)
+
+🧪 Dry Run:
+arr = [4, 6, 3, 7] → sorted → [3, 4, 6, 7]
+
+i = 2 (value 6) → l=0, r=1 → 3+4 > 6 → valid → count++
+i = 3 (value 7) → combinations: (3,4), (3,6), (4,6) → all valid → count += 3
+
+🔧 Code:
+*/
+
+class Solution {
+    // Function to count the number of possible triangles.
+    static int countTriangles(int arr[]) {
+        int cnt = 0;
+
+        // Step 1: Sort the array to enable two-pointer logic
+        Arrays.sort(arr);
+
+        // Step 2: Fix the largest side at index i and find two smaller sides
+        for (int i = arr.length - 1; i >= 2; i--) {
+            int l = 0, r = i - 1; // Two pointers start from beginning and just before i
+
+            while (l < r) {
+                /*
+                  Triangle condition:
+                  If arr[l] + arr[r] > arr[i], then
+                  all elements from index l to r-1 will also satisfy the condition with r
+                  because arr is sorted and smaller values appear before
+                */
+                if (arr[l] + arr[r] > arr[i]) {
+                    cnt += (r - l); // count all such pairs with this r
+                    r--; // try next smaller value
+                } else {
+                    /*
+                      If sum is not greater, we need a larger left side,
+                      so we move l forward
+                    */
+                    l++;
+                }
+            }
+        }
+
+        return cnt;
+    }
+}
