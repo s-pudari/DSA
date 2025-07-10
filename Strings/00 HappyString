@@ -1,0 +1,100 @@
+/*
+🎯 Problem: Custom Symbol-Based String Processing
+
+You are given a string that may contain special symbols: `*`, `$`, or `#`.
+
+🔸 Objective:
+- Whenever any of these symbols appears:
+    → Skip the **first non-space character** that appears *after* that symbol  
+    → Any number of **spaces after the symbol should be preserved**  
+- All other characters should be added to the result as-is.
+
+🔁 Example:
+Input:  "A * B $ C #D E"
+Step-by-step:
+→ A → keep  
+→ * → skip (keep spaces, skip next non-space, i.e., 'B')  
+→ $ → skip (keep spaces, skip next non-space, i.e., 'C')  
+→ # → skip (no spaces, directly skip 'D')  
+→ E → keep  
+
+Output: `"A   E"`
+
+--------------------------------------------------
+
+🧠 Dry Run:
+Input: "A * B  $ C #D E"
+
+Processing:
+- A → add
+- * → skip, preserve space → skip 'B'
+- $ → skip, preserve spaces → skip 'C'
+- # → skip, skip 'D'
+- E → add
+
+Output: "A     E"
+
+--------------------------------------------------
+
+🕒 Time Complexity: O(n)  
+📦 Space Complexity: O(n) (for the result string)
+
+*/
+
+import java.util.Scanner;
+
+public class Main {
+    public static void main(String[] args) {
+        // Scanner for user input
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Enter the input string:");
+        String input = scanner.nextLine();
+
+        // Call processing function
+        String output = Solution.processString(input);
+
+        // Display result
+        System.out.println("Processed string:");
+        System.out.println(output);
+    }
+}
+
+class Solution {
+    public static String processString(String str) {
+        StringBuilder result = new StringBuilder(); // For building the processed string
+        int i = 0;
+
+        while (i < str.length()) {
+            char current = str.charAt(i);
+
+            // If the character is one of the special symbols
+            if (current == '*' || current == '$' || current == '#') {
+                i++; // Move past the symbol itself
+
+                /* 
+                   Preserve all spaces immediately after the symbol.
+                   This is important to maintain formatting.
+                */
+                while (i < str.length() && str.charAt(i) == ' ') {
+                    result.append(' '); // Keep the space in output
+                    i++;
+                }
+
+                /* 
+                   After skipping spaces, skip the first non-space character 
+                   (only one character), if it exists.
+                */
+                if (i < str.length() && str.charAt(i) != ' ') {
+                    i++; // Skip the first non-space character after the symbol
+                }
+
+            } else {
+                // If it's not a symbol, simply add it to the result
+                result.append(current);
+                i++;
+            }
+        }
+
+        return result.toString(); // Return the final processed string
+    }
+}
