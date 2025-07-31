@@ -1,0 +1,128 @@
+/* https://www.geeksforgeeks.org/batch/gfg-160-problems/track/hashing-bonus-problem/problem/roman-number-to-integer3201
+🎯 Problem: Roman to Integer
+
+You are given a string representing a Roman numeral. Your task is to convert this Roman numeral into its equivalent **decimal (integer)** value.
+
+Roman numerals use characters:
+- I = 1, V = 5, X = 10, L = 50,
+- C = 100, D = 500, M = 1000
+
+🧠 Rule:
+- Normally, numerals are **added** (e.g., VI = 5 + 1 = 6)
+- But when a smaller numeral is placed **before a larger one**, it's **subtracted**
+  → e.g., IV = 5 - 1 = 4, IX = 10 - 1 = 9
+
+-------------------------------------------------------------
+
+🧪 Dry Run:
+Input: "MCMIV"
+
+Step-by-step:
+- M = 1000
+- C = 100, next is M = 1000 → smaller before larger → subtract → 1000 - 100 = 900
+- I = 1, next is V = 5 → subtract → 5 - 1 = 4
+
+Total = 1000 + 900 + 4 = 1904
+
+-------------------------------------------------------------
+
+🕒 Time Complexity: O(n) — single scan through the input string  
+📦 Space Complexity:
+- Brute Force: O(1) (constant method calls)
+- HashMap: O(1) (fixed size map with 7 keys)
+
+-------------------------------------------------------------
+*/
+
+import java.util.*;
+
+class Solution {
+    
+    // -----------------------------
+    // ✅ Approach 1: Brute Force using switch-case
+    // -----------------------------
+    
+    public int value(char ch) {
+        // Helper function to return decimal value of Roman character
+        switch(ch){
+            case 'I': return 1;
+            case 'V': return 5;
+            case 'X': return 10;
+            case 'L': return 50;
+            case 'C': return 100;
+            case 'D': return 500;
+            case 'M': return 1000;
+        }
+        return 0;
+    }
+
+    public int romanToDecimal_Brute(String s) {
+        int res = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            int ch1 = value(s.charAt(i)); // Current character's value
+
+            /* 
+               Check if next character exists.
+               If it does and its value is greater, it's a subtractive case.
+               Ex: IV → 5 - 1 = 4
+            */
+            if (i + 1 < s.length()) {
+                int ch2 = value(s.charAt(i + 1));
+
+                if (ch1 >= ch2) {
+                    res += ch1; // Normal addition
+                } else {
+                    res += (ch2 - ch1); // Subtraction case
+                    i++; // Skip the next character as it's already used
+                }
+            } else {
+                res += ch1; // Add last character if it's not part of a pair
+            }
+        }
+
+        return res;
+    }
+
+    // -----------------------------
+    // ✅ Approach 2: Optimized using HashMap
+    // -----------------------------
+    
+    public int romanToDecimal(String s) {
+        int res = 0;
+
+        // HashMap to store Roman symbol → value mapping
+        HashMap<Character, Integer> hm = new HashMap<>();
+        hm.put('I', 1);
+        hm.put('V', 5);
+        hm.put('X', 10);
+        hm.put('L', 50);
+        hm.put('C', 100);
+        hm.put('D', 500);
+        hm.put('M', 1000);
+
+        for (int i = 0; i < s.length(); i++) {
+            int ch1 = hm.get(s.charAt(i)); // Value of current character
+
+            /*
+               Check if next character exists, and whether it's greater than current.
+               If yes → subtractive case → use (ch2 - ch1) and skip next character
+               Else → normal addition
+            */
+            if (i + 1 < s.length()) {
+                int ch2 = hm.get(s.charAt(i + 1));
+
+                if (ch1 >= ch2) {
+                    res += ch1;
+                } else {
+                    res += (ch2 - ch1);
+                    i++; // Skip next char
+                }
+            } else {
+                res += ch1;
+            }
+        }
+
+        return res;
+    }
+}
