@@ -1,0 +1,118 @@
+/*
+-------------------------------------------------------
+🧩 Problem: Count Pairs with Absolute Difference K
+📌 LeetCode Link: https://leetcode.com/problems/count-number-of-pairs-with-absolute-difference-k/
+🧠 Difficulty: Easy
+
+🎯 Problem Explanation:
+You are given an integer array `arr` and an integer `k`.
+
+Your task is to count how many **pairs (i, j)** exist such that:
+- `i < j`
+- `|arr[i] - arr[j]| == k` (i.e., absolute difference is exactly `k`)
+
+-------------------------------------------------------
+🔍 Example:
+
+Input: arr = [1, 2, 2, 1], k = 1  
+→ Valid pairs: (0,1), (0,2), (1,3), (2,3)  
+→ Total = 4
+
+-------------------------------------------------------
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /*-----------------------------------------------------
+      ✅ Brute Force Approach
+      🕒 Time Complexity: O(n²)
+      🧠 Space Complexity: O(1)
+      
+      🧾 Explanation:
+      - We check every possible pair (i, j) where i < j.
+      - For each pair, we calculate |arr[i] - arr[j]|.
+      - If the absolute difference equals k, we increment our count.
+      -----------------------------------------------------*/
+
+    public int countPairsBruteForce(int[] arr, int k) {
+        int count = 0;
+
+        /* Iterate through all unique pairs using nested loops */
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
+
+                /* Check if absolute difference equals k */
+                if (Math.abs(arr[i] - arr[j]) == k) {
+                    count++;
+                }
+            }
+        }
+
+        return count;
+    }
+
+    /*
+    🔄 Dry Run for Brute Force:
+    Input: arr = [1, 2, 2, 1], k = 1
+
+    i=0, j=1 → |1-2| = 1 ✅ count=1  
+    i=0, j=2 → |1-2| = 1 ✅ count=2  
+    i=0, j=3 → |1-1| = 0 ❌  
+    i=1, j=2 → |2-2| = 0 ❌  
+    i=1, j=3 → |2-1| = 1 ✅ count=3  
+    i=2, j=3 → |2-1| = 1 ✅ count=4  
+
+    Final count = 4
+    -----------------------------------------------------*/
+
+
+    /*-----------------------------------------------------
+      ✅ Optimized Approach using HashMap
+      🕒 Time Complexity: O(n)
+      🧠 Space Complexity: O(n)
+
+      🧾 Explanation:
+      - For each element, we look for (arr[i] - k) and (arr[i] + k) in a HashMap.
+      - The map stores frequency counts of each element seen so far.
+      - This way, we count all previous values that form a valid pair with current.
+
+      Why both arr[i]+k and arr[i]-k?
+      - Because |a - b| = k → either a - b = k OR b - a = k
+      - So we check for both directions.
+      -----------------------------------------------------*/
+
+    public int countPairs(int[] arr, int k) {
+        int count = 0;
+        HashMap<Integer, Integer> freqMap = new HashMap<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            /* Check if a previous element forms a valid pair */
+            if (freqMap.containsKey(arr[i] + k)) {
+                count += freqMap.get(arr[i] + k);
+            }
+
+            if (freqMap.containsKey(arr[i] - k)) {
+                count += freqMap.get(arr[i] - k);
+            }
+
+            /* Add current element to frequency map */
+            freqMap.put(arr[i], freqMap.getOrDefault(arr[i], 0) + 1);
+        }
+
+        return count;
+    }
+
+    /*
+    🔄 Dry Run for Optimized:
+    Input: arr = [1, 2, 2, 1], k = 1
+
+    i=0: arr[0]=1 → map={} → no match → insert 1:1  
+    i=1: arr[1]=2 → check 2+1=3 ❌, 2-1=1 ✅ map[1]=1 → count=1 → insert 2:1  
+    i=2: arr[2]=2 → check 2+1=3 ❌, 2-1=1 ✅ map[1]=1 → count=2 → update 2:2  
+    i=3: arr[3]=1 → check 1+1=2 ✅ map[2]=2 → count+=2 → total count=4
+
+    Final count = 4
+    -----------------------------------------------------*/
+}
