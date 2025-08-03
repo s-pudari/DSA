@@ -1,0 +1,77 @@
+/*
+🎯 Problem: Maximum Distance Between Equal Elements
+
+🧠 You are given an array of integers.
+Your task is to find the **maximum distance between two equal elements** in the array.
+
+Formally:  
+Find the largest `j - i` such that `arr[i] == arr[j]` and `i < j`.
+
+📥 Example:
+Input: arr = [1, 2, 3, 2, 1, 2]
+Output: 4  
+→ arr[1] = 2, arr[5] = 2 → distance = 5 - 1 = 4
+
+--------------------------------------------------
+
+🧪 Dry Run:
+Array = [3, 5, 2, 3, 5, 2, 3]
+
+Step-by-step:
+- First 3 at index 0, next 3 at index 3 → distance = 3
+- Last 3 at index 6 → distance = 6
+- So, max distance = 6 (between index 0 and 6)
+
+--------------------------------------------------
+
+🕒 Time Complexity:
+- Brute Force: O(n²)
+- Optimized: O(n)
+
+📦 Space Complexity:
+- Brute Force: O(1)
+- Optimized: O(n) for HashMap
+
+--------------------------------------------------
+*/
+
+import java.util.*;
+
+class Solution {
+    
+    // ✅ Approach 1: Brute Force
+    public int maxDistanceBruteForce(int[] arr) {
+        int max = 0;
+
+        // Try all pairs (i, j) and check if values are same
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[i] == arr[j]) {
+                    max = Math.max(max, j - i);
+                }
+            }
+        }
+
+        return max;
+    }
+
+    // ✅ Approach 2: Optimized using HashMap
+    public int maxDistance(int[] arr) {
+        HashMap<Integer, Integer> hm = new HashMap<>(); // Stores first occurrence
+        int max = 0;
+
+        for (int i = 0; i < arr.length; i++) {
+            // If first occurrence, store the index
+            if (!hm.containsKey(arr[i])) {
+                hm.put(arr[i], i);
+            } 
+            // If already seen, calculate distance from first occurrence
+            else {
+                int firstIndex = hm.get(arr[i]);
+                max = Math.max(max, i - firstIndex);
+            }
+        }
+
+        return max;
+    }
+}
