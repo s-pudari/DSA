@@ -1,0 +1,133 @@
+/*
+-------------------------------------------------------------
+🧩 Problem: Group Shifted Strings
+📌 LeetCode Style Problem (Variation)
+
+🎯 Problem Statement:
+Given an array of strings, group all strings that belong to the **same shifting sequence**.
+
+📌 Definition:
+A "shifting sequence" is a group of strings where each character is shifted by the same amount to get the next string.
+For example:
+→ "abc" → "bcd" → "cde" ... (all differ by +1 shift)
+→ "az" → "ba" (a→b and z→a both shift by +1)
+
+📥 Input: arr[] = ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"]
+📤 Output: [
+  ["abc", "bcd", "xyz"],
+  ["az", "ba"],
+  ["acef"],
+  ["a", "z"]
+]
+
+-------------------------------------------------------------
+🧠 Key Insight:
+For each string, generate a **"pattern"** based on the **distance** between its characters.
+If two strings share the same pattern, they are in the same group.
+
+For example:
+→ "abc" → distances: b-a = 1, c-b = 1 → pattern = "1,1,"
+→ "bcd" → pattern = "1,1," → ✅ same group
+
+-------------------------------------------------------------
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /*-----------------------------------------------------
+      ✅ Optimized Grouping Approach using HashMap
+      🕒 Time Complexity: O(n * m), where:
+         n = number of strings, m = max string length
+      🧠 Space Complexity: O(n * m) for HashMap & result
+
+      🧾 Logic:
+      - For each string, generate a key based on its shifting pattern.
+      - Use a HashMap to group all strings with the same pattern.
+      - Finally, return all values from the map as grouped result.
+
+      -----------------------------------------------------*/
+
+    public ArrayList<ArrayList<String>> groupShiftedString(String[] arr) {
+        ArrayList<ArrayList<String>> result = new ArrayList<>();
+        HashMap<String, List<String>> map = new HashMap<>();
+
+        for (String str : arr) {
+            StringBuilder pattern = new StringBuilder();
+
+            /* 
+            🧮 Generate a unique key representing the distance between characters
+            For example, "abc" → (b-a)=1, (c-b)=1 → key = "1,1,"
+            */
+            for (int i = 1; i < str.length(); i++) {
+                char prev = str.charAt(i - 1);
+                char curr = str.charAt(i);
+                int distance = computeDistance(prev, curr);  // handles wrap-around using modular logic
+                pattern.append(distance).append(",");
+            }
+
+            String key = pattern.toString();  // pattern becomes the grouping key
+
+            // 📦 Add string to the appropriate group in the HashMap
+            List<String> group = map.getOrDefault(key, new ArrayList<>());
+            group.add(str);
+            map.put(key, group);
+        }
+
+        // ⛳ Convert HashMap values to result list
+        for (List<String> group : map.values()) {
+            result.add(new ArrayList<>(group));
+        }
+
+        return result;
+    }
+
+    /*-----------------------------------------------------
+      🔁 Helper Method: computeDistance
+      🧮 Calculates circular distance from prev to curr
+      For example:
+      - computeDistance('a', 'b') = 1
+      - computeDistance('z', 'a') = 1
+      - computeDistance('c', 'a') = 24
+
+      This ensures wrap-around handling (circular alphabet)
+      -----------------------------------------------------*/
+
+    public int computeDistance(char prev, char curr) {
+        int val1 = prev - 'a';
+        int val2 = curr - 'a';
+
+        /* 
+        If the current letter is ahead (normal case), just subtract.
+        If not, wrap around using (26 - val1 + val2)
+        */
+        return val2 >= val1 ? val2 - val1 : (26 - val1 + val2);
+    }
+
+    /*
+    🔄 Dry Run Example:
+    Input: ["abc", "bcd", "acef", "xyz", "az", "ba", "a", "z"]
+
+    Grouping logic:
+    - "abc" → "1,1,"
+    - "bcd" → "1,1,"         ✅ same as "abc"
+    - "xyz" → "1,1,"         ✅ same as above group
+
+    - "az"  → "25,"
+    - "ba"  → "25,"          ✅ same as "az"
+
+    - "acef" → "2,2,1,"      → unique
+
+    - "a" → ""               → no shift (single char)
+    - "z" → ""               → no shift (single char) ✅ same group as "a"
+
+    Final Output:
+    [
+      ["abc", "bcd", "xyz"],
+      ["acef"],
+      ["az", "ba"],
+      ["a", "z"]
+    ]
+    -----------------------------------------------------*/
+}
