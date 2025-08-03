@@ -1,0 +1,119 @@
+/*
+========================================================================
+📌 Problem: Plus One on a Linked List (Digits stored in reverse order)
+
+Given a singly linked list where each node stores a **single digit (0-9)** 
+as a **String**, write a function to add `1` to the number represented 
+by the linked list.
+
+🧾 Example:
+Input: 1 --> 2 --> 3     (represents number 123)
+Output: 1 --> 2 --> 4    (123 + 1 = 124)
+
+========================================================================
+🔄 Approach Overview:
+
+1️⃣ Reverse the linked list to make it easy to process digits from right to left.
+
+2️⃣ Add one to the first node and propagate carry as needed.
+
+3️⃣ If carry remains at the end, create a new node.
+
+4️⃣ Reverse the linked list again to restore original order.
+
+========================================================================
+*/
+
+class ListNode {
+    String val;
+    ListNode next;
+
+    ListNode(String val) {
+        this.val = val;
+        this.next = null;
+    }
+}
+
+public class PlusOneLinkedList {
+
+    /*
+    🔁 Step 1: Reverse the linked list
+    This allows us to start addition from the least significant digit
+    */
+    private static ListNode reverse(ListNode head) {
+        ListNode prev = null, curr = head;
+
+        while (curr != null) {
+            ListNode nextNode = curr.next; // Save next node
+            curr.next = prev;              // Reverse pointer
+            prev = curr;                   // Move prev forward
+            curr = nextNode;               // Move curr forward
+        }
+
+        return prev;
+    }
+
+    /*
+    ✅ Step 2 & 3: Add one and handle carry
+    - Start from head (least significant digit after reversal)
+    - If a carry exists, keep adding it and update the digit
+    - If carry remains at the end, add a new node
+    */
+    public static ListNode plusOne(ListNode head) {
+        // 🔁 Reverse to make addition easier
+        head = reverse(head);
+
+        ListNode curr = head;
+        int carry = 1; // We are adding 1
+
+        while (curr != null && carry > 0) {
+            int digit = Integer.parseInt(curr.val);  // Convert string to int
+            int sum = digit + carry;
+
+            curr.val = String.valueOf(sum % 10);     // Update digit
+            carry = sum / 10;                         // Carry for next node
+
+            // If we're at the last node and still have carry, append new node
+            if (curr.next == null && carry > 0) {
+                curr.next = new ListNode(String.valueOf(carry));
+                carry = 0; // Done
+            }
+
+            curr = curr.next;
+        }
+
+        // 🔁 Step 4: Reverse back to restore original order
+        return reverse(head);
+    }
+
+    /*
+    🛠️ Utility to print the list (for demonstration)
+    */
+    public static void printList(ListNode head) {
+        while (head != null) {
+            System.out.print(head.val);
+            if (head.next != null) System.out.print(" --> ");
+            head = head.next;
+        }
+        System.out.println();
+    }
+
+    /*
+    🎯 Sample Usage and Dry Run
+    Input: 1 --> 2 --> 3
+    Output: 1 --> 2 --> 4
+    */
+    public static void main(String[] args) {
+        ListNode head = new ListNode("1");
+        head.next = new ListNode("2");
+        head.next.next = new ListNode("3");
+
+        System.out.print("Input: ");
+        printList(head);
+
+        ListNode result = plusOne(head);
+
+        System.out.print("Output: ");
+        printList(result);
+    }
+}
