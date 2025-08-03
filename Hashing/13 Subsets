@@ -1,0 +1,115 @@
+/*
+-------------------------------------------------------------
+🧩 Problem: Count the Number of Consecutive Number Subsets
+📌 Simplified Variation of: "Longest Consecutive Sequence" + "Group Splitting"
+
+🎯 Problem Statement:
+You're given an array `arr[]` of integers.
+Split the array into the **minimum number of subsets** such that:
+- Each subset contains only **consecutive numbers** (e.g., [1,2,3])
+- No element is repeated across subsets
+- Return the **number of such subsets** needed.
+
+-------------------------------------------------------------
+🔍 Example:
+
+Input: arr = [3, 1, 2, 5, 6]  
+→ Consecutive subsets: [1,2,3], [5,6]  
+→ Output: 2
+
+Input: arr = [1, 4, 7]  
+→ No consecutive pairs → each number forms its own subset  
+→ Output: 3
+
+-------------------------------------------------------------
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /*-----------------------------------------------------
+      ✅ Approach 1: Sort + Check Gaps
+      🕒 Time Complexity: O(n log n)  (due to sorting)
+      🧠 Space Complexity: O(1)  (in-place)
+
+      🧾 Logic:
+      - Sort the array.
+      - Traverse and count how many **gaps** exist where `arr[i]+1 != arr[i+1]`.
+      - Each gap means we start a new subset.
+      - Initialize `cnt = 1` because we always have at least one subset.
+
+      -----------------------------------------------------*/
+
+    public int numOfSubsetSorted(int[] arr) {
+        int count = 1;  // Start with one subset by default
+        Arrays.sort(arr);
+
+        for (int i = 0; i < arr.length - 1; i++) {
+            if (arr[i] + 1 != arr[i + 1]) {
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /*
+    🔄 Dry Run:
+    Input: arr = [3, 1, 2, 5, 6] → sorted = [1, 2, 3, 5, 6]
+    → 1+1=2 ✅, 2+1=3 ✅, 3+1=4 ❌ → gap → count++
+    → 5+1=6 ✅
+    → Final count = 2
+    -----------------------------------------------------*/
+
+
+    /*-----------------------------------------------------
+      ✅ Approach 2: HashSet + Start-of-Sequence Detection
+      🕒 Time Complexity: O(n)
+      🧠 Space Complexity: O(n)
+
+      🧾 Logic:
+      - Store all elements in a HashSet (for O(1) lookups).
+      - Traverse through the HashSet.
+      - For each number, check if it is the **start of a sequence**: i.e., if (num-1) is not in set.
+      - If so, start a new subset (increase count).
+      - We only count distinct starting points of sequences.
+
+      🔥 Advantage: No need to sort — faster on large inputs.
+
+      -----------------------------------------------------*/
+
+    public int numOfSubset(int[] arr) {
+        int count = 0;
+        HashSet<Integer> set = new HashSet<>();
+
+        // Step 1: Add all elements to set
+        for (int num : arr) {
+            set.add(num);
+        }
+
+        // Step 2: Count starts of consecutive sequences
+        for (int num : set) {
+            if (!set.contains(num - 1)) {
+                // This is the start of a new subset
+                count++;
+            }
+        }
+
+        return count;
+    }
+
+    /*
+    🔄 Dry Run:
+    arr = [3, 1, 2, 5, 6] → set = {1,2,3,5,6}
+
+    Check:
+    1 → no 0 → ✅ count++
+    2 → has 1 → ❌
+    3 → has 2 → ❌
+    5 → no 4 → ✅ count++
+    6 → has 5 → ❌
+
+    Final count = 2
+    -----------------------------------------------------*/
+}
