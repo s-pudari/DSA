@@ -1,0 +1,139 @@
+/*
+Problem Name: Trapping Rain Water
+
+Explanation:
+Given an array `arr[]` where each element represents the height of a block, imagine rain falls over it. You need to find the total amount of water that can be trapped between the blocks after the rain.
+
+Water can only be trapped where there are blocks taller on both the left and right sides of a block. The water above a block is the minimum of the tallest block to the left and the tallest block to the right, minus the height of the current block.
+
+LeetCode Link: https://leetcode.com/problems/trapping-rain-water/
+*/
+
+// --------------------------------------------------
+// BRUTE FORCE APPROACH (for learning, not implemented in code)
+// --------------------------------------------------
+/*
+Time Complexity: O(n^2)
+Space Complexity: O(1)
+
+Explanation:
+- For every element, find the max height to its left and right
+- The water trapped = min(leftMax, rightMax) - current height
+*/
+
+// --------------------------------------------------
+// APPROACH 1: Using prefixMax and suffixMax arrays
+// --------------------------------------------------
+/*
+Time Complexity: O(n)
+Space Complexity: O(2n)
+
+Explanation:
+- Create two arrays:
+    - prefixMax[i] = maximum height from 0 to i
+    - suffixMax[i] = maximum height from n-1 to i
+- For each element, trapped water = min(prefixMax[i], suffixMax[i]) - arr[i] (if positive)
+*/
+class Solution {
+    public int maxWater(int[] arr) {
+        int n = arr.length;
+        int totalWater = 0;
+
+        int[] prefixMax = new int[n];
+        int[] suffixMax = new int[n];
+
+        // prefixMax[i] stores max height from 0 to i
+        prefixMax[0] = arr[0];
+        for (int i = 1; i < n; i++) {
+            prefixMax[i] = Math.max(prefixMax[i - 1], arr[i]);
+        }
+
+        // suffixMax[i] stores max height from n-1 to i
+        suffixMax[n - 1] = arr[n - 1];
+        for (int i = n - 2; i >= 0; i--) {
+            suffixMax[i] = Math.max(suffixMax[i + 1], arr[i]);
+        }
+
+        /* Dry Run Example:
+           arr[]       = [3, 0, 2, 0, 4]
+           prefixMax[] = [3, 3, 3, 3, 4]
+           suffixMax[] = [4, 4, 4, 4, 4]
+
+           For i = 1: min(3, 4) - 0 = 3 water
+           For i = 2: min(3, 4) - 2 = 1 water
+           For i = 3: min(3, 4) - 0 = 3 water
+           Total = 3 + 1 + 3 = 7 units
+        */
+
+        for (int i = 0; i < n; i++) {
+            int leftMax = prefixMax[i], rightMax = suffixMax[i];
+            if (arr[i] < leftMax && arr[i] < rightMax) {
+                totalWater += Math.min(leftMax, rightMax) - arr[i];
+            }
+        }
+
+        return totalWater;
+    }
+}
+
+// --------------------------------------------------
+// APPROACH 2: Optimized Prefix Array (not implemented here for brevity)
+// --------------------------------------------------
+/*
+Time Complexity: O(n)
+Space Complexity: O(n)
+- Avoids storing full rightMax array by computing on the fly
+*/
+
+// --------------------------------------------------
+// APPROACH 3: Two Pointer Approach (Most Optimized)
+// --------------------------------------------------
+/*
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+Explanation:
+- Use two pointers (left and right)
+- Maintain leftMax and rightMax while moving pointers inward
+- Always move the pointer with smaller height since water trapped depends on the smaller side
+*/
+class SolutionOptimized {
+    public int trap(int[] arr) {
+        int left = 0, right = arr.length - 1;
+        int lMax = 0, rMax = 0, totalWater = 0;
+
+        /* Dry Run Example:
+           arr = [3, 0, 2, 0, 4]
+           Left Pointer: ->
+           Right Pointer: <-
+
+           l = 0, r = 4
+           lMax = 3, rMax = 4
+           Since arr[l] <= arr[r], move l
+           At l = 1: water = 3 - 0 = 3
+           At l = 2: water = 3 - 2 = 1
+           At l = 3: water = 3 - 0 = 3
+           Total = 7 units
+        */
+
+        while (left < right) {
+            if (arr[left] <= arr[right]) {
+                if (arr[left] > lMax) {
+                    lMax = arr[left];
+                } else {
+                    totalWater += lMax - arr[left];
+                }
+                left++;
+            } else {
+                if (arr[right] > rMax) {
+                    rMax = arr[right];
+                } else {
+                    totalWater += rMax - arr[right];
+                }
+                right--;
+            }
+        }
+
+        return totalWater;
+    }
+}
