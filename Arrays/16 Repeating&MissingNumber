@@ -1,0 +1,163 @@
+/**
+ * 🧠 Problem: Repeat and Missing Number Array
+ * 🔗 Link: https://www.interviewbit.com/problems/repeat-and-missing-number-array/
+ * 
+ * 🎯 Problem Explanation:
+ * You're given a read-only array of size N with integers from 1 to N.
+ * But one number is **repeated** and one number is **missing**.
+ * Your task is to find both:
+ * - The number that is repeated (appears twice)
+ * - The number that is missing (doesn't appear at all)
+ *
+ * ✅ Constraints:
+ * - Array is read-only (you can't modify original array)
+ * - Time and space optimal solutions are preferred
+ *
+ * 🧪 Example:
+ * Input:  [4, 3, 6, 2, 1, 1]
+ * Output: [1, 5]
+ * Explanation:
+ * - 1 is repeating (appears twice)
+ * - 5 is missing (doesn't appear)
+ */
+
+import java.util.*;
+
+public class Solution {
+
+    // -----------------------------------------
+    // 🔴 Brute Force Approach (O(N^2), O(1))
+    // -----------------------------------------
+    /*
+     * ✅ Time Complexity: O(N^2)
+     * ✅ Space Complexity: O(1)
+     *
+     * 📌 Idea:
+     * Loop through numbers 1 to N and count how many times they appear.
+     * If a number appears 2 times → it's repeating.
+     * If a number appears 0 times → it's missing.
+     *
+     * 🔁 Dry Run:
+     * Input: [4, 3, 6, 2, 1, 1]
+     * Count for each number:
+     * 1 → 2 times (repeating)
+     * 2 → 1
+     * 3 → 1
+     * 4 → 1
+     * 5 → 0 times (missing)
+     * 6 → 1
+     */
+
+    /*
+    public ArrayList<Integer> repeatedNumber(final List<Integer> A) {
+        int n = A.size();
+        int repeating = -1, missing = -1;
+        ArrayList<Integer> ans = new ArrayList<>();
+
+        for (int i = 1; i <= n; i++) {
+            int count = 0;
+            for (int j = 0; j < n; j++) {
+                if (A.get(j) == i) {
+                    count++;
+                }
+            }
+            if (count == 2) repeating = i;
+            if (count == 0) missing = i;
+        }
+
+        ans.add(repeating);
+        ans.add(missing);
+        return ans;
+    }
+    */
+
+    // -----------------------------------------
+    // 🟠 HashMap Approach (O(N), O(N))
+    // -----------------------------------------
+    /*
+     * ✅ Time Complexity: O(N)
+     * ✅ Space Complexity: O(N)
+     *
+     * 📌 Idea:
+     * - Use a HashMap to count occurrences.
+     * - Traverse array and record frequency.
+     * - If frequency = 2 → repeating
+     * - If frequency = 0 → missing
+     */
+
+    /*
+    public ArrayList<Integer> repeatedNumber(final List<Integer> A) {
+        int n = A.size();
+        int repeating = -1, missing = -1;
+        ArrayList<Integer> ans = new ArrayList<>();
+
+        Map<Integer, Integer> freq = new HashMap<>();
+
+        for (int num : A) {
+            freq.put(num, freq.getOrDefault(num, 0) + 1);
+        }
+
+        for (int i = 1; i <= n; i++) {
+            int count = freq.getOrDefault(i, 0);
+            if (count == 2) repeating = i;
+            else if (count == 0) missing = i;
+        }
+
+        ans.add(repeating);
+        ans.add(missing);
+        return ans;
+    }
+    */
+
+    // ---------------------------------------------------
+    // ✅ Optimized Mathematical Approach (O(N), O(1))
+    // ---------------------------------------------------
+    /*
+     * ✅ Time Complexity: O(N)
+     * ✅ Space Complexity: O(1)
+     *
+     * 📌 Idea:
+     * - Let actual_sum = sum of array = s
+     * - Let expected_sum = sum from 1 to n = sn
+     * - Let actual_sq_sum = sum of squares in array = s2
+     * - Let expected_sq_sum = sum of squares from 1 to n = s2n
+     * 
+     * Let x = repeating, y = missing
+     * Then:
+     *   x - y = s - sn
+     *   x² - y² = s2 - s2n → (x - y)(x + y) = s2 - s2n
+     * From above, get x + y
+     * Then solve:
+     *   x = (val1 + val2) / 2
+     *   y = x - val1
+     */
+
+    public ArrayList<Integer> repeatedNumber(final List<Integer> A) {
+        int n = A.size();
+        ArrayList<Integer> ans = new ArrayList<>();
+
+        // Step 1: Expected sums
+        long sn = (long) n * (n + 1) / 2;
+        long s2n = (long) n * (n + 1) * (2L * n + 1) / 6;
+
+        // Step 2: Actual sums
+        long s = 0, s2 = 0;
+        for (int num : A) {
+            s += (long) num;
+            s2 += (long) num * num;
+        }
+
+        // Step 3: Equations
+        long val1 = s - sn;     // x - y
+        long val2 = s2 - s2n;   // x^2 - y^2
+
+        long sumXY = val2 / val1; // x + y
+
+        long x = (val1 + sumXY) / 2;
+        long y = x - val1;
+
+        ans.add((int) x); // repeating
+        ans.add((int) y); // missing
+        return ans;
+    }
+}
