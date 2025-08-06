@@ -33,7 +33,7 @@ base = 2.0, exp = 5
 ⚠️ This approach causes a stack overflow for large inputs like n = -2³¹ (Integer.MIN_VALUE)
 */
 
-/* Uncomment below for recursive version
+
 public double myPow(double base, int exp) {
     if (exp == 0) return 1;       // x⁰ = 1
     if (base == 0) return 0;      // 0^anything = 0
@@ -48,7 +48,7 @@ public double myPow(double base, int exp) {
         return base * half * half;
     }
 }
-*/
+
 
 
 /*
