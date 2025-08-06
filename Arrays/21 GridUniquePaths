@@ -1,0 +1,115 @@
+// 🔰 Problem: Unique Paths
+// 🔗 Link: https://leetcode.com/problems/unique-paths/
+
+/*
+🧩 What is being asked?
+You're given a grid of size m x n. 
+You are standing at the top-left corner of the grid and want to reach the bottom-right corner.
+You can **only move either right ➡️ or down ⬇️** at each step.
+
+Return the total number of **unique paths** from the top-left to the bottom-right.
+
+🧠 Explanation:
+Think of each path as a sequence of "rights" and "downs".
+For example, for a 3x2 grid (m=3, n=2), the paths are:
+  - Down → Down → Right
+  - Down → Right → Down
+  - Right → Down → Down
+Total: 3 unique ways.
+
+We can solve this using recursion, dynamic programming (memoization), or combinatorics.
+*/
+
+import java.util.Arrays;
+
+class Solution {
+
+    /* 
+    ============================================================
+    ✅ Approach 1: Brute Force Recursion (Try all possible paths)
+    ============================================================
+    🔁 Time Complexity: O(2^(m+n))
+    🧠 Space Complexity: O(m+n) for recursion stack
+
+    🔍 Dry Run:
+    For m = 2, n = 2 (2x2 grid)
+    Paths:
+    (0,0) → (0,1) → (1,1)
+    (0,0) → (1,0) → (1,1)
+    Total = 2 paths
+    */
+
+    /*
+    public int uniquePaths(int m, int n) {
+        return countPaths(0, 0, m, n);
+    }
+
+    public int countPaths(int i, int j, int m, int n) {
+        if (i >= m || j >= n) return 0; // Out of bounds
+        if (i == m - 1 && j == n - 1) return 1; // Reached destination
+        return countPaths(i + 1, j, m, n) + countPaths(i, j + 1, m, n);
+    }
+    */
+
+
+    /* 
+    ============================================================
+    ✅ Approach 2: Top-Down DP (Memoization)
+    ============================================================
+    🔁 Time Complexity: O(m * n)
+    🧠 Space Complexity: O(m * n) for memo + recursion stack
+
+    🔍 Dry Run:
+    For m = 3, n = 2 (3x2 grid)
+    Grid:
+      [S, _, _]
+      [_, _, _]
+    DP fills from bottom-right up with number of paths
+    */
+
+    /*
+    public int uniquePaths(int m, int n) {
+        int[][] dp = new int[m][n];
+        for (int[] row : dp) Arrays.fill(row, -1); // Fill with -1
+        return countPaths(0, 0, m, n, dp);
+    }
+
+    public int countPaths(int i, int j, int m, int n, int[][] dp) {
+        if (i >= m || j >= n) return 0;
+        if (i == m - 1 && j == n - 1) return 1;
+
+        if (dp[i][j] != -1) return dp[i][j]; // Already computed
+
+        return dp[i][j] = countPaths(i + 1, j, m, n, dp) + countPaths(i, j + 1, m, n, dp);
+    }
+    */
+
+
+    /* 
+    ============================================================
+    ✅ Approach 3: Combinatorics (Most Optimized)
+    ============================================================
+    🔁 Time Complexity: O(min(m, n))
+    🧠 Space Complexity: O(1)
+
+    🔍 Explanation:
+    Total moves needed = (m-1) downs + (n-1) rights = (m+n-2) moves
+    Choose (m-1) positions to place downs → C(m+n-2, m-1)
+
+    🔍 Dry Run for m = 3, n = 2:
+    Total moves = 3, choose 2 downs: C(3,2) = 3
+    */
+
+    public int uniquePaths(int m, int n) {
+        int N = m + n - 2;
+        int r = m - 1;
+        double result = 1;
+
+        // Calculate C(N, r)
+        for (int i = 1; i <= r; i++) {
+            result = result * (N - r + i) / i;
+        }
+
+        return (int) result;
+    }
+}
