@@ -1,0 +1,99 @@
+/*
+Problem Name: Pow(x, n)
+Link: https://leetcode.com/problems/powx-n/
+
+Problem Statement:
+Implement the function myPow(x, n), which calculates x raised to the power n (i.e., xⁿ).
+
+Constraints:
+- x is a double.
+- n is an integer and can be negative, zero, or positive.
+- Don't use built-in library functions like Math.pow().
+
+---
+
+🧠 Approach 1: Recursive (Brute-force with Divide and Conquer)
+Time Complexity: O(log n)
+Space Complexity: O(log n) due to recursion stack
+
+Explanation:
+- If exponent is 0 → return 1 (base case)
+- If exponent is negative → recursively call with positive exponent and take reciprocal.
+- Divide exponent by 2 at each step, and multiply results:
+   - If even: xⁿ = (xⁿ/²)²
+   - If odd: xⁿ = x × (xⁿ/²)²
+
+Dry Run:
+base = 2.0, exp = 5  
+→ call myPow(2.0, 5)  
+→ exp is odd → return 2 × myPow(2.0, 2)²  
+→ myPow(2.0, 2) = myPow(2.0, 1)²  
+→ and so on...
+
+⚠️ This approach causes a stack overflow for large inputs like n = -2³¹ (Integer.MIN_VALUE)
+*/
+
+/* Uncomment below for recursive version
+public double myPow(double base, int exp) {
+    if (exp == 0) return 1;       // x⁰ = 1
+    if (base == 0) return 0;      // 0^anything = 0
+
+    if (exp < 0) return 1 / myPow(base, -exp); // handle negative exponents
+
+    double half = myPow(base, exp / 2);
+
+    if (exp % 2 == 0) {
+        return half * half;
+    } else {
+        return base * half * half;
+    }
+}
+*/
+
+
+/*
+✅ Approach 2: Iterative Fast Exponentiation (Optimized)
+Time Complexity: O(log n)
+Space Complexity: O(1)
+
+Explanation:
+- Convert exponent to a positive long to avoid overflow for Integer.MIN_VALUE.
+- Keep squaring the base and reducing the exponent:
+   - If exponent is odd: multiply result by base and decrement exponent.
+   - If exponent is even: square the base and halve the exponent.
+
+Dry Run:
+base = 2.0, exp = 10  
+res = 1  
+exp is even → base = 4, exp = 5  
+exp is odd → res *= base → res = 4, base = 16, exp = 2  
+exp is even → base = 256, exp = 1  
+exp is odd → res *= base → res = 1024
+
+Final answer: 1024
+*/
+
+class Solution {
+    public double myPow(double base, int exp) {
+        double res = 1.0;
+
+        // Use long to safely handle INT_MIN
+        long pow = Math.abs((long) exp);
+
+        // Fast exponentiation loop
+        while (pow > 0) {
+            if (pow % 2 == 1) {
+                /* If power is odd, multiply result by current base */
+                res *= base;
+                pow--; // Decrease exponent by 1 to make it even
+            } else {
+                /* If power is even, square the base and halve the exponent */
+                base *= base;
+                pow = pow / 2;
+            }
+        }
+
+        // If exponent was negative, return reciprocal
+        return (exp >= 0) ? res : 1 / res;
+    }
+}
