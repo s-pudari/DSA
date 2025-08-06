@@ -1,0 +1,94 @@
+/*
+Problem Name: Search in a 2D Matrix II
+Link: https://leetcode.com/problems/search-a-2d-matrix-ii/
+
+Problem Explanation:
+You're given a 2D matrix where:
+- Each row is sorted in ascending order from left to right.
+- Each column is sorted in ascending order from top to bottom.
+
+Your task is to find whether a given target number exists in the matrix.
+
+Approach 1: Brute Force (Linear Search)
+Time Complexity: O(N * M)
+Space Complexity: O(1)
+
+Explanation:
+Check every element in the matrix one by one. 
+Since rows and columns are sorted, we could break early in some cases, but here we simply do a full scan.
+
+Dry Run:
+matrix = [[1, 4, 7], [8, 11, 15], [18, 21, 24]]
+target = 11
+
+Iterate over all elements:
+1 → 4 → 7 → 8 → 11 → ✅ found → return true
+*/
+
+
+public boolean searchMatrix(int[][] matrix, int target) {
+    int n = matrix.length;
+    int m = matrix[0].length;
+
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            if(matrix[i][j] == target) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+
+
+/*
+Approach 2: Optimized Approach (Start from Top Right)
+Time Complexity: O(N + M)
+Space Complexity: O(1)
+
+Explanation:
+Start from the top-right corner of the matrix:
+- If the current value is equal to target → return true
+- If the current value is greater than target → move left (column--)
+- If the current value is less than target → move down (row++)
+
+Why it works:
+Because each row and column is sorted, moving left decreases the value,
+moving down increases the value.
+
+Dry Run:
+matrix = [[1, 4, 7], 
+          [8, 11, 15], 
+          [18, 21, 24]]
+target = 11
+
+Start at matrix[0][2] = 7 → 7 < 11 → move down  
+matrix[1][2] = 15 → 15 > 11 → move left  
+matrix[1][1] = 11 → ✅ found → return true
+*/
+
+class Solution {
+    public boolean searchMatrix(int[][] matrix, int target) {
+        int n = matrix.length;        // number of rows
+        int m = matrix[0].length;     // number of columns
+
+        int row = 0;          // Start at top row
+        int col = m - 1;      // Start at last column (top-right corner)
+
+        while (row < n && col >= 0) {
+            if (matrix[row][col] == target) {
+                return true;  // ✅ target found
+            } else if (matrix[row][col] > target) {
+                /* If current element is too big, go left to find smaller numbers */
+                col--;
+            } else {
+                /* If current element is too small, go down to find bigger numbers */
+                row++;
+            }
+        }
+
+        // If we exit loop, target not found
+        return false;
+    }
+}
