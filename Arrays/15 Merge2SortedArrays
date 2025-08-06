@@ -1,0 +1,151 @@
+// ✅ Problem Name: Merge Sorted Array
+// 🔗 LeetCode: https://leetcode.com/problems/merge-sorted-array/
+
+/*
+💡 Problem Explanation (Beginner-Friendly):
+
+You are given two sorted arrays:
+
+   🔹 nums1[] of size n + m (first n elements are valid, the rest are 0 placeholders)
+   🔹 nums2[] of size m
+
+Your task is to merge both sorted arrays into `nums1[]` as a single sorted array **in-place**.
+
+Example:
+Input: nums1 = [1,2,3,0,0,0], n = 3
+       nums2 = [2,5,6], m = 3
+Output: [1,2,2,3,5,6]
+*/
+
+
+// ===============================================================
+// 🔴 Brute Force Approach (Using Extra Array)
+// ===============================================================
+
+/*
+🧠 Idea:
+Use an extra array to merge both sorted arrays in sorted order,
+then copy the result back to `nums1`.
+
+🕒 Time Complexity: O(n + m)
+🧠 Space Complexity: O(n + m)
+
+📘 Dry Run:
+Input: nums1 = [1,2,3,0,0,0], n = 3
+       nums2 = [2,5,6], m = 3
+
+Step 1: Merge both → arr = [1,2,2,3,5,6]
+Step 2: Copy back → nums1 = [1,2,2,3,5,6]
+*/
+
+public class Solution {
+    public void merge(int[] nums1, int n, int[] nums2, int m) {
+        int[] arr = new int[n + m];
+
+        int left = 0, right = 0, idx = 0;
+
+        // Merge two sorted arrays into arr[]
+        while (left < n && right < m) {
+            if (nums1[left] <= nums2[right]) {
+                arr[idx++] = nums1[left++];
+            } else {
+                arr[idx++] = nums2[right++];
+            }
+        }
+
+        // Copy remaining elements
+        while (left < n) {
+            arr[idx++] = nums1[left++];
+        }
+
+        while (right < m) {
+            arr[idx++] = nums2[right++];
+        }
+
+        // Copy the result back into nums1
+        for (int i = 0; i < n + m; i++) {
+            nums1[i] = arr[i];
+        }
+    }
+}
+
+
+// ===============================================================
+// ✅ Optimized Approach (Three Pointer, In-place from the End)
+// ===============================================================
+
+/*
+🧠 Idea:
+Instead of using extra space, we start merging from the **end**
+to avoid overwriting elements in nums1.
+
+Use 3 pointers:
+   - i = last element of nums1's actual data (n - 1)
+   - j = last element of nums2 (m - 1)
+   - k = last index of nums1 (n + m - 1)
+
+At each step, put the larger of nums1[i] or nums2[j] into nums1[k].
+
+🕒 Time Complexity: O(n + m)
+🧠 Space Complexity: O(1) (In-place)
+
+📘 Dry Run:
+nums1 = [1,2,3,0,0,0], n = 3
+nums2 = [2,5,6], m = 3
+
+i = 2 (nums1[i]=3), j = 2 (nums2[j]=6), k = 5
+→ nums2[j] > nums1[i] → nums1[k] = nums2[j] = 6
+→ k=4, j=1
+
+Repeat...
+Final nums1 = [1,2,2,3,5,6]
+*/
+
+public class Solution {
+    public void merge(int[] nums1, int n, int[] nums2, int m) {
+        int i = n - 1; // Last valid element in nums1
+        int j = m - 1; // Last element in nums2
+        int k = n + m - 1; // Last index to fill in nums1
+
+        // Merge in reverse order to prevent overwriting
+        while (i >= 0 && j >= 0) {
+            if (nums1[i] > nums2[j]) {
+                nums1[k--] = nums1[i--];
+            } else {
+                nums1[k--] = nums2[j--];
+            }
+        }
+
+        // If nums2 has remaining elements, copy them
+        while (j >= 0) {
+            nums1[k--] = nums2[j--];
+        }
+
+        // No need to copy remaining nums1[i], they're already in place
+    }
+}
+
+
+// ===============================================================
+// 🔵 Alternative Approach (Sorting - Built-in Function)
+// ===============================================================
+
+/*
+🧠 Idea:
+Copy nums2 into the end of nums1, then sort the array.
+
+🕒 Time Complexity: O((n + m) log(n + m))
+🧠 Space Complexity: O(1)
+
+⚠️ Not recommended for interviews unless asked to use library functions
+*/
+
+public class Solution {
+    public void merge(int[] nums1, int n, int[] nums2, int m) {
+        for (int i = 0; i < m; i++) {
+            nums1[n + i] = nums2[i];
+        }
+
+        Arrays.sort(nums1); // Sort entire array
+    }
+}
