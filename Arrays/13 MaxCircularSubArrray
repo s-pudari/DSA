@@ -102,3 +102,31 @@ class Solution {
     }
 }
 
+
+
+circular Index :
+ 1.Positive Only :
+    public class CircularArraySimple {
+    public static void main(String[] args) {
+        String[] items = {"A", "B", "C", "D"};
+        int length = items.length;
+
+        for (int i = 0; i < 10; i++) {
+            int circularIndex = i % length;
+            System.out.println("Index " + i + " → " + items[circularIndex]);
+        }
+    }
+}
+2. Both -ve and +ve
+ public class CircularArrayExample {
+    public static void main(String[] args) {
+        String[] items = {"A", "B", "C", "D"};
+        int length = items.length;
+
+        for (int i = -5; i <= 6; i++) {
+            int circularIndex = (i % length + length) % length;
+            System.out.println("Index " + i + " → " + items[circularIndex]);
+        }
+    }
+}
+
