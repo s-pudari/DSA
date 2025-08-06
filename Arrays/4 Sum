@@ -1,87 +1,130 @@
-https://leetcode.com/problems/4sum/
+/*
+🔷 Problem: 4Sum
+
+🔹 Problem Statement (in simple words):
+You are given an array `nums` and a target value `target`. Your job is to find all **unique combinations of 4 numbers** (quadruplets) in the array that add up to the target.
+
+✅ Example:
+Input: nums = [1, 0, -1, 0, -2, 2], target = 0  
+Output: [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+
+🔗 Problem Link: https://leetcode.com/problems/4sum/
+*/
 
 import java.util.*;
 
 class Solution {
+
+    // ---------------------------------------------------
+    // 🔶 APPROACH 1: BRUTE FORCE (4 Nested Loops)
+    // ---------------------------------------------------
     /*
-    🔹 Approach 2: Two Pointers + Sorting (Optimized)
-    ---------------------------------------------------
-    - Sort the array to use a two-pointer technique efficiently.
-    - Iterate through each pair (i, j) and use two pointers (left, right) to find remaining two numbers.
-    - Store unique quadruplets in a HashSet to avoid duplicates.
+    🔸 Time Complexity: O(N^4) — Four nested loops  
+    🔸 Space Complexity: O(K) — K = number of unique quadruplets (for HashSet)
 
-    🔹 Time Complexity: O(N³) -> Three nested loops + Two-pointer search.
-    🔹 Space Complexity: O(K) -> Where K is the number of unique quadruplets stored.
+    🔸 How It Works:
+    - We use four nested loops to explore all combinations of 4 elements.
+    - If their sum matches the target, we store the sorted quadruplet in a HashSet to avoid duplicates.
 
-    🔹 Dry Run Example:
-      Input: nums = [1, 0, -1, 0, -2, 2], target = 0
-      Sorted: [-2, -1, 0, 0, 1, 2]
-      Unique Quadruplets: [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
+    🔸 Dry Run:
+    Input: nums = [1, 0, -1, 0, -2, 2], target = 0
+    -> Check all 4-element combinations:
+       [-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1], etc.
+    -> Return unique sets that sum to 0
     */
-    public List<List<Integer>> fourSum(int[] nums, int target) {
+
+    public List<List<Integer>> fourSumBruteForce(int[] nums, int target) {
         int n = nums.length;
-        Set<List<Integer>> hs = new HashSet<>();  // To store unique quadruplets
+        Set<List<Integer>> result = new HashSet<>();
 
-        Arrays.sort(nums);  // Sort the array for two-pointer approach
-
-        // First two loops to fix two elements
-        for (int i = 0; i < n - 3; i++) {
-            for (int j = i + 1; j < n - 2; j++) {
-                int left = j + 1, right = n - 1;
-
-                // Two-pointer approach
-                while (left < right) {
-                    long sum = (long) nums[i] + nums[j] + nums[left] + nums[right];
-
-                    if (sum == target) {
-                        hs.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
-                        left++;
-                        right--;
-                    } else if (sum < target) {
-                        left++;  // Need a larger sum
-                    } else {
-                        right--;  // Need a smaller sum
-                    }
-                }
-            }
-        }
-
-        return new ArrayList<>(hs);
-    }
-
-    /*
-    🔹 Approach 1: Brute Force (Nested Loops)
-    ---------------------------------------------------
-    - Use four nested loops to check all quadruplets.
-    - Store them in a HashSet to avoid duplicates.
-
-    🔹 Time Complexity: O(N⁴) -> Four nested loops.
-    🔹 Space Complexity: O(K) -> Where K is the number of unique quadruplets.
-
-    🔹 Dry Run Example:
-      Input: nums = [1, 0, -1, 0, -2, 2], target = 0
-      All Possible Quadruplets Checked (Even Duplicates)
-      Unique Quadruplets Extracted from HashSet: [[-2, -1, 1, 2], [-2, 0, 0, 2], [-1, 0, 0, 1]]
-    
-    static List<List<Integer>> fourSum(int[] nums, int target) {
-        int n = nums.length;
-        Set<List<Integer>> hs = new HashSet<>();
-
-        // Four nested loops to generate all possible quadruplets
+        // Try all combinations of four distinct indices
         for (int i = 0; i < n - 3; i++) {
             for (int j = i + 1; j < n - 2; j++) {
                 for (int k = j + 1; k < n - 1; k++) {
                     for (int l = k + 1; l < n; l++) {
-                        if ((long) nums[i] + nums[j] + nums[k] + nums[l] == target) {
-                            hs.add(Arrays.asList(nums[i], nums[j], nums[k], nums[l]));
+
+                        // Use long to avoid integer overflow
+                        long sum = (long) nums[i] + nums[j] + nums[k] + nums[l];
+
+                        if (sum == target) {
+                            /* Sort the quadruplet before storing to ensure uniqueness
+                             * Example: [0, 1, -1, 0] -> [-1, 0, 0, 1]
+                             */
+                            List<Integer> quad = Arrays.asList(nums[i], nums[j], nums[k], nums[l]);
+                            Collections.sort(quad);
+                            result.add(quad);
                         }
                     }
                 }
             }
         }
 
-        return new ArrayList<>(hs);
+        return new ArrayList<>(result);  // Convert HashSet to List
     }
-    */
-}
 
+    // ---------------------------------------------------
+    // 🔶 APPROACH 2: SORT + TWO POINTERS (Optimized)
+    // ---------------------------------------------------
+    /*
+    🔸 Time Complexity: O(N^3) — Two nested loops + two pointers  
+    🔸 Space Complexity: O(K) — K = number of unique quadruplets (for HashSet)
+
+    🔸 How It Works:
+    - Sort the array to make duplicate checking and two-pointer logic easier.
+    - Use two nested loops to fix the first two numbers.
+    - Use a two-pointer strategy to find remaining two numbers efficiently.
+
+    🔸 Dry Run:
+    Input: nums = [1, 0, -1, 0, -2, 2], target = 0  
+    Sorted: [-2, -1, 0, 0, 1, 2]  
+    Loop i=-2, j=-1 → Use two pointers on [0, 0, 1, 2]
+    Valid sums found: [-2, -1, 1, 2], etc.
+    */
+
+    public List<List<Integer>> fourSum(int[] nums, int target) {
+        int n = nums.length;
+        Set<List<Integer>> result = new HashSet<>();
+
+        Arrays.sort(nums);  // Required for two-pointer and skipping duplicates
+
+        for (int i = 0; i < n - 3; i++) {
+            for (int j = i + 1; j < n - 2; j++) {
+
+                int left = j + 1;
+                int right = n - 1;
+
+                // Two-pointer search between left and right
+                while (left < right) {
+                    /* Use long to prevent overflow */
+                    long sum = (long) nums[i] + nums[j] + nums[left] + nums[right];
+
+                    if (sum == target) {
+                        /* Valid quadruplet found */
+                        result.add(Arrays.asList(nums[i], nums[j], nums[left], nums[right]));
+                        left++;
+                        right--;
+                    } else if (sum < target) {
+                        left++;  // Increase sum by moving left forward
+                    } else {
+                        right--; // Decrease sum by moving right backward
+                    }
+                }
+            }
+        }
+
+        return new ArrayList<>(result);  // Convert set to list
+    }
+
+    // ---------------------------------------------------
+    // 🔽 Sample Main Method for Testing
+    // ---------------------------------------------------
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int[] nums = {1, 0, -1, 0, -2, 2};
+        int target = 0;
+
+        // Choose either of the methods below to test
+        System.out.println("Brute Force: " + sol.fourSumBruteForce(nums, target));
+        System.out.println("Optimized: " + sol.fourSum(nums, target));
+    }
+}
