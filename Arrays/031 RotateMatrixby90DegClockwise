@@ -1,0 +1,160 @@
+/*
+=========================================
+🧠 Problem: Rotate Image (90° Clockwise)
+🔗 LeetCode: https://leetcode.com/problems/rotate-image/
+=========================================
+
+🔍 Problem Explanation:
+You're given an n x n 2D matrix representing an image.
+Rotate the image **in-place** by 90 degrees (clockwise).
+This means you cannot use another matrix — you must modify the original one.
+
+Example:
+Input:
+[
+ [1, 2, 3],
+ [4, 5, 6],
+ [7, 8, 9]
+]
+
+Output:
+[
+ [7, 4, 1],
+ [8, 5, 2],
+ [9, 6, 3]
+]
+
+=================================================
+💡 Approach 1: Brute Force (using extra matrix)
+=================================================
+
+🕒 Time Complexity: O(n²)
+📦 Space Complexity: O(n²) — due to extra matrix used
+
+👣 Dry Run:
+Input matrix:
+[
+ [1, 2, 3],
+ [4, 5, 6],
+ [7, 8, 9]
+]
+
+rotated[j][n - i - 1] = matrix[i][j]
+
+→ rotated[0][2] = 1
+→ rotated[1][2] = 2
+→ rotated[2][2] = 3
+...
+
+After filling, copy the rotated matrix back to original one.
+
+*/
+
+class Solution {
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+        
+        // Create a new matrix to store rotated version
+        int[][] rotated = new int[n][n];
+
+        // Copy values to rotated in 90° clockwise manner
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                /* 
+                Place matrix[i][j] into the rotated position [j][n - i - 1]
+                This effectively rotates the element by 90 degrees clockwise
+                */
+                rotated[j][n - i - 1] = matrix[i][j];
+            }
+        }
+
+        // Copy back to original matrix
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = rotated[i][j];
+            }
+        }
+    }
+}
+
+/*
+=================================================
+⚡ Approach 2: Optimized (In-place transpose + reverse)
+=================================================
+
+🕒 Time Complexity: O(n²)
+📦 Space Complexity: O(1)
+
+✨ Key Idea:
+1. First do a **transpose** of the matrix → convert rows to columns
+2. Then **reverse each row** → gives 90° clockwise rotation
+
+👣 Dry Run:
+Original Matrix:
+[
+ [1, 2, 3],
+ [4, 5, 6],
+ [7, 8, 9]
+]
+
+Step 1: Transpose:
+→ swap(matrix[i][j], matrix[j][i]) for i < j
+
+[
+ [1, 4, 7],
+ [2, 5, 8],
+ [3, 6, 9]
+]
+
+Step 2: Reverse each row:
+→ reverse([1, 4, 7]) → [7, 4, 1]
+→ reverse([2, 5, 8]) → [8, 5, 2]
+→ reverse([3, 6, 9]) → [9, 6, 3]
+
+Final rotated matrix:
+[
+ [7, 4, 1],
+ [8, 5, 2],
+ [9, 6, 3]
+]
+*/
+
+class Solution {
+    public void rotate(int[][] matrix) {
+        int n = matrix.length;
+
+        // 🔁 Step 1: Transpose the matrix (swap across diagonal)
+        for (int i = 0; i < n - 1; i++) {
+            for (int j = i + 1; j < n; j++) {
+                /*
+                Transpose logic: swap element at (i, j) with (j, i)
+                Only need to process half the matrix (upper triangle)
+                */
+                swap(matrix, i, j);
+            }
+        }
+
+        // 🔁 Step 2: Reverse each row in-place
+        for (int i = 0; i < n; i++) {
+            reverse(matrix[i], 0, n - 1);
+        }
+    }
+
+    // Helper method to swap elements across the diagonal
+    private void swap(int[][] matrix, int i, int j) {
+        int temp = matrix[i][j];
+        matrix[i][j] = matrix[j][i];
+        matrix[j][i] = temp;
+    }
+
+    // Helper method to reverse a row
+    private void reverse(int[] row, int start, int end) {
+        while (start < end) {
+            int temp = row[start];
+            row[start] = row[end];
+            row[end] = temp;
+            start++;
+            end--;
+        }
+    }
+}
