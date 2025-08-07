@@ -1,133 +1,88 @@
-https://leetcode.com/problems/set-mismatch/
 /*
-Problem: 
----------
-You are given an array representing numbers from 1 to n, but one number is duplicated and one number is missing. 
-Find both the duplicate and missing numbers.
+Problem:
+--------
+You are given an array representing numbers from 1 to n, where one number is duplicated and one number is missing.
+You need to return the duplicate and the missing number.
 
-Approach Explanation:
-------------------------
+Example:
+Input: [1,2,2,4]
+Output: [2,3]
+Explanation: 2 is duplicated, 3 is missing.
 
-Optimized Approach (Cycle Sort Technique):
-- Place each number at its correct index (value - 1).
-- After sorting, if at any index the value doesn't match index+1, then:
-    - nums[i] = duplicate number
-    - i+1 = missing number
-
-Brute Force Approach (Commented):
-- Use a HashMap or an extra array to count the occurrences of each number.
-- Find the number with count = 2 (duplicate) and number not present (missing).
-
-Complexities:
---------------
-Optimized Approach (Cycle Sort):
-- Time Complexity: O(N)
-- Space Complexity: O(1) (excluding the output array)
-
-Brute Force Approach (HashMap):
+Approach 1: Brute Force using Counting Array
+--------------------------------------------
+- Use an array to count the frequency of each number.
+- Traverse the frequency array to find:
+  - the number with frequency 2 → duplicate
+  - the number with frequency 0 → missing
 - Time Complexity: O(N)
 - Space Complexity: O(N)
-
-Dry Run Example:
-----------------
-Input: [1,2,2,4]
-
-After cycle sort:
-- Elements will be rearranged trying to fit correct indexes, but duplicate will block it.
-
-Final array after cycle sort:
-- [1,2,2,4]
-
-Checking:
-- Index 0: 1 → correct
-- Index 1: 2 → correct
-- Index 2: 2 ≠ 3 → Duplicate = 2, Missing = 3
-
-Output: [2,3]
 */
 
 class Solution {
-
-    public int[] findErrorNums(int[] nums) {
-        int[] ans = new int[2]; // Array to store {duplicate, missing}
-        
-        cycleSort(nums); // Place elements at their correct positions
-
-        for (int i = 0; i < nums.length; i++) {
-            
-            /* 
-            After cycle sort, if an element is not at its correct index,
-            - nums[i] is the duplicate number
-            - i+1 is the missing number
-            */
-            if (nums[i] != i + 1) {
-                ans[0] = nums[i]; // Duplicate number
-                ans[1] = i + 1;   // Missing number
-            }
-        }
-        return ans; // Return the result array
-    }
-
-    // Function to perform Cycle Sort
-    public static void cycleSort(int[] arr) {
-        int i = 0;
-        
-        while (i < arr.length) {
-            int correctIndex = arr[i] - 1; // Expected index for the current value
-
-            /* 
-            Only swap if:
-            - Current element is not at its correct index.
-            - This ensures we are not swapping correct elements or handling duplicates.
-            */
-            if (arr[i] != arr[correctIndex]) {
-                swap(arr, i, correctIndex); // Swap to place value correctly
-            } else {
-                i++; // Move to next element if already correct
-            }
-        }
-    }
-
-    // Utility function to swap two elements
-    public static void swap(int[] arr, int first, int second) {
-        int temp = arr[first];
-        arr[first] = arr[second];
-        arr[second] = temp;
-    }
-
-    /*
-    --------------------------------------------------------------------------------
-    Brute Force Approach (Commented)
-    --------------------------------------------------------------------------------*/
-
     public int[] findErrorNums(int[] nums) {
         int[] count = new int[nums.length + 1];
         int[] ans = new int[2];
 
-        // Count occurrences
         for (int num : nums) {
             count[num]++;
         }
 
         for (int i = 1; i < count.length; i++) {
             if (count[i] == 2) {
-                ans[0] = i; // Duplicate
+                ans[0] = i; // duplicate
             } else if (count[i] == 0) {
-                ans[1] = i; // Missing
+                ans[1] = i; // missing
+            }
+        }
+
+        return ans;
+    }
+}
+
+/*
+Approach 2: Optimized using Cycle Sort
+--------------------------------------
+- Place each element at its correct index (value - 1)
+- After sorting, if an element is not at its correct index i, then:
+  - nums[i] is the duplicate
+  - i+1 is the missing number
+- Time Complexity: O(N)
+- Space Complexity: O(1)
+*/
+
+class Solution {
+    public int[] findErrorNums(int[] nums) {
+        int[] ans = new int[2];
+        cycleSort(nums);
+
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i + 1) {
+                ans[0] = nums[i];     // duplicate
+                ans[1] = i + 1;       // missing
             }
         }
 
         return ans;
     }
 
-   /*  Explanation:
-    ------------
-    - Traverse the array to count how many times each number appears.
-    - The number with count 2 is the duplicate.
-    - The number with count 0 is the missing number.
+    public void cycleSort(int[] arr) {
+        int i = 0;
 
-    Drawback:
-    ---------
-    - Extra space O(N) required for counting array.
-    */
+        while (i < arr.length) {
+            int correctIndex = arr[i] - 1;
+
+            if (arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    public void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
 }
