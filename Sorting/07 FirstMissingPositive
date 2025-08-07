@@ -1,133 +1,106 @@
-https://leetcode.com/problems/first-missing-positive/
 /*
-Problem:
----------
-Given an unsorted integer array, find the smallest missing positive integer.
+ Problem: First Missing Positive
+ LeetCode Link: https://leetcode.com/problems/first-missing-positive/
 
-Approach Explanation:
-------------------------
+ Description:
+  You're given an unsorted integer array. Your goal is to find the smallest missing positive integer.
+  You must do this in O(n) time and use constant extra space.
 
-Optimized Approach (Cycle Sort Technique):
-- We place each positive number (between 1 and n) at its correct index (value - 1).
-- After the sorting, the first index where nums[i] != i+1 indicates the missing positive number.
+ Approach 1: Brute Force Using HashSet
+ -------------------------------------
+ Steps:
+ 1. Insert all numbers into a HashSet for constant-time lookups.
+ 2. Iterate from 1 to n (inclusive) and return the first number not in the set.
+ 3. If all numbers from 1 to n are present, return n + 1.
 
-Brute Force Approach (Commented):
-- Use a HashSet to store all numbers.
-- Then, from 1 to n, check which number is missing.
+ Dry Run Example:
+  Input: [3, 4, -1, 1]
+  HashSet = {3,4,-1,1}
+  Check 1 → exists
+  Check 2 → missing → return 2
 
-Complexities:
---------------
-Optimized Approach (Cycle Sort):
-- Time Complexity: O(N)
-- Space Complexity: O(1)
+ Time Complexity: O(n)
+ Space Complexity: O(n) — due to HashSet usage
+*/
 
-Brute Force Approach (HashSet):
-- Time Complexity: O(N)
-- Space Complexity: O(N)
+class SolutionBrute {
+    public int firstMissingPositive(int[] nums) {
+        Set<Integer> seen = new HashSet<>();
+        for (int num : nums) seen.add(num);
 
-Dry Run Example:
-----------------
-Input: [3,4,-1,1]
+        for (int i = 1; i <= nums.length; i++) {
+            if (!seen.contains(i)) return i;
+        }
+        return nums.length + 1;
+    }
+}
 
-After cycle sort:
-- Try placing numbers at correct positions:
-    - 3 → index 2
-    - 4 → index 3
-    - -1 is ignored
-    - 1 → index 0
+/*
+ Approach 2: Optimized (Cycle Sort Technique)
+ ---------------------------------------------
+ Idea:
+  - Place each positive integer x (1 ≤ x ≤ n) at index x - 1.
+  - After rearrangement, the first index where nums[i] != i + 1 gives the missing number at i + 1.
 
-Array after sort:
-[1, -1, 3, 4]
+ Strong Points:
+  - In-place rearrangement.
+  - Constant extra space.
 
-Checking:
-- Index 0 → 1 → correct
-- Index 1 → -1 ≠ 2 → Missing positive is 2
+ Detailed Dry Run:
+  Input: [3, 4, -1, 1]
+  Steps:
+   1. i = 0 → nums[0]=3 → correct pos=2 → swap nums[0] & nums[2] → [ -1, 4, 3, 1 ]
+   2. i = 0 → nums[0] = -1 (ignored, out of valid range) → increment i
+   3. i = 1 → nums[1] = 4 → correct pos = 3 → swap → [ -1, 1, 3, 4 ]
+   4. i = 1 → nums[1] = 1 → correct pos = 0 → swap → [ 1, -1, 3, 4 ]
+   5. All further are either in place or ignored
+  Final array: [1, -1, 3, 4]
+  Walk through:
+   - i = 0 → 1 → OK
+   - i = 1 → -1 != 2 → return 2
 
-Output: 2
+ Time Complexity: O(n)
+ Space Complexity: O(1)
 */
 
 class Solution {
-
     public int firstMissingPositive(int[] nums) {
-        
-        cycleSort(nums); // Place numbers at their correct positions
-        
-        // Traverse the sorted array
+        cycleSort(nums);
+
+        // Identify the first index where the number is incorrect
         for (int i = 0; i < nums.length; i++) {
-            
-            /*
-            After sorting, if value at index i is not (i+1),
-            then (i+1) is the smallest missing positive number.
-            */
             if (nums[i] != i + 1) {
                 return i + 1;
             }
         }
-        
-        // If all positions are correct, missing number is n+1
+
+        // If all are correctly placed, the missing number is n+1
         return nums.length + 1;
     }
 
-    // Function to perform Cycle Sort on the array
-    public void cycleSort(int[] nums) {
+    /**
+     * Rearranges the array in-place so each number is placed at index = value - 1 (if valid).
+     */
+    private void cycleSort(int[] nums) {
         int i = 0;
-
         while (i < nums.length) {
-            int correctIndex = nums[i] - 1; // Expected correct index for nums[i]
+            int current = nums[i];
+            int correctIndex = current - 1;
 
-            /*
-            Conditions for swapping:
-            - nums[i] should be positive.
-            - nums[i] should be within the range [1, nums.length].
-            - nums[i] should not already be at its correct position to avoid infinite swapping.
-            */
-            if (nums[i] > 0 && nums[i] <= nums.length && nums[i] != nums[correctIndex]) {
-                swap(nums, i, correctIndex); // Swap to correct position
+            // Swap only when in valid range and not already in correct position
+            if (current > 0 && current <= nums.length && nums[i] != nums[correctIndex]) {
+                swap(nums, i, correctIndex);
             } else {
-                i++; // Move to next index if current value is already correct or invalid
+                // Move forward if invalid or already in correct position
+                i++;
             }
         }
     }
 
-    // Utility function to swap two elements
-    public static void swap(int[] arr, int first, int second) {
-        int temp = arr[first];
-        arr[first] = arr[second];
-        arr[second] = temp;
+    /** Swaps elements at indices a and b */
+    private void swap(int[] nums, int a, int b) {
+        int tmp = nums[a];
+        nums[a] = nums[b];
+        nums[b] = tmp;
     }
-
-    /*
-    --------------------------------------------------------------------------------
-    Brute Force Approach (Commented)
-    --------------------------------------------------------------------------------*/
-
-    public int firstMissingPositive(int[] nums) {
-        Set<Integer> set = new HashSet<>();
-        
-        // Insert all elements into the HashSet
-        for (int num : nums) {
-            set.add(num);
-        }
-
-        // Check from 1 to n which number is missing
-        for (int i = 1; i <= nums.length; i++) {
-            if (!set.contains(i)) {
-                return i;
-            }
-        }
-        
-        // If all numbers from 1 to n are present, return n+1
-        return nums.length + 1;
-    }
-
-    /*Explanation:
-    ------------
-    - Insert all numbers into a set.
-    - Check sequentially starting from 1 to find the first missing positive.
-    - If all numbers are present, return n+1.
-
-    Drawback:
-    ---------
-    - Uses O(N) extra space, unlike optimized cycle sort approach which is O(1).
-    */
 }
