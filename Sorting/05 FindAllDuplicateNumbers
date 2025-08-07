@@ -93,7 +93,7 @@ class Solution {
     /*
     --------------------------------------------------------------------------------
     Brute Force Approach (Commented)
-    --------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------*/
 
     public List<Integer> findDuplicates(int[] nums) {
         Map<Integer, Integer> countMap = new HashMap<>();
@@ -112,7 +112,7 @@ class Solution {
         return duplicates;
     }
 
-    Explanation:
+   /* Explanation:
     ------------
     - Count the frequency of each element using a HashMap.
     - If any element's count is exactly 2, it's a duplicate.
