@@ -1,0 +1,133 @@
+/*
+🔍 PROBLEM: Find the Duplicate Number (LeetCode #287)
+------------------------------------------------------
+You are given an array of `n + 1` integers where each integer is between 1 and `n` (inclusive).
+There is only one repeated number but it could be repeated more than once.
+Return this duplicate number.
+
+🧠 Example:
+Input:  [1,3,4,2,2]
+Output: 2
+
+------------------------------------------------------
+✅ APPROACH 1: Cycle Sort Technique (In-Place Detection)
+------------------------------------------------------
+🎯 Idea:
+- Place each number at its correct index (i.e., value `x` should be at index `x - 1`).
+- If a number is already at its correct index and we try to place the same value again, that number is a duplicate.
+
+🧮 Complexity:
+- Time: O(N)
+- Space: O(1)
+
+🔂 Dry Run (Input: [1,3,4,2,2]):
+→ Index 0: 1 at correct place.
+→ Index 1: 3 → should go to index 2 → swap → [1,4,3,2,2]
+→ Index 1: 4 → should go to index 3 → swap → [1,2,3,4,2]
+→ Index 1: 2 → should go to index 1 → already there → duplicate = 2
+
+*/
+
+class Solution {
+    public int findDuplicate(int[] nums) {
+        cycleSort(nums); // Rearrange elements to expected positions
+
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i + 1) {
+                return nums[i]; // Element not at correct index = duplicate
+            }
+        }
+
+        return -1; // Fallback, though problem guarantees a duplicate
+    }
+
+    // 🧩 Cycle Sort Helper
+    private void cycleSort(int[] arr) {
+        int i = 0;
+        while (i < arr.length) {
+            int correctIndex = arr[i] - 1;
+
+            // Only swap if values are different (avoid infinite loop due to duplicates)
+            if (arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    // 🔁 Swap Utility
+    private void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+
+    /*
+    ------------------------------------------------------
+    ✅ APPROACH 2: Floyd's Tortoise and Hare (Cycle Detection)
+    ------------------------------------------------------
+    🎯 Idea:
+    - Treat array values as pointers (linked list).
+    - Detect cycle (duplicate = start of cycle).
+
+    🧮 Complexity:
+    - Time: O(N)
+    - Space: O(1)
+
+    🔁 Implementation:
+    
+    public int findDuplicate(int[] nums) {
+        int slow = nums[0];
+        int fast = nums[0];
+
+        // Phase 1: Detect cycle
+        do {
+            slow = nums[slow];
+            fast = nums[nums[fast]];
+        } while (slow != fast);
+
+        // Phase 2: Find start of cycle
+        fast = nums[0];
+        while (slow != fast) {
+            slow = nums[slow];
+            fast = nums[fast];
+        }
+
+        return slow; // Start of the cycle = duplicate
+    }
+
+    ✅ Example:
+    Input: [1,3,4,2,2]
+    - slow = nums[1] = 3, fast = nums[nums[1]] = nums[3] = 2
+    - slow = nums[3] = 2, fast = nums[nums[2]] = nums[4] = 2
+    → They meet at 2 → duplicate
+    */
+
+    /*
+    ------------------------------------------------------
+    🐌 APPROACH 3: Brute Force (Nested Loop)
+    ------------------------------------------------------
+    🎯 Idea:
+    - Compare every element with every other element.
+
+    🧮 Complexity:
+    - Time: O(N^2)
+    - Space: O(1)
+
+    🔁 Implementation:*/
+    
+    public int findDuplicate(int[] nums) {
+        for (int i = 0; i < nums.length - 1; i++) {
+            for (int j = i + 1; j < nums.length; j++) {
+                if (nums[i] == nums[j]) {
+                    return nums[i];
+                }
+            }
+        }
+        return -1;
+    }
+
+    //⚠️ Not suitable for large inputs due to high time complexity.
+    
+}
