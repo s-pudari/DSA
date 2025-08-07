@@ -1,0 +1,98 @@
+/*
+🔍 PROBLEM: Cycle Sort for 0 to N or 1 to N
+--------------------------------------------
+Sort an array of size N where elements are:
+  - From 0 to N (inclusive of 0), or
+  - From 1 to N (inclusive of 1)
+
+We aim to sort it **in-place** with **O(N)** time and **O(1)** space.
+
+----------------------------------------------------------
+✅ Approach Explanation:
+----------------------------------------------------------
+We use **Cycle Sort**, where we repeatedly place each element at its correct index:
+
+1️⃣ For 0 to N:
+    - Each element's correct index is exactly equal to its value.
+    - If element is not at its correct index, we swap it with the one at that index.
+
+2️⃣ For 1 to N:
+    - Each element’s correct index is (value - 1).
+    - Again, we swap until all elements are in place.
+
+📌 Key Property: Each element is moved at most once.
+
+----------------------------------------------------------
+✅ Time Complexity: O(N) — Each element is placed at its correct index once.
+✅ Space Complexity: O(1) — In-place sorting.
+----------------------------------------------------------
+📌 DRY RUN (0 to N):
+Input: [1, 3, 0, 2, 4]
+
+Step 1: i=0, arr[0]=1 → correctIndex=1 → swap(0,1) → [3,1,0,2,4]
+Step 2: i=0, arr[0]=3 → correctIndex=3 → swap(0,3) → [2,1,0,3,4]
+Step 3: i=0, arr[0]=2 → correctIndex=2 → swap(0,2) → [0,1,2,3,4]
+Step 4-8: All at correct position → move on
+Output: [0,1,2,3,4]
+*/
+
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        // 🧪 Example input array for 0 to N
+        int[] arr = {1, 3, 0, 2, 4};
+
+        cycleSortZeroToN(arr);  // Sort using Cycle Sort (0 to N)
+
+        System.out.println("Sorted Array (0 to N): " + Arrays.toString(arr));
+    }
+
+    // ✅ Cycle Sort for elements from 0 to N
+    public static void cycleSortZeroToN(int[] arr) {
+        int i = 0;
+        while (i < arr.length) {
+            int correctIndex = arr[i]; // For 0 to N, correct index = value itself
+
+            // ⚠️ Make sure value is within bounds and not already in correct place
+            if (arr[i] < arr.length && arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    // 🔄 Utility function to swap two elements in the array
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+
+    /*
+    ---------------------------------------------------------------------------
+    📝 Alternate Version: For elements from 1 to N
+    ---------------------------------------------------------------------------*/
+
+    public static void main(String[] args) {
+        int[] arr = {1, 3, 5, 2, 4}; // Input array for 1 to N
+        cycleSortOneToN(arr); // Sort using Cycle Sort (1 to N)
+        System.out.println("Sorted Array (1 to N): " + Arrays.toString(arr));
+    }
+
+    // ✅ Cycle Sort for elements from 1 to N
+    public static void cycleSortOneToN(int[] arr) {
+        int i = 0;
+        while (i < arr.length) {
+            int correctIndex = arr[i] - 1; // For 1 to N, correct index = value - 1
+
+            if (arr[i] != arr[correctIndex]) {
+                swap(arr, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+    
+}
