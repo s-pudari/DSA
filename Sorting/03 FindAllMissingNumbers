@@ -1,0 +1,104 @@
+/*
+🔍 PROBLEM: Find All Numbers Disappeared in an Array (LeetCode #448)
+--------------------------------------------------------------------
+Given an array `nums` of length `n`, where each element is in the range [1, n], 
+some numbers appear once and others may appear more than once.
+Return all the numbers in the range [1, n] that do not appear in `nums`.
+
+🧠 EXAMPLE:
+Input:  [4,3,2,7,8,2,3,1]
+Output: [5,6]
+
+--------------------------------------------------------------------
+✅ APPROACH: Cycle Sort (In-place Rearrangement)
+--------------------------------------------------------------------
+🎯 GOAL: Place each number at its correct index: `nums[i] == i + 1`.
+         After rearrangement, if any index `i` has `nums[i] != i+1`, 
+         then `i+1` is missing.
+
+📌 Steps:
+1. Iterate through the array using Cycle Sort to place each value at its proper index.
+   (i.e., value `x` should be placed at index `x-1`)
+2. After sorting, scan the array. If `nums[i] != i + 1`, then `i + 1` is missing.
+
+🧮 COMPLEXITY:
+- Time: O(N)
+- Space: O(1) (ignoring the result list)
+
+--------------------------------------------------------------------
+🔂 DRY RUN:
+Input: [4,3,2,7,8,2,3,1]
+Cycle Sort:
+→ swap(0, 3): [7,3,2,4,8,2,3,1]
+→ swap(0, 6): [3,3,2,4,8,2,7,1]
+→ swap(0, 2): [2,3,3,4,8,2,7,1]
+→ swap(0, 1): [3,2,3,4,8,2,7,1]
+→ swap(0, 2): [3,2,3,4,8,2,7,1] (duplicate → move on)
+Sorted: [1,2,3,4,3,2,7,8]
+→ Indices with wrong values: i=4 (val=3), i=5 (val=2)
+→ Missing: 5, 6
+
+*/
+
+import java.util.*;
+
+class Solution {
+    public List<Integer> findDisappearedNumbers(int[] nums) {
+        List<Integer> result = new ArrayList<>();
+
+        cycleSort(nums);  // Step 1: Place each number at the correct index
+
+        // Step 2: Find indices where nums[i] != i + 1
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i + 1) {
+                result.add(i + 1);  // Missing number
+            }
+        }
+
+        return result;
+    }
+
+    // Cycle Sort for 1 to N numbers
+    private void cycleSort(int[] nums) {
+        int i = 0;
+
+        while (i < nums.length) {
+            int correctIndex = nums[i] - 1;
+
+            // Only swap if not at correct position and not duplicate
+            if (nums[i] != nums[correctIndex]) {
+                swap(nums, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    // Swap utility
+    private void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+/*
+--------------------------------------------------------------------
+📌 ALTERNATIVE APPROACH (Negation Marking Trick):
+--------------------------------------------------------------------
+1. For each number `x`, mark `nums[x - 1]` as negative to indicate presence.
+2. After traversal, the indices with positive numbers correspond to missing values.
+
+Example:*/
+    for (int i = 0; i < nums.length; i++) {
+        int index = Math.abs(nums[i]) - 1;
+        if (nums[index] > 0) nums[index] = -nums[index];
+    }
+    for (int i = 0; i < nums.length; i++) {
+        if (nums[i] > 0) result.add(i + 1);
+    }
+
+/*✅ Time: O(N)
+✅ Space: O(1)
+✔️ Works well without needing to sort.
+*/
