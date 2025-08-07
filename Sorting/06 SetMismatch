@@ -98,7 +98,7 @@ class Solution {
     /*
     --------------------------------------------------------------------------------
     Brute Force Approach (Commented)
-    --------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------*/
 
     public int[] findErrorNums(int[] nums) {
         int[] count = new int[nums.length + 1];
@@ -120,7 +120,7 @@ class Solution {
         return ans;
     }
 
-    Explanation:
+   /*  Explanation:
     ------------
     - Traverse the array to count how many times each number appears.
     - The number with count 2 is the duplicate.
