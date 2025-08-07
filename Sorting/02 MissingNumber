@@ -1,0 +1,91 @@
+/*
+🔍 PROBLEM: Missing Number (LeetCode #268)
+-------------------------------------------
+Given an array `nums` containing `n` distinct numbers taken from the range [0, n],
+find the one number that is missing from the array.
+
+Example:
+Input:  [3, 0, 1]
+Output: 2
+
+------------------------------------------------------------------
+✅ APPROACH: Cycle Sort (In-place, O(N) Time, O(1) Space)
+------------------------------------------------------------------
+🧠 IDEA:
+- Each number should ideally be at the index equal to its value: i.e., value `i` → index `i`.
+- If after sorting, a value is missing at index `i` (i.e., `nums[i] != i`), then `i` is the missing number.
+- If all values are at their correct indices, then the missing number is `n`.
+
+📌 Steps:
+1. Use **Cycle Sort** to place each element at its correct index.
+2. Traverse the array to find the first `i` such that `nums[i] != i`.
+3. Return `i` as the missing number.
+4. If not found, return `n`.
+
+------------------------------------------------------------------
+✅ TIME COMPLEXITY: O(N)
+✅ SPACE COMPLEXITY: O(1)
+------------------------------------------------------------------
+📌 DRY RUN:
+Input: [3, 0, 1]
+→ Swap 1 and 0 → [0, 3, 1]
+→ Swap 1 and 3 → [0, 1, 3]
+Now:
+- nums[0] == 0 ✅
+- nums[1] == 1 ✅
+- nums[2] == 3 ❌ → missing number is 2
+*/
+
+import java.util.*;
+
+class Solution {
+    public int missingNumber(int[] nums) {
+        cycleSort(nums);  // Step 1: Sort elements in-place using cycle sort
+
+        // Step 2: Check for missing index
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] != i) {
+                return i;
+            }
+        }
+
+        // Step 3: All numbers in place → missing number is n
+        return nums.length;
+    }
+
+    // Cycle Sort for range [0, n]
+    public void cycleSort(int[] nums) {
+        int i = 0;
+
+        while (i < nums.length) {
+            int correctIndex = nums[i];
+
+            // Only swap if within bounds and not already in place
+            if (nums[i] < nums.length && nums[i] != nums[correctIndex]) {
+                swap(nums, i, correctIndex);
+            } else {
+                i++;
+            }
+        }
+    }
+
+    // Swap helper
+    private void swap(int[] arr, int i, int j) {
+        int temp = arr[i];
+        arr[i] = arr[j];
+        arr[j] = temp;
+    }
+}
+
+/*
+------------------------------------------------------------------
+📌 ALTERNATIVE: Math Approach (without modifying the array)
+------------------------------------------------------------------*/
+int expected = (n * (n + 1)) / 2;
+int actual = sum of all elements;
+return expected - actual;
+
+/*🕒 Time: O(N)
+🧠 Space: O(1)
+✔️ Works well if you can't modify the input array
+*/
