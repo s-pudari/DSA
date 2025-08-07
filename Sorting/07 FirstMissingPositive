@@ -99,7 +99,7 @@ class Solution {
     /*
     --------------------------------------------------------------------------------
     Brute Force Approach (Commented)
-    --------------------------------------------------------------------------------
+    --------------------------------------------------------------------------------*/
 
     public int firstMissingPositive(int[] nums) {
         Set<Integer> set = new HashSet<>();
@@ -120,7 +120,7 @@ class Solution {
         return nums.length + 1;
     }
 
-    Explanation:
+    /*Explanation:
     ------------
     - Insert all numbers into a set.
     - Check sequentially starting from 1 to find the first missing positive.
