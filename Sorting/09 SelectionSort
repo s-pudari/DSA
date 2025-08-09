@@ -1,0 +1,167 @@
+/*
+Problem: Implement Selection Sort in both ascending and descending order.
+Link: https://www.geeksforgeeks.org/selection-sort/
+
+===============================
+Brute Force Selection Sort:
+===============================
+Idea:
+- For each position from start to end, find the smallest (for ascending) or largest (for descending) element in the remaining unsorted array and swap it with the current position.
+- No optimization — always perform all passes, even if the array becomes sorted earlier.
+
+Time Complexity:
+- Always O(N^2), since two nested loops run regardless of initial order.
+Space Complexity:
+- O(1), sorting in place.
+
+Dry Run Example (Ascending):
+Input: [2, 9, 4, 8, 1, -1]
+
+Iteration 1:
+- Find min between index 0–5 => -1 at index 5
+- Swap with index 0 → [-1, 9, 4, 8, 1, 2]
+
+Iteration 2:
+- Find min between index 1–5 => 1 at index 4
+- Swap with index 1 → [-1, 1, 4, 8, 9, 2]
+
+Iteration 3:
+- Find min between index 2–5 => 2 at index 5
+- Swap with index 2 → [-1, 1, 2, 8, 9, 4]
+
+Iteration 4:
+- Find min between index 3–5 => 4 at index 5
+- Swap with index 3 → [-1, 1, 2, 4, 9, 8]
+
+Iteration 5:
+- Find min between index 4–5 => 8 at index 5
+- Swap with index 4 → [-1, 1, 2, 4, 8, 9]
+
+Iteration 6:
+- Single element left, already in place.
+*/
+
+import java.util.*;
+
+class Main {
+
+    public static void bruteForceSelectionSortAscending(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int minIndex = i; // assume current index is min
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j; // found smaller element
+                }
+            }
+            swap(arr, i, minIndex);
+        }
+    }
+
+    public static void bruteForceSelectionSortDescending(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int maxIndex = i; // assume current index is max
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] > arr[maxIndex]) {
+                    maxIndex = j; // found larger element
+                }
+            }
+            swap(arr, i, maxIndex);
+        }
+    }
+
+    /*
+    ===============================
+    Optimized Selection Sort:
+    ===============================
+    Idea:
+    - Instead of starting from the beginning and moving forward, we can place the maximum element at the end of the unsorted part in each iteration.
+    - Still O(N^2) but slightly fewer swaps compared to brute force.
+    - This method works well when minimizing write operations is important.
+
+    Time Complexity: O(N^2)
+    Space Complexity: O(1)
+
+    Dry Run Example (Ascending):
+    Input: [2, 9, 4, 8, 1, -1]
+
+    Iteration 1:
+    - Find max index between 0–5 => 9 at index 1
+    - Swap with index 5 → [2, -1, 4, 8, 1, 9]
+
+    Iteration 2:
+    - Find max index between 0–4 => 8 at index 3
+    - Swap with index 4 → [2, -1, 4, 1, 8, 9]
+
+    Iteration 3:
+    - Find max index between 0–3 => 4 at index 2
+    - Swap with index 3 → [2, -1, 1, 4, 8, 9]
+
+    Iteration 4:
+    - Find max index between 0–2 => 2 at index 0
+    - Swap with index 2 → [1, -1, 2, 4, 8, 9]
+
+    Iteration 5:
+    - Find max index between 0–1 => 1 at index 0
+    - Swap with index 1 → [-1, 1, 2, 4, 8, 9]
+    */
+
+    public static void optimizedSelectionSortAscending(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int last = arr.length - i - 1;
+            int maxIndex = getMaxIndex(arr, 0, last);
+            swap(arr, maxIndex, last);
+        }
+    }
+
+    public static void optimizedSelectionSortDescending(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int last = arr.length - i - 1;
+            int minIndex = getMinIndex(arr, 0, last);
+            swap(arr, minIndex, last);
+        }
+    }
+
+    public static int getMaxIndex(int[] arr, int start, int end) {
+        int max = start;
+        for (int i = start; i <= end; i++) {
+            if (arr[i] > arr[max]) {
+                max = i;
+            }
+        }
+        return max;
+    }
+
+    public static int getMinIndex(int[] arr, int start, int end) {
+        int min = start;
+        for (int i = start; i <= end; i++) {
+            if (arr[i] < arr[min]) {
+                min = i;
+            }
+        }
+        return min;
+    }
+
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {2, 9, 4, 8, 1, -1};
+        bruteForceSelectionSortAscending(arr1);
+        System.out.println("Brute Force Ascending: " + Arrays.toString(arr1));
+
+        int[] arr2 = {2, 9, 4, 8, 1, -1};
+        bruteForceSelectionSortDescending(arr2);
+        System.out.println("Brute Force Descending: " + Arrays.toString(arr2));
+
+        int[] arr3 = {2, 9, 4, 8, 1, -1};
+        optimizedSelectionSortAscending(arr3);
+        System.out.println("Optimized Ascending: " + Arrays.toString(arr3));
+
+        int[] arr4 = {2, 9, 4, 8, 1, -1};
+        optimizedSelectionSortDescending(arr4);
+        System.out.println("Optimized Descending: " + Arrays.toString(arr4));
+    }
+}
