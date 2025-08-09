@@ -1,0 +1,114 @@
+/*
+Problem:
+--------
+Implement Bubble Sort to sort an array in both ascending and descending order.
+
+We will first implement the Brute Force (traditional bubble sort without early stopping),
+then the Optimized version (with early stopping using a 'swapped' flag).
+
+No external problem link — this is a fundamental algorithm.
+
+-----------------------------------------------------------
+Approach 1: Brute Force Bubble Sort (No Early Stopping)
+-----------------------------------------------------------
+- For each pass, compare adjacent elements and swap if they are in the wrong order.
+- Always performs N passes regardless of whether the array is already sorted.
+
+Time Complexity:
+- Always O(N^2)
+Space Complexity:
+- O(1) — in-place sorting.
+
+Dry Run:
+--------
+Input: [2, 9, 4, 8, 1]
+
+Pass 1: [2, 4, 8, 1, 9]
+Pass 2: [2, 4, 1, 8, 9]
+Pass 3: [2, 1, 4, 8, 9]
+Pass 4: [1, 2, 4, 8, 9]
+(No early stopping — continues until all passes complete)
+*/
+
+import java.util.*;
+
+class Main {
+    public static void main(String[] args) {
+        int[] arr1 = {2, 9, 4, 8, 1};
+        bubbleSortBruteForce(arr1);
+        System.out.println("Brute Force Ascending: " + Arrays.toString(arr1));
+
+        int[] arr2 = {2, 9, 4, 8, 1};
+        bubbleSortOptimizedAscending(arr2);
+        System.out.println("Optimized Ascending: " + Arrays.toString(arr2));
+
+        int[] arr3 = {2, 9, 4, 8, 1};
+        bubbleSortOptimizedDescending(arr3);
+        System.out.println("Optimized Descending: " + Arrays.toString(arr3));
+    }
+
+    // Brute Force Bubble Sort - Ascending
+    public static void bubbleSortBruteForce(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            for (int j = 1; j < arr.length - i; j++) {
+                if (arr[j] < arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                }
+            }
+        }
+    }
+
+    /*
+    -----------------------------------------------------------
+    Approach 2: Optimized Bubble Sort (Early Stopping)
+    -----------------------------------------------------------
+    - Same as bubble sort, but if no swaps happen in a pass, stop early.
+    - Best case (already sorted) → O(N)
+    - Worst/Average case → O(N^2)
+    
+    Dry Run:
+    --------
+    Input: [2, 9, 4, 8, 1]
+
+    Pass 1: [2, 4, 8, 1, 9]
+    Pass 2: [2, 4, 1, 8, 9]
+    Pass 3: [2, 1, 4, 8, 9]
+    Pass 4: [1, 2, 4, 8, 9] → No swaps next pass → Stop early
+    */
+
+    public static void bubbleSortOptimizedAscending(int[] arr) {
+        boolean swapped;
+        for (int i = 0; i < arr.length; i++) {
+            swapped = false;
+            for (int j = 1; j < arr.length - i; j++) {
+                if (arr[j] < arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+    }
+
+    // Optimized Bubble Sort - Descending
+    public static void bubbleSortOptimizedDescending(int[] arr) {
+        boolean swapped;
+        for (int i = 0; i < arr.length; i++) {
+            swapped = false;
+            for (int j = 1; j < arr.length - i; j++) {
+                if (arr[j] > arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                    swapped = true;
+                }
+            }
+            if (!swapped) break;
+        }
+    }
+
+    // Swap utility
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
