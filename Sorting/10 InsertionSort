@@ -1,0 +1,161 @@
+/*
+Problem: Implement Insertion Sort in both ascending and descending order.
+Link: https://www.geeksforgeeks.org/insertion-sort/
+
+================================
+Brute Force Insertion Sort:
+================================
+Idea:
+- For each element, shift it backwards one position at a time until it reaches the correct place.
+- No optimization: continue checking and swapping even if already in the correct position.
+- This makes it slower on already sorted or nearly sorted arrays.
+
+Time Complexity: O(N^2)
+Space Complexity: O(1)
+Stability: Yes (relative order of equal elements is preserved)
+
+Dry Run Example (Ascending):
+Input: [2, 9, 4, 8, 1, 2]
+
+Step 1:
+- Compare 9 with 2 → Swap → [2, 9, 4, 8, 1, 2]
+
+Step 2:
+- Compare 4 with 9 → Swap → [2, 4, 9, 8, 1, 2]
+- Compare 4 with 2 → No swap (stop here)
+
+Step 3:
+- Compare 8 with 9 → Swap → [2, 4, 8, 9, 1, 2]
+- Compare 8 with 4 → No swap (stop here)
+
+Step 4:
+- Compare 1 with 9 → Swap → [2, 4, 8, 1, 9, 2]
+- Compare 1 with 8 → Swap → [2, 4, 1, 8, 9, 2]
+- Compare 1 with 4 → Swap → [2, 1, 4, 8, 9, 2]
+- Compare 1 with 2 → Swap → [1, 2, 4, 8, 9, 2]
+
+Step 5:
+- Compare 2 with 9 → Swap → [1, 2, 4, 8, 2, 9]
+- Compare 2 with 8 → Swap → [1, 2, 4, 2, 8, 9]
+- Compare 2 with 4 → Swap → [1, 2, 2, 4, 8, 9]
+- Compare 2 with 2 → No swap (stop here)
+*/
+
+import java.util.*;
+
+class Main {
+
+    // Brute Force Ascending Insertion Sort
+    public static void bruteForceInsertionSortAscending(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                // Always check and swap if out of order
+                if (arr[j] < arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                }
+            }
+        }
+    }
+
+    // Brute Force Descending Insertion Sort
+    public static void bruteForceInsertionSortDescending(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                if (arr[j] > arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                }
+            }
+        }
+    }
+
+    /*
+    ===============================
+    Optimized Insertion Sort:
+    ===============================
+    Idea:
+    - Shift elements backwards until correct position is found.
+    - If an element is already in correct order, break early to save time.
+    - Works better for nearly sorted arrays.
+
+    Time Complexity: O(N^2) worst case, O(N) best case
+    Space Complexity: O(1)
+    Stability: Yes
+
+    Dry Run Example (Ascending):
+    Input: [2, 9, 4, 8, 1, 2]
+
+    Step 1:
+    - Compare 9 with 2 → No swap → Already sorted so far.
+
+    Step 2:
+    - Compare 4 with 9 → Swap → [2, 4, 9, 8, 1, 2]
+    - Compare 4 with 2 → No swap → Break early.
+
+    Step 3:
+    - Compare 8 with 9 → Swap → [2, 4, 8, 9, 1, 2]
+    - Compare 8 with 4 → No swap → Break early.
+
+    Step 4:
+    - Compare 1 with 9 → Swap → [2, 4, 8, 1, 9, 2]
+    - Compare 1 with 8 → Swap → [2, 4, 1, 8, 9, 2]
+    - Compare 1 with 4 → Swap → [2, 1, 4, 8, 9, 2]
+    - Compare 1 with 2 → Swap → [1, 2, 4, 8, 9, 2]
+
+    Step 5:
+    - Compare 2 with 9 → Swap → [1, 2, 4, 8, 2, 9]
+    - Compare 2 with 8 → Swap → [1, 2, 4, 2, 8, 9]
+    - Compare 2 with 4 → Swap → [1, 2, 2, 4, 8, 9]
+    - Compare 2 with 2 → Break early.
+    */
+
+    // Optimized Ascending Insertion Sort
+    public static void optimizedInsertionSortAscending(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                if (arr[j] < arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                } else {
+                    break; // Early stop if already sorted
+                }
+            }
+        }
+    }
+
+    // Optimized Descending Insertion Sort
+    public static void optimizedInsertionSortDescending(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                if (arr[j] > arr[j - 1]) {
+                    swap(arr, j, j - 1);
+                } else {
+                    break; // Early stop if already sorted
+                }
+            }
+        }
+    }
+
+    // Swap helper
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {2, 9, 4, 8, 1, 2};
+        bruteForceInsertionSortAscending(arr1);
+        System.out.println("Brute Force Ascending: " + Arrays.toString(arr1));
+
+        int[] arr2 = {2, 9, 4, 8, 1, 2};
+        bruteForceInsertionSortDescending(arr2);
+        System.out.println("Brute Force Descending: " + Arrays.toString(arr2));
+
+        int[] arr3 = {2, 9, 4, 8, 1, 2};
+        optimizedInsertionSortAscending(arr3);
+        System.out.println("Optimized Ascending: " + Arrays.toString(arr3));
+
+        int[] arr4 = {2, 9, 4, 8, 1, 2};
+        optimizedInsertionSortDescending(arr4);
+        System.out.println("Optimized Descending: " + Arrays.toString(arr4));
+    }
+}
