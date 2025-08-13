@@ -1,0 +1,130 @@
+import java.util.*;
+
+/*
+======================================================
+Problem: Recursive Selection Sort
+======================================================
+
+Selection Sort (Recursive Approach) — Explanation:
+---------------------------------------------------
+- Selection Sort works by repeatedly finding the maximum (or minimum) element 
+  from the unsorted part of the array and placing it at its correct position.
+
+- In the recursive approach:
+  1. Find the index of the maximum element in the unsorted part.
+  2. Swap it with the last element of the unsorted part.
+  3. Recursively sort the remaining unsorted part.
+
+Stability:
+----------
+- **Not stable**:
+  Equal elements may swap and change their original order.
+
+Time Complexity:  O(N^2)
+Space Complexity: O(N) (due to recursion stack)
+---------------------------------------------------
+
+Dry Run Example:
+----------------
+Input: [2, 9, 4, 8, 1, 2]
+
+Call: selectionSortRec(arr, 0, 6, 0)  
+(N = 6, so indexes are from 0 to 5)
+
+Pass 1:
+  - Find max index from 0 to 5 → max = 1 (value 9)
+  - Swap 9 with last element index 5 (value 2)
+  Array → [2, 2, 4, 8, 1, 9]
+
+Pass 2:
+  - Find max index from 0 to 4 → max = 3 (value 8)
+  - Swap 8 with last index 4 (value 1)
+  Array → [2, 2, 4, 1, 8, 9]
+
+Pass 3:
+  - Find max index from 0 to 3 → max = 2 (value 4)
+  - Swap 4 with last index 3 (value 1)
+  Array → [2, 2, 1, 4, 8, 9]
+
+Pass 4:
+  - Find max index from 0 to 2 → max = 0 (value 2)
+  - Swap 2 with last index 2 (value 1)
+  Array → [1, 2, 2, 4, 8, 9]
+
+Pass 5:
+  - Find max index from 0 to 1 → max = 1 (value 2)
+  - Swap 2 with last index 1 (value 2) → No change
+  Array → [1, 2, 2, 4, 8, 9]
+
+Output:
+  Sorted Array (Ascending) → [1, 2, 2, 4, 8, 9]
+======================================================
+*/
+
+class Main {
+
+    public static void main(String[] args) {
+        int[] arr = {2, 9, 4, 8, 1, 2};
+
+        // Call recursive selection sort
+        selectionSortRec(arr, 0, arr.length, 0);
+
+        System.out.println("Sorted Array (Ascending): " + Arrays.toString(arr));
+    }
+
+    /*
+     * Recursive Selection Sort
+     * Parameters:
+     * arr → input array
+     * i   → current index for scanning
+     * j   → size of the unsorted part
+     * max → index of the current maximum element
+     */
+    public static void selectionSortRec(int[] arr, int i, int j, int max) {
+
+        // Base case: If unsorted part becomes size 0 → array is sorted
+        if (j == 0) return;
+
+        if (i < j) {
+            // Compare current element with current maximum
+            if (arr[i] > arr[max]) {
+                // Update max index if larger element found
+                selectionSortRec(arr, i + 1, j, i);
+            } else {
+                // Continue scanning the unsorted part
+                selectionSortRec(arr, i + 1, j, max);
+            }
+        } else {
+            /*
+             * i == j → End of one pass
+             * Swap the largest element found with the last element
+             * in the current unsorted part (at index j-1).
+             */
+            swap(arr, j - 1, max);
+
+            // Recursive call for remaining unsorted part
+            // Reset i = 0, max = 0 for the new pass
+            selectionSortRec(arr, 0, j - 1, 0);
+        }
+    }
+
+    // Utility function to swap elements at two indexes
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
+
+/*
+===============================================================
+Brute Force Recursive Selection Sort:
+---------------------------------------------------------------
+- Similar logic but without any optimization (e.g., early exit).
+- Still requires scanning all unsorted elements each pass.
+
+Stability: Not stable
+Time Complexity: O(N^2)
+Space Complexity: O(N)
+===============================================================
+*/
