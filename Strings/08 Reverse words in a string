@@ -70,7 +70,7 @@ class Solution {
     Time: O(n)
     Space: O(n)
 
-    Code:
+    Code: */
 
     StringBuilder ans = new StringBuilder();
     int l, r = s.length() - 1;
@@ -101,8 +101,7 @@ class Solution {
 
     return ans.toString().trim(); // Remove last space
 
-    ----------------------------------------------------------------------
-    */
+    
 
     /*
     🧠 APPROACH 1: Using Stack (Classic Beginner Way)
@@ -115,7 +114,7 @@ class Solution {
     Time: O(n)
     Space: O(n) for stack
 
-    Code:
+    Code: */
 
     Stack<String> st = new Stack<>();
     String str = "";
@@ -146,6 +145,5 @@ class Solution {
     }
 
     return ans;
-    --------------------------------------------------
-    */
+    
 }
