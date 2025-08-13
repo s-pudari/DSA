@@ -1,0 +1,146 @@
+import java.util.*;
+
+/*
+==================================================
+Problem: Merge Sort
+==================================================
+Given an array of integers, sort it in ascending order using Merge Sort.
+
+Link: https://www.geeksforgeeks.org/merge-sort/
+
+--------------------------------------------------
+Brute Force Approach: Selection Sort
+--------------------------------------------------
+- Iterate through the array.
+- For each position, find the smallest element from the remaining unsorted part and swap it.
+- Simple to implement but very slow for large inputs.
+
+Time Complexity: O(N^2)
+Space Complexity: O(1)
+Stable: No
+
+Dry Run:
+Input: [2, 9, 4, 8, 1, 2]
+Step 1: [1, 9, 4, 8, 2, 2]
+Step 2: [1, 2, 4, 8, 9, 2]
+Step 3: [1, 2, 2, 8, 9, 4]
+Step 4: [1, 2, 2, 4, 9, 8]
+Step 5: [1, 2, 2, 4, 8, 9] (Sorted)
+--------------------------------------------------
+*/
+
+class BruteForceSelectionSort {
+    public static void sort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            int minIndex = i;
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] < arr[minIndex]) {
+                    minIndex = j;
+                }
+            }
+            int temp = arr[i];
+            arr[i] = arr[minIndex];
+            arr[minIndex] = temp;
+        }
+    }
+}
+
+/*
+--------------------------------------------------
+Optimized Approach: Merge Sort (Extra Space)
+--------------------------------------------------
+- Uses divide and conquer: split array into halves, sort each recursively, then merge.
+- Stable: preserves order of equal elements.
+
+Time Complexity: O(N log N)
+Space Complexity: O(N)
+Stable: Yes
+
+Dry Run:
+Input: [2, 9, 4, 8, 1, 2]
+1. Split → [2,9,4] and [8,1,2]
+2. Split [2,9,4] → [2] and [9,4]
+3. Split [9,4] → [9] and [4]
+4. Merge [9] and [4] → [4,9]
+5. Merge [2] and [4,9] → [2,4,9]
+6. Sort [8,1,2] similarly → [1,2,8]
+7. Merge [2,4,9] and [1,2,8] → [1,2,2,4,8,9]
+--------------------------------------------------
+*/
+
+public class Main {
+    public static void main(String[] args) {
+        int[] arr1 = {2, 9, 4, 8, 1, 2};
+        BruteForceSelectionSort.sort(arr1);
+        System.out.println("Sorted (Brute Force): " + Arrays.toString(arr1));
+
+        int[] arr2 = {2, 9, 4, 8, 1, 2};
+        arr2 = mergeSort(arr2);
+        System.out.println("Sorted using Merge Sort: " + Arrays.toString(arr2));
+
+        int[] arr3 = {2, 9, 4, 8, 1, 2};
+        mergeSortInPlace(arr3, 0, arr3.length);
+        System.out.println("Sorted using In-Place Merge Sort: " + Arrays.toString(arr3));
+    }
+
+    // Merge Sort with extra space
+    public static int[] mergeSort(int[] arr) {
+        if (arr.length == 1) return arr;
+        int mid = arr.length / 2;
+        int[] left = mergeSort(Arrays.copyOfRange(arr, 0, mid));
+        int[] right = mergeSort(Arrays.copyOfRange(arr, mid, arr.length));
+        return merge(left, right);
+    }
+
+    public static int[] merge(int[] left, int[] right) {
+        int[] mix = new int[left.length + right.length];
+        int i = 0, j = 0, k = 0;
+        while (i < left.length && j < right.length) {
+            if (left[i] <= right[j]) {
+                mix[k++] = left[i++];
+            } else {
+                mix[k++] = right[j++];
+            }
+        }
+        while (i < left.length) mix[k++] = left[i++];
+        while (j < right.length) mix[k++] = right[j++];
+        return mix;
+    }
+
+    /*
+    --------------------------------------------------
+    In-Place Merge Sort
+    --------------------------------------------------
+    - Same divide & conquer idea but without creating new arrays at every step.
+    - Still needs a temporary array for merging step.
+    - Saves space for subarray creation.
+    Time Complexity: O(N log N)
+    Space Complexity: O(1) (excluding recursion stack)
+    Stable: Yes (with careful implementation)
+
+    Dry Run:
+    Input: [2,9,4,8,1,2]
+    - Sort left half [2,9,4], sort right half [8,1,2]
+    - Merge them directly in original array
+    --------------------------------------------------
+    */
+    public static void mergeSortInPlace(int[] arr, int start, int end) {
+        if (end - start == 1) return;
+        int mid = start + (end - start) / 2;
+        mergeSortInPlace(arr, start, mid);
+        mergeSortInPlace(arr, mid, end);
+        mergeInPlace(arr, start, mid, end);
+    }
+
+    public static void mergeInPlace(int[] arr, int start, int mid, int end) {
+        int[] mix = new int[end - start];
+        int i = start, j = mid, k = 0;
+        while (i < mid && j < end) {
+            if (arr[i] <= arr[j]) mix[k++] = arr[i++];
+            else mix[k++] = arr[j++];
+        }
+        while (i < mid) mix[k++] = arr[i++];
+        while (j < end) mix[k++] = arr[j++];
+        for (int l = 0; l < mix.length; l++) arr[start + l] = mix[l];
+    }
+}
