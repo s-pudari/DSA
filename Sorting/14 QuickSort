@@ -1,0 +1,143 @@
+import java.util.*;
+
+/*
+==================================================
+Problem: Quick Sort
+==================================================
+Given an array of integers, sort it in ascending or descending order using Quick Sort.
+
+Link: https://www.geeksforgeeks.org/quick-sort/
+
+--------------------------------------------------
+Brute Force Approach: Quick Sort with Extra Arrays
+--------------------------------------------------
+- Always pick the first element as pivot.
+- Partition array into two new lists:
+  - Elements less than pivot
+  - Elements greater than pivot
+- Recursively sort left and right lists
+- Concatenate results.
+
+Time Complexity: O(N^2) in worst case (sorted or nearly sorted arrays)
+Space Complexity: O(N) due to creating new arrays at every recursion
+Stable: No
+
+Dry Run:
+Input: [2, 9, 4, 8, 1, 2]
+Pivot = 2
+Left = [1]
+Right = [9, 4, 8, 2]
+Recursive steps eventually → [1, 2, 2, 4, 8, 9]
+--------------------------------------------------
+*/
+
+class BruteForceQuickSort {
+    public static int[] quickSort(int[] arr) {
+        if (arr.length <= 1) return arr;
+
+        int pivot = arr[0];
+        List<Integer> left = new ArrayList<>();
+        List<Integer> right = new ArrayList<>();
+
+        for (int i = 1; i < arr.length; i++) {
+            if (arr[i] < pivot) left.add(arr[i]);
+            else right.add(arr[i]);
+        }
+
+        int[] sortedLeft = quickSort(left.stream().mapToInt(i -> i).toArray());
+        int[] sortedRight = quickSort(right.stream().mapToInt(i -> i).toArray());
+
+        int[] result = new int[sortedLeft.length + 1 + sortedRight.length];
+        System.arraycopy(sortedLeft, 0, result, 0, sortedLeft.length);
+        result[sortedLeft.length] = pivot;
+        System.arraycopy(sortedRight, 0, result, sortedLeft.length + 1, sortedRight.length);
+
+        return result;
+    }
+}
+
+/*
+--------------------------------------------------
+Optimized Quick Sort Approach (Ascending + Descending)
+--------------------------------------------------
+- Uses divide and conquer:
+  1. Choose pivot (here: middle element)
+  2. Partition array in place
+  3. Recursively sort partitions
+- No extra arrays are created.
+- Average Time: O(N log N)
+- Worst Time: O(N^2) (if pivot choice is poor)
+- Space: O(log N) (recursion stack)
+- Not stable.
+
+Dry Run (Ascending):
+Input: [2,9,4,8,1,2]
+Pivot = 4
+After partition: [2,1,2,4,9,8]
+Sort left: [2,1,2] → [1,2,2]
+Sort right: [9,8] → [8,9]
+Final: [1,2,2,4,8,9]
+--------------------------------------------------
+*/
+
+public class Main {
+    public static void main(String[] args) {
+        int[] bruteArr = {2, 9, 4, 8, 1, 2};
+        bruteArr = BruteForceQuickSort.quickSort(bruteArr);
+        System.out.println("Sorted (Brute Force): " + Arrays.toString(bruteArr));
+
+        int[] ascArr = {2, 9, 4, 8, 1, 2};
+        quickSortAscending(ascArr, 0, ascArr.length - 1);
+        System.out.println("Sorted in Ascending Order: " + Arrays.toString(ascArr));
+
+        int[] descArr = {2, 9, 4, 8, 1, 2};
+        quickSortDescending(descArr, 0, descArr.length - 1);
+        System.out.println("Sorted in Descending Order: " + Arrays.toString(descArr));
+    }
+
+    public static void quickSortAscending(int[] arr, int low, int high) {
+        if (low >= high) return;
+        int s = low, e = high;
+        int mid = s + (e - s) / 2;
+        int pivot = arr[mid];
+
+        while (s <= e) {
+            while (arr[s] < pivot) s++;
+            while (arr[e] > pivot) e--;
+            if (s <= e) {
+                swap(arr, s, e);
+                s++;
+                e--;
+            }
+        }
+
+        quickSortAscending(arr, low, e);
+        quickSortAscending(arr, s, high);
+    }
+
+    public static void quickSortDescending(int[] arr, int low, int high) {
+        if (low >= high) return;
+        int s = low, e = high;
+        int mid = s + (e - s) / 2;
+        int pivot = arr[mid];
+
+        while (s <= e) {
+            while (arr[s] > pivot) s++;
+            while (arr[e] < pivot) e--;
+            if (s <= e) {
+                swap(arr, s, e);
+                s++;
+                e--;
+            }
+        }
+
+        quickSortDescending(arr, low, e);
+        quickSortDescending(arr, s, high);
+    }
+
+    public static void swap(int[] arr, int first, int second) {
+        int temp = arr[first];
+        arr[first] = arr[second];
+        arr[second] = temp;
+    }
+}
