@@ -1,0 +1,99 @@
+/*
+==================================================
+Problem: Bubble Sort (Iterative & Recursive)
+Link: https://www.geeksforgeeks.org/bubble-sort/
+==================================================
+We need to sort an array in ascending order using Bubble Sort, first with the 
+brute-force iterative approach and then with a recursive approach.
+==================================================
+*/
+
+import java.util.*;
+
+class Main {
+
+    /* 
+    ==================================================
+    Approach 1: Brute-Force Bubble Sort (Iterative)
+    ==================================================
+    Explanation:
+    - Use two nested loops.
+    - Outer loop runs N-1 times.
+    - Inner loop compares adjacent pairs and swaps if needed.
+    - After each pass, the largest unsorted element moves to its correct position at the end.
+    - Stable algorithm (order of equal elements preserved).
+
+    Time Complexity: O(N^2)
+    Space Complexity: O(1)
+
+    Dry Run Example:
+    Input: [2, 9, 4, 8, 1, 2]
+
+    Pass 1: [2, 4, 8, 1, 2, 9]
+    Pass 2: [2, 4, 1, 2, 8, 9]
+    Pass 3: [2, 1, 2, 4, 8, 9]
+    Pass 4: [1, 2, 2, 4, 8, 9]
+    Sorted Output: [1, 2, 2, 4, 8, 9]
+    ==================================================
+    */
+    public static void bubbleSortIterative(int[] arr) {
+        int n = arr.length;
+        for (int pass = 0; pass < n - 1; pass++) {
+            for (int i = 0; i < n - pass - 1; i++) {
+                if (arr[i] > arr[i + 1]) {
+                    int temp = arr[i];
+                    arr[i] = arr[i + 1];
+                    arr[i + 1] = temp;
+                }
+            }
+        }
+    }
+
+    /* 
+    ==================================================
+    Approach 2: Recursive Bubble Sort
+    ==================================================
+    Explanation:
+    - Instead of loops, we use recursion to mimic them.
+    - First recursion bubbles the largest element to the end.
+    - Second recursion reduces the problem size and repeats.
+    - Stable algorithm.
+
+    Time Complexity: O(N^2)
+    Space Complexity: O(N) (due to recursion stack)
+
+    Dry Run Example:
+    Input: [2, 9, 4, 8, 1, 2]
+
+    Pass 1: [2, 4, 8, 1, 2, 9]
+    Pass 2: [2, 4, 1, 2, 8, 9]
+    Pass 3: [2, 1, 2, 4, 8, 9]
+    Pass 4: [1, 2, 2, 4, 8, 9]
+    Sorted Output: [1, 2, 2, 4, 8, 9]
+    ==================================================
+    */
+    public static void bubbleSortRecursive(int[] arr, int i, int j) {
+        if (j == 0) return; 
+        if (i < j) {
+            if (arr[i] > arr[i + 1]) {
+                int temp = arr[i];
+                arr[i] = arr[i + 1];
+                arr[i + 1] = temp;
+            }
+            bubbleSortRecursive(arr, i + 1, j);
+        } else {
+            bubbleSortRecursive(arr, 0, j - 1);
+        }
+    }
+
+    public static void main(String[] args) {
+        int[] arr1 = {2, 9, 4, 8, 1, 2};
+        int[] arr2 = {2, 9, 4, 8, 1, 2};
+
+        bubbleSortIterative(arr1);
+        System.out.println("Iterative Sorted: " + Arrays.toString(arr1));
+
+        bubbleSortRecursive(arr2, 0, arr2.length - 1);
+        System.out.println("Recursive Sorted: " + Arrays.toString(arr2));
+    }
+}
