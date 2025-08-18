@@ -1,0 +1,88 @@
+/*
+LeetCode Problem: https://leetcode.com/problems/maximum-nesting-depth-of-the-parentheses/
+Problem Name: Maximum Nesting Depth of the Parentheses
+
+📌 Problem Explanation:
+We are given a valid parentheses string.
+We need to return the maximum nesting depth.
+Depth = maximum number of open brackets at any time.
+
+-------------------------------------------------------
+BRUTE FORCE APPROACH:
+-------------------------------------------------------
+🔹 Idea:
+- For each opening bracket '(' → check how many brackets until it closes.
+- Track maximum depth by counting manually for each segment.
+- Very slow since we keep scanning multiple times.
+
+⏱ Time Complexity: O(n^2)
+💾 Space Complexity: O(1)
+
+🔹 Dry Run Example:
+Input: s = "((1+(2*3))+((8)/4))+1"
+- First '(' starts depth count → goes max 3.
+- Another segment goes max 3 again.
+Answer = 3
+*/
+
+class SolutionBruteForce {
+    public int maxDepth(String s) {
+        int maxDepth = 0;
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == '(') {
+                int depth = 1;
+                int j = i + 1;
+                while (j < s.length() && depth > 0) {
+                    if (s.charAt(j) == '(') depth++;
+                    else if (s.charAt(j) == ')') depth--;
+                    j++;
+                }
+                maxDepth = Math.max(maxDepth, j - i);
+            }
+        }
+        return maxDepth > 0 ? maxDepth/2 : 0; 
+    }
+}
+
+/*
+-------------------------------------------------------
+OPTIMIZED APPROACH (Single Scan):
+-------------------------------------------------------
+🔹 Idea:
+- Use a counter (or stack).
+- Increment counter when '(' seen.
+- Decrement counter when ')' seen.
+- Track maximum value of counter = maximum depth.
+
+⏱ Time Complexity: O(n)
+💾 Space Complexity: O(1)
+
+🔹 Dry Run Example:
+Input: s = "((1+(2*3))+((8)/4))+1"
+Step 1: '(' → depth=1, max=1
+Step 2: '(' → depth=2, max=2
+Step 3: '(' → depth=3, max=3
+Step 4: ')' → depth=2
+Step 5: ')' → depth=1
+... continue
+Final max depth = 3
+*/
+
+class Solution {
+    public int maxDepth(String s) {
+        int cnt = 0;        // current depth
+        int maxDepth = 0;   // max depth seen so far
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+
+            if (ch == '(') {
+                cnt++; // going deeper
+                maxDepth = Math.max(maxDepth, cnt); 
+            } else if (ch == ')') {
+                cnt--; // closing bracket → go back up
+            }
+        }
+        return maxDepth;
+    }
+}
