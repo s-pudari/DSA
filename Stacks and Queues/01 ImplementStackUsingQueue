@@ -1,0 +1,119 @@
+// Problem Link: https://leetcode.com/problems/implement-stack-using-queues/
+
+/*
+Problem Name: Implement Stack using Queues
+
+Explanation:
+We need to implement a stack (LIFO = Last In First Out) using only queues.
+Stack supports 4 main operations:
+1. push(x) -> Insert element on top
+2. pop() -> Remove and return top element
+3. top() -> Return top element without removing
+4. empty() -> Return true if stack is empty, false otherwise
+
+We are only allowed to use the standard operations of a queue:
+- enqueue (add at back)
+- dequeue (remove from front)
+- size()
+- isEmpty()
+
+Approaches:
+1. Brute Force Approach:
+   - Use 2 queues. For each push, transfer all elements to helper queue, push new element, then transfer back.
+   - This makes push costly (O(n)) but keeps pop/top O(1).
+
+2. Optimized Approach:
+   - Use a single queue.
+   - For push(x), add element to queue, then rotate queue elements (q.size()-1 times).
+   - This ensures the last pushed element is always at the front, so pop/top are O(1).
+*/
+
+// ------------------- Brute Force Approach (Two Queues) -------------------
+class MyStackBrute {
+    Queue<Integer> q1 = new LinkedList<>();
+    Queue<Integer> q2 = new LinkedList<>();
+
+    public MyStackBrute() {}
+
+    public void push(int x) {
+        // First push element into q2
+        q2.add(x);
+        // Move all elements from q1 -> q2
+        while(!q1.isEmpty()) {
+            q2.add(q1.remove());
+        }
+        // Swap references: now q1 will have the correct order
+        Queue<Integer> temp = q1;
+        q1 = q2;
+        q2 = temp;
+    }
+
+    public int pop() {
+        return q1.remove(); // top element at front
+    }
+
+    public int top() {
+        return q1.peek(); // front gives top of stack
+    }
+
+    public boolean empty() {
+        return q1.isEmpty();
+    }
+}
+
+/*
+Dry Run (Brute Force):
+push(1) → q2 = [1], transfer none, swap → q1=[1]
+push(2) → q2=[2], transfer q1=[1] → q2=[2,1], swap → q1=[2,1]
+push(3) → q2=[3], transfer q1=[2,1] → q2=[3,2,1], swap → q1=[3,2,1]
+
+Now:
+pop() → removes 3
+top() → returns 2
+empty() → false
+pop() → removes 2
+pop() → removes 1
+empty() → true
+*/
+
+// ------------------- Optimized Approach (Single Queue) -------------------
+class MyStack {
+    Queue<Integer> q = new LinkedList<>();
+
+    public MyStack() {}
+
+    public void push(int x) {
+        q.add(x); 
+        // rotate queue so new element moves to front
+        for(int i=0; i<q.size()-1; i++) {
+            q.add(q.remove());
+        }
+    }
+
+    public int pop() {
+        return q.remove(); // front is always top of stack
+    }
+
+    public int top() {
+        return q.peek(); // peek front
+    }
+
+    public boolean empty() {
+        return q.isEmpty();
+    }
+}
+
+/*
+Dry Run (Optimized):
+push(1) → q=[1]
+push(2) → q.add(2) → [1,2], rotate → remove(1), add(1) → q=[2,1]
+push(3) → q.add(3) → [2,1,3], rotate twice → remove(2), add(2) → [1,3,2], remove(1), add(1) → [3,2,1]
+
+Now:
+pop() → removes 3
+top() → returns 2
+empty() → false
+pop() → removes 2
+pop() → removes 1
+empty() → true
+*/
