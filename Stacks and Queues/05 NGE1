@@ -77,7 +77,3 @@ class Solution {
         return nge;
     }
 }
-
-        return nge;
-    }
-}
