@@ -1,0 +1,104 @@
+// Problem: Next Greater Element
+// Link: https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-gfg-160/problem/next-larger-element-1587115620
+
+import java.util.*;
+
+/*
+------------------------------------------------------------------------------------
+Brute Force Approach:
+------------------------------------------------------------------------------------
+Explanation:
+- For each element, look towards the right side of the array.
+- Find the first element greater than the current element.
+- If no such element exists, store -1.
+- This checks every element with all elements on its right → O(N^2).
+
+Time Complexity: O(N^2) (Nested loops)
+Space Complexity: O(N) (For storing results)
+
+Dry Run:
+Example: [4, 5, 2, 10, 8]
+- For 4 → next greater is 5
+- For 5 → next greater is 10
+- For 2 → next greater is 10
+- For 10 → no greater → -1
+- For 8 → no greater → -1
+Output: [5, 10, 10, -1, -1]
+*/
+
+class BruteForceSolution {
+    public ArrayList<Integer> nextLargerElement(int[] arr) {
+        ArrayList<Integer> result = new ArrayList<>();
+
+        for (int i = 0; i < arr.length; i++) {
+            int nextGreater = -1;
+
+            // Look for a greater element on the right side
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] > arr[i]) {
+                    nextGreater = arr[j];
+                    break; // Found the next greater, break
+                }
+            }
+
+            result.add(nextGreater);
+        }
+        return result;
+    }
+}
+
+
+/*
+------------------------------------------------------------------------------------
+Optimized Approach (Using Stack):
+------------------------------------------------------------------------------------
+Explanation:
+1. Use a **monotonic decreasing stack** to store elements.
+2. Traverse the array **from right to left**:
+   - Pop elements smaller or equal to the current one.
+   - If stack is empty → no greater element, store -1.
+   - Else → top of the stack is the next greater element.
+   - Push the current element into the stack.
+3. Reverse the stored result to restore original order.
+
+Time Complexity: O(N) (Each element pushed and popped once)
+Space Complexity: O(N) (Stack + result array)
+
+Dry Run:
+Example: [4, 5, 2, 10, 8]
+Stack process (right → left):
+- i=4 (8): stack=[], so result=-1 → push(8)
+- i=3 (10): stack=[8], pop 8, stack empty → result=-1 → push(10)
+- i=2 (2): stack=[10], top=10 → result=10 → push(2)
+- i=1 (5): stack=[10,2], pop 2, top=10 → result=10 → push(5)
+- i=0 (4): stack=[10,5,2], top=5 → result=5 → push(4)
+
+Final Output: [5, 10, 10, -1, -1]
+*/
+
+class OptimizedSolution {
+    public ArrayList<Integer> nextLargerElement(int[] arr) {
+        ArrayList<Integer> result = new ArrayList<>();
+        Stack<Integer> st = new Stack<>();
+
+        for (int i = arr.length - 1; i >= 0; i--) {
+            // Remove all smaller or equal elements from stack
+            while (!st.isEmpty() && st.peek() <= arr[i]) {
+                st.pop();
+            }
+
+            // If stack empty → no greater element
+            if (st.isEmpty()) {
+                result.add(-1);
+            } else {
+                result.add(st.peek()); // Next greater is stack top
+            }
+
+            // Push current element for future checks
+            st.push(arr[i]);
+        }
+
+        Collections.reverse(result); // Reverse to match left→right order
+        return result;
+    }
+}
