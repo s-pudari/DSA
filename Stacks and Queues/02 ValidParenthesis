@@ -1,0 +1,81 @@
+/*
+Problem: Valid Parentheses
+Link: https://leetcode.com/problems/valid-parentheses/
+
+Explanation:
+We are given a string s containing only characters '(', ')', '{', '}', '[' and ']'.
+We need to check whether the string is valid.
+A string is valid if:
+1. Every opening bracket has a corresponding closing bracket of the same type.
+2. Brackets are closed in the correct order.
+
+--------------------------------------------------------
+Brute Force Approach:
+--------------------------------------------------------
+Idea:
+- Repeatedly scan the string and remove pairs of valid parentheses "()", "{}", "[]".
+- Continue until no more removals are possible.
+- If the final string is empty, then it is valid. Otherwise, invalid.
+
+Dry Run (Example: s = "{[]}")  
+1. "{[]}" → we see "[]" → remove → "{}"  
+2. "{}" → remove "{}" → ""  
+3. String is empty → VALID.
+
+Time Complexity: O(n^2) (because each removal can take O(n) and we may do this up to n times).  
+Space Complexity: O(1) (using string operations only).
+
+Code (Brute Force):
+*/
+class SolutionBruteForce {
+    public boolean isValid(String s) {
+        boolean changed = true;
+        while (changed) {
+            int before = s.length();
+            s = s.replace("()", "").replace("{}", "").replace("[]", "");
+            int after = s.length();
+            changed = before != after; // check if any replacement happened
+        }
+        return s.isEmpty();
+    }
+}
+
+/*
+--------------------------------------------------------
+Optimized Approach (Using Stack):
+--------------------------------------------------------
+Idea:
+- Use a stack to keep track of opening brackets.
+- Traverse the string:
+   - If it's an opening bracket, push it.
+   - If it's a closing bracket, check if top of stack has the matching opening bracket.
+   - If not matching OR stack is empty → INVALID.
+- At the end, if stack is empty → VALID.
+
+Dry Run (Example: s = "{[]}")  
+1. Read '{' → push → stack = {'{'}  
+2. Read '[' → push → stack = {'{','['}  
+3. Read ']' → top is '[' → pop → stack = {'{'}  
+4. Read '}' → top is '{' → pop → stack = {}  
+5. Stack empty → VALID.
+
+Time Complexity: O(n) (single traversal).  
+Space Complexity: O(n) (stack storage).
+
+Code (Optimized):
+*/
+class Solution {
+    public boolean isValid(String s) {
+        Stack<Character> stack = new Stack<>();
+        for (char ch : s.toCharArray()) {
+            if (ch == '(' || ch == '{' || ch == '[') {
+                stack.push(ch); // push opening bracket
+            } else {
+                if (ch == ')' && (stack.isEmpty() || stack.pop() != '(')) return false;
+                if (ch == '}' && (stack.isEmpty() || stack.pop() != '{')) return false;
+                if (ch == ']' && (stack.isEmpty() || stack.pop() != '[')) return false;
+            }
+        }
+        return stack.isEmpty();
+    }
+}
