@@ -1,0 +1,145 @@
+import java.util.*;
+
+/*
+==================================================
+Problem: Implement Queue using Stacks
+==================================================
+Implement a **FIFO (queue)** using only two stacks. 
+You must support the operations: push, pop, peek, and empty.
+
+LeetCode Link: https://leetcode.com/problems/implement-queue-using-stacks/
+
+--------------------------------------------------
+Brute Force Approach: Enqueue Costly (Rearrange on Push)
+--------------------------------------------------
+Idea:
+- Make the push operation costly: every time you enqueue, move all existing elements to the second stack, push the new element, then move everything back.
+- This ensures the queue's front is always at the top of one stack for fast pop/peek.
+
+Time Complexity:
+- push: O(N)
+- pop: O(1)
+- peek: O(1)
+- empty: O(1)
+
+Space Complexity: O(N) (two stacks to hold elements)
+
+Dry Run:
+ - push(1): s1=[1]  
+ - push(2): transfer s1→s2 => push 2 to s1 => transfer back => s1=[2,1]  
+ - pop(): just pop from s1 → returns 1  
+ - peek(): peek top of s1 → shows 2  
+ - empty(): false
+
+--------------------------------------------------
+Optimized Approach: Lazy Transfer (Enqueue Efficient, Dequeue Costly)
+--------------------------------------------------
+Idea:
+- Use two stacks: **input** (for push) and **output** (for pop/peek).
+- Push always goes to input.  
+- For pop/peek, if output is empty, transfer all items from input → output once, then consume.
+
+Time Complexity (Amortized):
+- push: O(1)
+- pop: O(1)
+- peek: O(1)
+- empty: O(1)
+
+Space Complexity: O(N)
+
+Dry Run:
+ - push(1), push(2) → input=[1,2], output=[]
+ - peek(): move input to output => output=[2,1]; peek returns 1
+ - pop(): pop 1 from output
+ - empty(): false (output still has 2)
+
+==================================================
+*/
+
+class MyQueueEnqueueCostly {
+    private Stack<Integer> s1;
+    private Stack<Integer> s2;
+    
+    public MyQueueEnqueueCostly() {
+        s1 = new Stack<>();
+        s2 = new Stack<>();
+    }
+    
+    public void push(int x) {
+        // Move all elements out of s1 into s2
+        while (!s1.isEmpty()) s2.push(s1.pop());
+        // Push new element
+        s1.push(x);
+        // Move everything back to s1
+        while (!s2.isEmpty()) s1.push(s2.pop());
+    }
+    
+    public int pop() {
+        return s1.pop(); // O(1)
+    }
+    
+    public int peek() {
+        return s1.peek(); // O(1)
+    }
+    
+    public boolean empty() {
+        return s1.isEmpty(); // O(1)
+    }
+}
+
+class MyQueueLazyTransfer {
+    private Stack<Integer> input, output;
+    
+    public MyQueueLazyTransfer() {
+        input = new Stack<>();
+        output = new Stack<>();
+    }
+    
+    public void push(int x) {
+        input.push(x); // Always push into input stack
+    }
+    
+    public int pop() {
+        moveIfNeeded();
+        return output.pop();
+    }
+    
+    public int peek() {
+        moveIfNeeded();
+        return output.peek();
+    }
+    
+    public boolean empty() {
+        return input.isEmpty() && output.isEmpty();
+    }
+    
+    private void moveIfNeeded() {
+        // Only transfer when output is empty
+        if (output.isEmpty()) {
+            while (!input.isEmpty()) {
+                output.push(input.pop());
+            }
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        MyQueueEnqueueCostly bruteQueue = new MyQueueEnqueueCostly();
+        MyQueueLazyTransfer fastQueue = new MyQueueLazyTransfer();
+
+        // Testing Brute-Force Queue
+        bruteQueue.push(1);
+        bruteQueue.push(2);
+        System.out.println("Brute Pop: " + bruteQueue.pop());   // Outputs 1
+        System.out.println("Brute Peek: " + bruteQueue.peek()); // Outputs 2
+        System.out.println("Brute Empty?: " + bruteQueue.empty()); // false
+
+        // Testing Optimized (Lazy) Queue
+        fastQueue.push(1);
+        fastQueue.push(2);
+        System.out.println("Lazy Pop: " + fastQueue.pop());   // Outputs 1
+        System.out.println("Lazy Peek: " + fastQueue.peek()); // Outputs 2
+        System.out.println("Lazy Empty?: " + fastQueue.empty()); // false
+    }
+}
