@@ -1,0 +1,153 @@
+/*
+Problem: Get Maximum/Minimum from Stack
+Link: https://www.geeksforgeeks.org/batch/gfg-160-problems/track/stack-bonus-problems/problem/get-max-from-stack
+
+We need to implement a special stack that supports:
+1. push(x) → insert element
+2. pop() → remove top element
+3. peek() → return top element
+4. getMax() / getMin() → return maximum/minimum element in stack
+
+---
+
+APPROACH 1: Brute Force
+- Store only normal stack values.
+- For getMax/getMin: traverse entire stack to find max/min → O(N).
+(Not efficient, so commented below)
+
+APPROACH 2: Optimized (Using Stack of Pair [value, max/min])
+- Along with each element, store the current max/min till that element.
+- While pushing: compute new max/min using top element’s stored value.
+- While popping: just remove top (as both element + max/min stored).
+- This ensures O(1) operations.
+
+Time Complexity: 
+- push, pop, peek, getMax/getMin → O(1)
+Space Complexity: 
+- O(N) for storing pairs
+
+---
+*/
+
+/* ================= BRUTE FORCE (Commented) =================*/
+class Solution {
+    Stack<Integer> st;
+    public Solution() {
+        st = new Stack<>();
+    }
+
+    public void push(int x) {
+        st.push(x);
+    }
+
+    public void pop() {
+        if(!st.isEmpty()) st.pop();
+    }
+
+    public int peek() {
+        return st.isEmpty() ? -1 : st.peek();
+    }
+
+    // Brute force getMax → traverse entire stack each time
+    public int getMax() {
+        if(st.isEmpty()) return -1;
+        int max = Integer.MIN_VALUE;
+        for(int val : st) {
+            max = Math.max(max, val);
+        }
+        return max;
+    }
+
+    // Brute force getMin → traverse entire stack each time
+    public int getMin() {
+        if(st.isEmpty()) return -1;
+        int min = Integer.MAX_VALUE;
+        for(int val : st) {
+            min = Math.min(min, val);
+        }
+        return min;
+    }
+}
+
+
+
+/* ================= OPTIMIZED VERSION ================= */
+
+// ✅ Max Stack
+class MaxStack {
+    Stack<int[]> st;
+    public MaxStack() {
+        st = new Stack<>();
+    }
+
+    public void push(int x) {
+        // If stack empty, current max is x itself
+        int max = st.isEmpty() ? x : Math.max(x, st.peek()[1]);
+        // Store [value, maxTillNow]
+        st.push(new int[]{x, max});
+    }
+
+    public void pop() {
+        if(!st.isEmpty()) st.pop();
+    }
+
+    public int peek() {
+        return st.isEmpty() ? -1 : st.peek()[0]; // top element
+    }
+
+    public int getMax() {
+        return st.isEmpty() ? -1 : st.peek()[1]; // max till now
+    }
+}
+
+
+// ✅ Min Stack
+class MinStack {
+    Stack<int[]> st;
+    public MinStack() {
+        st = new Stack<>();
+    }
+
+    public void push(int x) {
+        // If stack empty, current min is x itself
+        int min = st.isEmpty() ? x : Math.min(x, st.peek()[1]);
+        // Store [value, minTillNow]
+        st.push(new int[]{x, min});
+    }
+
+    public void pop() {
+        if(!st.isEmpty()) st.pop();
+    }
+
+    public int peek() {
+        return st.isEmpty() ? -1 : st.peek()[0]; // top element
+    }
+
+    public int getMin() {
+        return st.isEmpty() ? -1 : st.peek()[1]; // min till now
+    }
+}
+
+
+/* ================= DRY RUN (MaxStack Example) =================
+Input:
+push(5), push(3), push(7), push(2)
+peek(), getMax(), pop(), getMax()
+
+Step by Step:
+- push(5) → st = [ [5,5] ]
+- push(3) → st = [ [5,5], [3,5] ]
+- push(7) → st = [ [5,5], [3,5], [7,7] ]
+- push(2) → st = [ [5,5], [3,5], [7,7], [2,7] ]
+
+peek() → 2
+getMax() → 7
+pop() → removes [2,7] → st = [ [5,5], [3,5], [7,7] ]
+getMax() → 7
+
+Correct Output:
+peek → 2
+getMax → 7
+pop
+getMax → 7
+========================================================== */
