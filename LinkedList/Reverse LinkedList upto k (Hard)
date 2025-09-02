@@ -1,32 +1,120 @@
-//https://www.naukri.com/code360/problems/reverse-list-in-k-groups_983644
-public class Solution {
-    public static Node kReverse(Node head, int k) {
-        // Write your code here.
-        Node temp=head;
-        int count=0;
+/*
+Problem Name: Reverse Nodes in k-Group
+LeetCode Link: https://leetcode.com/problems/reverse-nodes-in-k-group/
 
-        while(temp!=null && count<k){
-            count++;
-            temp=temp.next;
+We are given the head of a linked list and an integer k.
+We need to reverse the nodes of the list k at a time and return the modified list.
+If the number of nodes is not a multiple of k, then the remaining nodes are left as it is.
+
+---------------------------------------------------------------------
+BRUTE FORCE APPROACH (Using extra ArrayList):
+---------------------------------------------------------------------
+1. Traverse the linked list and store all node values in an ArrayList.
+2. For every block of size k, reverse that part inside the ArrayList.
+3. Build a new linked list from the modified ArrayList and return the head.
+- Time Complexity: O(N) traversal + O(N) reconstruction = O(N)
+- Space Complexity: O(N) because of ArrayList.
+
+Dry Run Example:
+Input: head = [1,2,3,4,5], k = 2
+Step 1: Store in array → [1,2,3,4,5]
+Step 2: Reverse groups of 2 → [2,1,4,3,5]
+Step 3: Build linked list → [2,1,4,3,5]
+Output: [2,1,4,3,5]
+*/
+
+class Solution {
+    // Brute Force approach using ArrayList
+    public ListNode reverseKGroupBrute(ListNode head, int k) {
+        if (head == null || k == 1) return head;
+
+        // Step 1: Store values in ArrayList
+        ArrayList<Integer> arr = new ArrayList<>();
+        ListNode temp = head;
+        while (temp != null) {
+            arr.add(temp.val);
+            temp = temp.next;
         }
 
-        if(count==k){
-            Node prev=null,curr=head,next=null;
-            int c=0;
+        // Step 2: Reverse every block of size k
+        for (int i = 0; i + k <= arr.size(); i += k) {
+            int left = i, right = i + k - 1;
+            while (left < right) {
+                int t = arr.get(left);
+                arr.set(left, arr.get(right));
+                arr.set(right, t);
+                left++;
+                right--;
+            }
+        }
 
-            while(curr!=null && c<k){
-                next=curr.next;
-                curr.next=prev;
-                prev=curr;
-                curr=next;
-                c++;
-                
-            }
-            if(next != null){
-                head.next=kReverse(next,k);
-            }
-          return prev;
+        // Step 3: Rebuild linked list
+        temp = head;
+        int idx = 0;
+        while (temp != null) {
+            temp.val = arr.get(idx++);
+            temp = temp.next;
         }
         return head;
+    }
+}
+
+/*
+---------------------------------------------------------------------
+OPTIMIZED APPROACH (In-place reversal using pointers):
+---------------------------------------------------------------------
+1. Use a dummy node before head for easier operations.
+2. Count the total number of nodes.
+3. For each block of size k:
+   - Reverse the k nodes by pointer manipulation.
+   - Move `pre` to the end of the reversed block.
+4. Continue until fewer than k nodes remain.
+
+- Time Complexity: O(N) (each node is reversed once)
+- Space Complexity: O(1) (no extra space, done in-place)
+
+Dry Run Example:
+Input: head = [1,2,3,4,5], k = 3
+Step 1: Count nodes = 5
+Step 2: Reverse first 3 → [3,2,1,4,5]
+Step 3: Remaining nodes < k → stop
+Output: [3,2,1,4,5]
+*/
+
+class SolutionOptimized {
+    public ListNode reverseKGroup(ListNode head, int k) {
+        if (head == null || k == 1) return head;
+
+        // Dummy node before head
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        ListNode curr = dummy, pre = dummy, next = dummy;
+        int count = 0;
+
+        // Count total nodes
+        while (curr.next != null) {
+            curr = curr.next;
+            count++;
+        }
+
+        // While at least k nodes remain
+        while (count >= k) {
+            curr = pre.next;    // current block first node
+            next = curr.next;   // next node for re-linking
+
+            // Reverse k nodes
+            for (int i = 1; i < k; i++) {
+                curr.next = next.next;
+                next.next = pre.next;
+                pre.next = next;
+                next = curr.next;
+            }
+
+            // Move pre pointer to end of reversed block
+            pre = curr;
+            count -= k;
+        }
+        return dummy.next;
     }
 }
