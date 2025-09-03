@@ -1,0 +1,130 @@
+/*
+Problem: Middle of the Linked List
+Link: https://leetcode.com/problems/middle-of-the-linked-list/
+
+We are given the head of a singly linked list.
+We need to return the middle node:
+- If there are two middle nodes, return the second one.
+
+------------------------------------------------------------
+APPROACH 1: Brute Force (Count Nodes)
+------------------------------------------------------------
+1. Traverse the list once to count total nodes (N).
+2. Middle = N/2 (0-based index).
+3. Traverse again and stop at the middle node.
+
+- Time Complexity: O(N) (two traversals)
+- Space Complexity: O(1)
+
+Dry Run:
+Input: 1 -> 2 -> 3 -> 4 -> 5
+Count = 5 → middle index = 5/2 = 2
+Traverse again → node at index 2 is "3"
+Output: 3
+
+Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Count = 6 → middle index = 6/2 = 3
+Traverse again → node at index 3 is "4"
+Output: 4
+------------------------------------------------------------
+APPROACH 2: Optimized (Slow & Fast Pointers)
+------------------------------------------------------------
+1. Maintain two pointers: slow & fast.
+2. Move slow by 1 step, fast by 2 steps each time.
+3. When fast reaches the end, slow will be at the middle.
+
+- Time Complexity: O(N) (single traversal)
+- Space Complexity: O(1)
+
+Dry Run:
+Input: 1 -> 2 -> 3 -> 4 -> 5
+Step 1: slow=1, fast=1
+Step 2: slow=2, fast=3
+Step 3: slow=3, fast=5 (end reached)
+Output: 3
+
+Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Step 1: slow=1, fast=1
+Step 2: slow=2, fast=3
+Step 3: slow=3, fast=5
+Step 4: slow=4, fast=null (end reached)
+Output: 4
+*/
+
+// ------------------ Approach 1: Brute Force ------------------
+class SolutionBruteForce {
+    public ListNode middleNode(ListNode head) {
+        int count = 0;
+        ListNode temp = head;
+
+        // First pass: count total nodes
+        while (temp != null) {
+            count++;
+            temp = temp.next;
+        }
+
+        // Middle index (second middle if even)
+        int mid = count / 2;
+
+        // Second pass: reach middle node
+        temp = head;
+        while (mid > 0) {
+            temp = temp.next;
+            mid--;
+        }
+        return temp;
+    }
+}
+
+// ------------------ Approach 2: Optimized (Slow & Fast Pointers) ------------------
+class SolutionTwoPointer {
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head, fast = head;
+
+        // Move slow by 1 and fast by 2
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Slow is at the middle node
+        return slow;
+    }
+}
+
+// ------------------ ListNode Class & Driver ------------------
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int val) { this.val = val; }
+}
+
+class Main {
+    public static void printLinkedList(ListNode head) {
+        while (head != null) {
+            System.out.print(head.val + " ");
+            head = head.next;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        // Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+        head.next.next.next.next = new ListNode(5);
+        head.next.next.next.next.next = new ListNode(6);
+
+        // Brute Force
+        SolutionBruteForce sol1 = new SolutionBruteForce();
+        System.out.print("Middle (Brute Force): ");
+        printLinkedList(sol1.middleNode(head)); // should print from 4 onwards
+
+        // Two Pointer
+        SolutionTwoPointer sol2 = new SolutionTwoPointer();
+        System.out.print("Middle (Two Pointer): ");
+        printLinkedList(sol2.middleNode(head)); // should print from 4 onwards
+    }
+}
