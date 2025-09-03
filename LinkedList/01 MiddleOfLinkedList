@@ -5,7 +5,9 @@ Link: https://leetcode.com/problems/middle-of-the-linked-list/
 We are given the head of a singly linked list.
 We need to return the middle node:
 - If there are two middle nodes, return the second one.
+*/
 
+/* 
 ------------------------------------------------------------
 APPROACH 1: Brute Force (Count Nodes)
 ------------------------------------------------------------
@@ -26,32 +28,7 @@ Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
 Count = 6 → middle index = 6/2 = 3
 Traverse again → node at index 3 is "4"
 Output: 4
-------------------------------------------------------------
-APPROACH 2: Optimized (Slow & Fast Pointers)
-------------------------------------------------------------
-1. Maintain two pointers: slow & fast.
-2. Move slow by 1 step, fast by 2 steps each time.
-3. When fast reaches the end, slow will be at the middle.
-
-- Time Complexity: O(N) (single traversal)
-- Space Complexity: O(1)
-
-Dry Run:
-Input: 1 -> 2 -> 3 -> 4 -> 5
-Step 1: slow=1, fast=1
-Step 2: slow=2, fast=3
-Step 3: slow=3, fast=5 (end reached)
-Output: 3
-
-Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
-Step 1: slow=1, fast=1
-Step 2: slow=2, fast=3
-Step 3: slow=3, fast=5
-Step 4: slow=4, fast=null (end reached)
-Output: 4
 */
-
-// ------------------ Approach 1: Brute Force ------------------
 class SolutionBruteForce {
     public ListNode middleNode(ListNode head) {
         int count = 0;
@@ -76,7 +53,32 @@ class SolutionBruteForce {
     }
 }
 
-// ------------------ Approach 2: Optimized (Slow & Fast Pointers) ------------------
+
+/*
+------------------------------------------------------------
+APPROACH 2: Optimized (Slow & Fast Pointers)
+------------------------------------------------------------
+1. Maintain two pointers: slow & fast.
+2. Move slow by 1 step, fast by 2 steps each time.
+3. When fast reaches the end, slow will be at the middle.
+
+- Time Complexity: O(N) (single traversal)
+- Space Complexity: O(1)
+
+Dry Run:
+Input: 1 -> 2 -> 3 -> 4 -> 5
+Step 1: slow=1, fast=1
+Step 2: slow=2, fast=3
+Step 3: slow=3, fast=5 (end reached)
+Output: 3
+
+Input: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+Step 1: slow=1, fast=1
+Step 2: slow=2, fast=3
+Step 3: slow=3, fast=5
+Step 4: slow=4, fast=null (end reached)
+Output: 4
+*/
 class SolutionTwoPointer {
     public ListNode middleNode(ListNode head) {
         ListNode slow = head, fast = head;
@@ -91,6 +93,7 @@ class SolutionTwoPointer {
         return slow;
     }
 }
+
 
 // ------------------ ListNode Class & Driver ------------------
 class ListNode {
