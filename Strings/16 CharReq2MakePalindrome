@@ -1,0 +1,153 @@
+/*
+🔗 Problem: Minimum Characters to be Added at Front to Make String Palindrome
+   https://www.geeksforgeeks.org/problems/minimum-characters-to-be-added-at-front-to-make-string-palindrome/1
+
+📝 Problem Statement:
+   Given a string `s`, find the minimum number of characters that need to be added 
+   at the front of the string to make it a palindrome.
+*/
+
+
+/*------------------------------------------------------
+✅ Approach 1: Brute Force (Check suffixes)
+--------------------------------------------------------
+Idea:
+ - Remove characters one by one from the end until the remaining prefix is a palindrome.
+ - The number of removed characters = number of characters we must add in front.
+
+Dry Run:
+   s = "AACECAAAA"
+   Remove suffix until prefix becomes palindrome:
+   "AACECAAAA" → not palindrome → count=1
+   "AACECAAA"  → not palindrome → count=2
+   "AACECAA"   → not palindrome → count=3
+   ...
+   "A" → palindrome
+   Answer = 7
+
+⏱️ Time Complexity: O(n^2)  
+📦 Space Complexity: O(n) (substring copies)
+*/
+class BruteForceApproach1 {
+    public static int minChar(String s) {
+        int count = 0;
+
+        // Keep removing last char until prefix is palindrome
+        while(!isPalindrome(s)) {
+            s = s.substring(0, s.length()-1); 
+            count++;
+        }
+        return count;
+    }
+
+    // Check if given string is palindrome
+    private static boolean isPalindrome(String str) {
+        int left = 0, right = str.length()-1;
+        while(left < right) {
+            if(str.charAt(left) != str.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+
+
+/*------------------------------------------------------
+✅ Approach 2: Improved Brute Force (Check Palindrome in-place)
+--------------------------------------------------------
+Idea:
+ - Instead of creating substrings, check directly using two pointers.
+ - For each suffix, check if s[0...i] is palindrome.
+ - Stop when found.
+
+Dry Run:
+   s = "AACECAAAA"
+   i=8 → s[0..8] not palindrome
+   i=7 → s[0..7] not palindrome
+   i=1 → palindrome found
+   Result = n - (i+1) = 7
+
+⏱️ Time Complexity: O(n^2) (nested check)  
+📦 Space Complexity: O(1)
+*/
+class BruteForceApproach2 {
+    public static int minChar(String s) {
+        int count=0;
+        int i = s.length()-1;
+
+        // Move from end towards start until prefix is palindrome
+        while(i >= 0 && !isPalindrome(s, 0, i)) {
+            i--;
+            count++;
+        }
+        return count;
+    }
+
+    private static boolean isPalindrome(String str, int left, int right) {
+        while(left < right) {
+            if(str.charAt(left) != str.charAt(right)) return false;
+            left++;
+            right--;
+        }
+        return true;
+    }
+}
+
+
+/*------------------------------------------------------
+✅ Approach 3: Optimized (KMP LPS Array)
+--------------------------------------------------------
+Idea:
+ - Build `combined = s + '#' + reverse(s)`
+ - Compute LPS (Longest Prefix Suffix) for `combined`.
+ - LPS last value gives longest palindromic prefix.
+ - Answer = n - LPS[last].
+
+Dry Run:
+   s = "AACECAAAA"
+   reverse(s) = "AAAACECAA"
+   combined = "AACECAAAA#AAAACECAA"
+   LPS last = 7
+   Result = n - 7 = 9 - 7 = 2
+
+⏱️ Time Complexity: O(n)  
+📦 Space Complexity: O(n)
+*/
+class OptimizedApproach {
+    public static int minChar(String s) {
+        String reversed = new StringBuilder(s).reverse().toString();
+        String combined = s + "#" + reversed;
+
+        // Compute LPS array
+        int[] lps = computeLPS(combined);
+
+        // Answer = total length - longest palindromic prefix length
+        return s.length() - lps[combined.length()-1];
+    }
+
+    private static int[] computeLPS(String str) {
+        int n = str.length();
+        int[] lps = new int[n];
+        int len = 0; // current length of prefix match
+        int i = 1;
+
+        while(i < n) {
+            if(str.charAt(i) == str.charAt(len)) {
+                len++;
+                lps[i] = len;
+                i++;
+            } else {
+                if(len != 0) {
+                    len = lps[len-1];
+                } else {
+                    lps[i] = 0;
+                    i++;
+                }
+            }
+        }
+        return lps;
+    }
+}
