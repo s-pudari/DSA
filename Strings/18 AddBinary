@@ -1,0 +1,88 @@
+/*
+Problem: Add Binary
+Link: https://leetcode.com/problems/add-binary/
+
+Brief problem explanation:
+- You are given two binary strings `a` and `b`.
+- Add them and return the sum as a binary string.
+
+We’ll cover two approaches:
+1. Brute Force using manual binary to decimal conversion + addition + decimal to binary conversion.
+2. Optimized approach using carry-based addition (most efficient).
+*/
+
+class Solution {
+
+    /*
+    --------------------------------------------------------
+    APPROACH 1 — Brute Force (convert to decimal and back)
+    --------------------------------------------------------
+    Time Complexity: O(n + m) + O(max(n,m)) ~ O(n+m)
+    Space Complexity: O(1) apart from result string.
+
+    Explanation:
+    - Convert both binary strings to decimal integers.
+    - Add the two integers.
+    - Convert the sum back into binary string.
+
+    Limitation: may cause integer overflow for very large binary strings.
+    
+    Dry run:
+      a = "11", b = "1"
+      Convert a -> 3, b -> 1
+      Sum = 3+1 = 4
+      Convert 4 -> "100"
+      Output = "100"
+    */
+    public String addBinaryBruteForce(String a, String b) {
+        // Convert binary strings to integers
+        int num1 = Integer.parseInt(a, 2);
+        int num2 = Integer.parseInt(b, 2);
+
+        int sum = num1 + num2;
+
+        // Convert integer sum back to binary
+        return Integer.toBinaryString(sum);
+    }
+
+
+    /*
+    --------------------------------------------------------
+    APPROACH 2 — Optimized Carry-based Addition
+    --------------------------------------------------------
+    Time Complexity: O(max(n,m))  // iterate through both strings once
+    Space Complexity: O(max(n,m)) // result stored in StringBuilder
+
+    Explanation:
+    - Start from the end of both strings (least significant bit).
+    - Add corresponding bits and carry.
+    - Append sum%2 to result and update carry as sum/2.
+    - Continue until all digits and carry are processed.
+    - Reverse result to get correct order.
+
+    Dry run:
+      a = "1010", b = "1011"
+      i=3, j=3, carry=0
+      sum = 0+1+0=1 → append 1, carry=0
+      sum = 1+1+0=2 → append 0, carry=1
+      sum = 0+0+1=1 → append 1, carry=0
+      sum = 1+1+0=2 → append 0, carry=1
+      final carry=1 → append 1
+      Result = "10101"
+    */
+    public String addBinary(String a, String b) {
+        StringBuilder sb = new StringBuilder();
+        int i = a.length() - 1, j = b.length() - 1, carry = 0;
+
+        while (i >= 0 || j >= 0 || carry != 0) {
+            int sum = carry;
+            if (i >= 0) sum += a.charAt(i--) - '0';  // convert char to int
+            if (j >= 0) sum += b.charAt(j--) - '0';
+
+            sb.append(sum % 2);   // store binary digit
+            carry = sum / 2;      // update carry
+        }
+
+        return sb.reverse().toString();
+    }
+}
