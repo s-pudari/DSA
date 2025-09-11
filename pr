@@ -1,0 +1,141 @@
+/*
+Problem: Count Primes (< n)
+Link: https://leetcode.com/problems/count-primes/
+
+Brief problem explanation (in my words):
+Given an integer n, return the number of prime numbers strictly less than n.
+We will provide two approaches below:
+  - Brute force (check each number for primality)
+  - Optimized (Sieve of Eratosthenes)
+
+IMPORTANT: For each approach the explanation, complexity and a dry-run are placed
+directly above the implementation. The brute-force approach appears first,
+followed immediately by the optimized approach, as requested.
+*/
+
+import java.util.Arrays;
+
+class Solution {
+
+    /* 
+    --------------------------------------------------------
+    APPROACH 1 — Brute Force (check each number)
+    --------------------------------------------------------
+    Time Complexity: O(n * sqrt(n))  // For each number up to n we check divisors up to sqrt(number)
+    Space Complexity: O(1)           // constant extra space
+
+    Brief explanation:
+    - Iterate x from 2 to n-1.
+    - For each x, test whether x is prime by checking divisibility from 2 up to sqrt(x).
+    - Count primes found.
+
+    Dry run (small example):
+      n = 10
+      Check: 2 (prime), 3 (prime), 4 (not), 5 (prime), 6 (not), 7 (prime), 8 (not), 9 (not)
+      Count = 4 (2,3,5,7)
+
+    The brute method is straightforward but slower for large n because primality
+    testing is repeated for every number.
+    */
+    public int countPrimesBrute(int n) {
+        if (n <= 2) return 0; // no primes less than 2
+
+        int count = 0;
+        for (int x = 2; x < n; x++) {
+            if (isPrime(x)) {
+                count++;
+            }
+        }
+        return count;
+    }
+
+    /*
+     * Helper for brute force primality check.
+     * Uses trial division up to sqrt(num).
+     */
+    private boolean isPrime(int num) {
+        if (num < 2) return false;
+        /* 
+         * Check divisors from 2 up to sqrt(num).
+         * We use i * i <= num to avoid calling sqrt repeatedly.
+         */
+        for (int i = 2; i * i <= num; i++) {
+            if (num % i == 0) {
+                return false; // found a divisor -> not prime
+            }
+        }
+        return true; // no divisors found -> prime
+    }
+
+
+    /* 
+    --------------------------------------------------------
+    APPROACH 2 — Optimized: Sieve of Eratosthenes
+    --------------------------------------------------------
+    Time Complexity: O(n log log n)   // classic sieve complexity
+    Space Complexity: O(n)            // boolean array of size n
+
+    Brief explanation:
+    - Create a boolean array isPrime[0..n-1], initialize true (except 0 and 1).
+    - For each i from 2 up to sqrt(n), if isPrime[i] is true, mark multiples of i (starting at i*i) as false.
+      (Starting at i*i avoids re-marking numbers that smaller primes already handled.)
+    - Finally count how many indices i (2 <= i < n) have isPrime[i] == true.
+
+    Dry run:
+      n = 10
+      Start with isPrime[2..9] = true
+      i = 2 -> mark 4,6,8 false
+      i = 3 -> mark 9 false
+      Remaining true: 2,3,5,7 -> count = 4
+    */
+    public int countPrimes(int n) {
+        if (n <= 2) return 0; // there are no primes less than 2
+
+        // boolean array where isPrime[i] indicates whether i is prime (initially true)
+        boolean[] isPrime = new boolean[n];
+        Arrays.fill(isPrime, true);
+
+        // 0 and 1 are not prime by definition
+        isPrime[0] = false;
+        isPrime[1] = false;
+
+        /*
+         * Main sieve loop:
+         * We only need to iterate i while i*i < n because any composite < n has
+         * at least one prime factor <= sqrt(n). Using i*i avoids calling sqrt.
+         */
+        for (int i = 2; i * i < n; i++) {
+            if (isPrime[i]) {
+                /*
+                 * When we discover a prime i, mark its multiples as not prime.
+                 * We begin marking from i*i because any smaller multiple (i * m,
+                 * where m < i) was already marked when processing m.
+                 *
+                 * Example: when i=5, start marking at 25 rather than 10,15,20.
+                 */
+                for (int j = i * i; j < n; j += i) {
+                    isPrime[j] = false;
+                }
+            }
+            /* 
+             * If isPrime[i] == false we skip it because it's already known composite.
+             * This conditional avoids unnecessary inner-loop work and keeps complexity low.
+             */
+        }
+
+        // Count remaining primes
+        int count = 0;
+        for (int i = 2; i < n; i++) {
+            if (isPrime[i]) count++;
+        }
+        return count;
+    }
+
+    /*
+     * (Optional) Approach 3 notes (not implemented):
+     * - You can optimize memory by storing only odd numbers, or use a BitSet.
+     * - Those variations reduce memory and constant factors but keep asymptotic behaviour.
+     *
+     * End of Solution class.
+     */
+}
