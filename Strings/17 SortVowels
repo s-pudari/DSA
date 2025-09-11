@@ -1,0 +1,136 @@
+/*
+Problem: Sort Vowels in a String
+Link: https://leetcode.com/problems/sort-vowels-in-a-string/
+
+Brief problem explanation (in my words):
+- You are given a string s.
+- Rearrange only the vowels (a, e, i, o, u — both lowercase and uppercase) in sorted order,
+  while keeping all other characters fixed in their original positions.
+- Return the modified string.
+
+We’ll provide two approaches:
+  1. Brute Force using list + sort
+  2. Optimized approach using frequency counting of vowels
+
+Both approaches are explained with complexity analysis and dry runs.
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /*
+    --------------------------------------------------------
+    APPROACH 1 — Brute Force (List + Sort)
+    --------------------------------------------------------
+    Time Complexity: O(n log n)    // collecting vowels O(n), sorting O(m log m), rebuild O(n)
+    Space Complexity: O(m)         // extra space for storing vowels, where m = number of vowels
+
+    Explanation:
+    - Scan the string and collect all vowels into a list.
+    - Sort the list of vowels (natural char order, which respects uppercase before lowercase).
+    - Rebuild the string: if current character is a vowel, take the next from the sorted list; else keep original.
+
+    Dry run:
+      s = "lEetcOde"
+      Step 1: vowels = [E, e, O, e]
+      Step 2: sort -> [E, O, e, e]
+      Step 3: rebuild:
+        l (not vowel)
+        E -> replaced by E (first sorted)
+        e -> replaced by O (second sorted)
+        t (not vowel)
+        c (not vowel)
+        O -> replaced by e (third sorted)
+        d (not vowel)
+        e -> replaced by e (fourth sorted)
+      Result = "lEOtcOde" -> "lEOtcOde"
+    */
+    public String sortVowels(String s) {
+        String vowels = "aeiouAEIOU";
+
+        // Step 1: collect all vowels from string
+        List<Character> li = new ArrayList<>();
+        for (char ch : s.toCharArray()) {
+            if (vowels.indexOf(ch) != -1) {
+                li.add(ch);
+            }
+        }
+
+        // Step 2: sort vowels list
+        Collections.sort(li);
+
+        // Step 3: rebuild string with sorted vowels placed back
+        StringBuilder sb = new StringBuilder();
+        int idx = 0;
+        for (char ch : s.toCharArray()) {
+            if (vowels.indexOf(ch) != -1) {
+                sb.append(li.get(idx++)); // replace with sorted vowel
+            } else {
+                sb.append(ch); // keep consonant as is
+            }
+        }
+        return sb.toString();
+    }
+
+
+    /*
+    --------------------------------------------------------
+    APPROACH 2 — Optimized using frequency counting
+    --------------------------------------------------------
+    Time Complexity: O(n)          // single pass to collect + rebuild, no sorting overhead
+    Space Complexity: O(1)         // only fixed 52-size frequency map at most (26 uppercase + 26 lowercase)
+
+    Explanation:
+    - Instead of storing vowels and sorting, we can predefine vowel order
+      ("AEIOUaeiou") and count frequency of each vowel.
+    - Rebuild the string: if char is vowel, place the smallest available vowel from frequency map.
+
+    Dry run:
+      s = "lEetcOde"
+      Count frequencies:
+        E:1, e:2, O:1
+      Rebuild:
+        l (not vowel)
+        -> E (freq E=0 now)
+        -> next vowel is O (freq O=0 now)
+        -> t,c as is
+        -> next vowel is e (freq e=1 now)
+        -> d as is
+        -> next vowel is e (freq e=0 now)
+      Result = "lEOtcde"
+    */
+    public String sortVowelsOptimized(String s) {
+        String vowels = "AEIOUaeiou";
+
+        // Step 1: frequency map for vowels
+        Map<Character, Integer> freq = new LinkedHashMap<>();
+        for (char v : vowels.toCharArray()) {
+            freq.put(v, 0);
+        }
+        for (char ch : s.toCharArray()) {
+            if (freq.containsKey(ch)) {
+                freq.put(ch, freq.get(ch) + 1);
+            }
+        }
+
+        // Step 2: rebuild string with sorted vowels (order from vowels string)
+        StringBuilder sb = new StringBuilder();
+        Iterator<Map.Entry<Character, Integer>> it = freq.entrySet().iterator();
+        Map.Entry<Character, Integer> current = it.next();
+
+        for (char ch : s.toCharArray()) {
+            if (!freq.containsKey(ch)) {
+                sb.append(ch); // consonant
+            } else {
+                // find next available vowel
+                while (current.getValue() == 0 && it.hasNext()) {
+                    current = it.next();
+                }
+                sb.append(current.getKey());
+                current.setValue(current.getValue() - 1);
+            }
+        }
+        return sb.toString();
+    }
+}
