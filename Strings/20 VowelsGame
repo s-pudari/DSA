@@ -1,0 +1,78 @@
+/*
+LeetCode (Contest Problem): Does Alice Win? https://leetcode.com/problems/vowels-game-in-a-string/?envType=daily-question&envId=2025-09-12
+----------------------------------------------------
+Problem Explanation:
+We are given a string `s`. Alice and Bob play a game where:
+- Alice wins if there is at least one vowel in the string (because she can make a move).
+- Otherwise, Bob wins.
+
+So the core check is:
+-> Does the string contain at least one vowel (a, e, i, o, u)?
+
+----------------------------------------------------
+Approach 1: Simple Count Vowels
+----------------------------------------------------
+1. Traverse the string character by character.
+2. Count how many vowels exist.
+3. If vowel count > 0 → return true (Alice wins), else false.
+
+Dry Run Example:
+s = "bcdfg"
+No vowels → Alice cannot play → false
+
+s = "abc"
+Vowels = 1 ('a') → Alice can play → true
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+*/
+class SolutionApproach1 {
+    public boolean doesAliceWin(String s) {
+        int vowels = 0;
+
+        for (char ch : s.toCharArray()) {
+            if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
+                vowels++;
+            }
+        }
+        return vowels > 0;
+    }
+}
+
+/*
+----------------------------------------------------
+Approach 2: Parity (Even/Odd count of vowels)
+----------------------------------------------------
+1. Initialize an integer `parity = 0`.
+2. Iterate over string:
+   - If char is vowel → flip parity (XOR with 1).
+   - Keep track of prefix parities in count[] array.
+3. If both even and odd parity occur at least once → Alice wins.
+
+Dry Run Example:
+s = "aba"
+- Start parity = 0 → count[0] = 1
+- 'a' → vowel → parity=1 → count[1]=1
+- 'b' → not vowel → parity=1
+- 'a' → vowel → parity=0 → count[0]=2
+Both count[0] and count[1] > 0 → return true
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+*/
+class SolutionApproach2 {
+    public boolean doesAliceWin(String s) {
+        int[] count = new int[2];
+        int parity = 0;
+
+        count[parity]++; // initial state
+
+        for (char ch : s.toCharArray()) {
+            if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
+                parity ^= 1; // flip parity on vowel
+            }
+            count[parity]++;
+        }
+        return count[0] > 0 && count[1] > 0;
+    }
+}
