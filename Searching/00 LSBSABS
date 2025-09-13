@@ -1,0 +1,164 @@
+/*
+LeetCode: Binary Search
+Link: https://leetcode.com/problems/binary-search/
+
+Problem (in my words):
+Given a sorted array and a target value, return the index of the target in the array.
+If the target does not exist, return -1.
+
+Below you will find THREE approaches presented one-by-one.
+For each approach:
+  - A short, beginner-friendly explanation
+  - Time & space complexity (one line)
+  - A small dry-run example
+  - The implementation immediately following the explanation
+All explanatory text is inside the code as comments so everything is self-contained.
+*/
+
+class Solution {
+
+    /* -------------------------
+       APPROACH 1 — LINEAR SEARCH
+       (Brute-force)
+       -------------------------
+       Explanation:
+       - Scan the array from left to right.
+       - Compare each element with the target.
+       - If found, return the index; if we finish the scan, return -1.
+
+       Time Complexity: O(n)
+       Space Complexity: O(1)
+
+       Dry run:
+       nums = [-1,0,3,5,9,12], target = 9
+       check nums[0] -> -1 (no)
+       check nums[1] -> 0  (no)
+       ...
+       check nums[4] -> 9  (yes) -> return 4
+    */
+    public int linearSearch(int[] nums, int target) {
+        // iterate through each element
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                return i; // found target -> return index immediately
+            }
+        }
+        return -1; // target not found after full scan
+    }
+
+
+    /* -------------------------
+       APPROACH 2 — BINARY SEARCH (ascending array)
+       (Optimized classical binary search)
+       -------------------------
+       Explanation:
+       - Maintain two pointers s (start) and e (end).
+       - Compute mid = s + (e - s) / 2 to avoid overflow.
+       - If nums[mid] == target -> return mid.
+       - If nums[mid] < target -> search right half (s = mid + 1).
+       - Else -> search left half (e = mid - 1).
+       - Repeat until s > e.
+
+       Time Complexity: O(log n)
+       Space Complexity: O(1)
+
+       Dry run:
+       nums = [-1,0,3,5,9,12], target = 9
+       s=0,e=5 -> mid=2 -> nums[2]=3 < 9 -> s=3
+       s=3,e=5 -> mid=4 -> nums[4]=9 == 9 -> return 4
+    */
+    public int binarySearch(int[] nums, int target) {
+        int s = 0;
+        int e = nums.length - 1;
+
+        // Loop until search space is exhausted
+        while (s <= e) {
+            // mid calculation that avoids overflow
+            int mid = s + (e - s) / 2;
+
+            if (nums[mid] == target) {
+                return mid; // found
+            } else if (nums[mid] > target) {
+                // target must be in left half (if present)
+                e = mid - 1;
+            } else {
+                // target must be in right half (if present)
+                s = mid + 1;
+            }
+        }
+        return -1; // not found
+    }
+
+
+    /* -------------------------
+       APPROACH 3 — ORDER-AGNOSTIC BINARY SEARCH
+       (Works for both ascending and descending sorted arrays)
+       -------------------------
+       Explanation:
+       - First detect array order by comparing first and last elements.
+         If array has length 1 or all equal, treat as ascending.
+       - Use the binary search pattern but adjust comparisons according to order:
+         * If ascending:
+             - if target < nums[mid] -> search left
+             - else -> search right
+         * If descending:
+             - if target > nums[mid] -> search left
+             - else -> search right
+       - This makes the same O(log n) behavior but works regardless of order.
+
+       Time Complexity: O(log n)
+       Space Complexity: O(1)
+
+       Dry run (descending):
+       nums = [100, 80, 60, 40, 20, 0], target = 60
+       s=0,e=5 -> mid=2 -> nums[2]=60 -> return 2
+
+       Edge cases:
+       - Empty array -> return -1
+       - Single-element array -> handled naturally
+    */
+    public int orderAgnosticBinarySearch(int[] nums, int target) {
+        // handle empty array
+        if (nums == null || nums.length == 0) return -1;
+
+        int s = 0;
+        int e = nums.length - 1;
+
+        // determine ordering; treat single-element arrays as ascending
+        boolean isAscending = nums[s] <= nums[e];
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (nums[mid] == target) {
+                return mid; // found
+            }
+
+            if (isAscending) {
+                // normal binary search for ascending arrays
+                if (target < nums[mid]) {
+                    e = mid - 1;
+                } else {
+                    s = mid + 1;
+                }
+            } else {
+                // reversed comparisons for descending arrays
+                if (target > nums[mid]) {
+                    e = mid - 1;
+                } else {
+                    s = mid + 1;
+                }
+            }
+        }
+
+        return -1; // not found
+    }
+
+    /* -------------------------
+       Note:
+       - The methods are presented in the requested order:
+         Brute-force (linearSearch) -> Optimized (binarySearch) -> Order-agnostic (orderAgnosticBinarySearch).
+       - Each method is self-contained and uses O(1) extra space.
+       - Use linearSearch for unsorted arrays; use binarySearch / orderAgnosticBinarySearch when the array is sorted.
+       ------------------------- */
+}
