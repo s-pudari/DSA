@@ -1,0 +1,113 @@
+/*
+GFG/Custom Problem: Maximum Frequency Sum of Vowel and Consonant
+----------------------------------------------------
+Problem Explanation:
+We are given a string `s`. 
+We need to:
+1. Find the maximum frequency among vowels.
+2. Find the maximum frequency among consonants.
+3. Return the sum of these two maximum frequencies.
+
+Example:
+s = "aabbbc"
+- Vowels: 'a' appears 2 times → maxV = 2
+- Consonants: 'b' appears 3 times, 'c' appears 1 time → maxC = 3
+Answer = 2 + 3 = 5
+
+----------------------------------------------------
+Approach 1: Brute Force (Nested Loops)
+----------------------------------------------------
+1. For each character in the string:
+   - Count its frequency by traversing the rest of the string.
+   - If vowel → update maxV.
+   - Else → update maxC.
+2. Finally, return maxV + maxC.
+
+Dry Run:
+s = "aabbbc"
+- i=0 → 'a' → freq=2 → maxV=2
+- i=2 → 'b' → freq=3 → maxC=3
+- i=5 → 'c' → freq=1 → maxC=max(3,1)=3
+Return 2+3=5
+
+Time Complexity: O(n^2)   // because for each char we count again
+Space Complexity: O(1)
+*/
+class SolutionBruteForce {
+    public boolean isVowel(char ch) {
+        return (ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u');
+    }
+
+    public int maxFreqSum(String s) {
+        int maxV = 0;
+        int maxC = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            char ch = s.charAt(i);
+            int freq = 1;
+
+            // count frequency of this char
+            for (int j = i+1; j < s.length(); j++) {
+                if (s.charAt(j) == ch) {
+                    freq++;
+                }
+            }
+
+            // update vowel or consonant max
+            if (isVowel(ch)) {
+                maxV = Math.max(maxV, freq);
+            } else {
+                maxC = Math.max(maxC, freq);
+            }
+        }
+        return maxV + maxC;
+    }
+}
+
+/*
+----------------------------------------------------
+Approach 2: HashMap (Optimized Frequency Count)
+----------------------------------------------------
+1. Traverse string once and store frequency of each char in HashMap.
+2. Traverse string again:
+   - If vowel → update maxV using stored frequency.
+   - Else → update maxC.
+3. Return maxV + maxC.
+
+Dry Run:
+s = "aabbbc"
+HashMap = {a=2, b=3, c=1}
+- 'a' → vowel → maxV = 2
+- 'b' → consonant → maxC = 3
+- 'c' → consonant → maxC=max(3,1)=3
+Answer = 2+3=5
+
+Time Complexity: O(n)   // two passes
+Space Complexity: O(n)  // hashmap stores frequencies
+*/
+class SolutionOptimized {
+    public boolean isVowel(char ch) {
+        return (ch=='a'||ch=='e'||ch=='i'||ch=='o'||ch=='u');
+    }
+
+    public int maxFreqSum(String s) {
+        HashMap<Character,Integer> hm = new HashMap<>();
+
+        // count frequencies
+        for (char ch : s.toCharArray()) {
+            hm.put(ch, hm.getOrDefault(ch, 0) + 1);
+        }
+
+        int maxV = 0, maxC = 0;
+
+        // update max vowel & consonant frequencies
+        for (char ch : s.toCharArray()) {
+            if (isVowel(ch)) {
+                maxV = Math.max(maxV, hm.get(ch));
+            } else {
+                maxC = Math.max(maxC, hm.get(ch));
+            }
+        }
+        return maxV + maxC;
+    }
+}
