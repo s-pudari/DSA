@@ -1,0 +1,54 @@
+/*
+LeetCode: https://leetcode.com/problems/excel-sheet-column-title/
+----------------------------------------------------
+Problem Explanation:
+We are given a positive integer n.
+We need to convert it into an Excel column title (like in spreadsheets):
+- 1 → A
+- 2 → B
+- ...
+- 26 → Z
+- 27 → AA
+- 28 → AB
+and so on.
+
+This is basically converting a number into a "base-26" system,
+but instead of 0-25, we use letters A-Z with 1-based indexing.
+
+----------------------------------------------------
+Approach:
+----------------------------------------------------
+1. While n > 0:
+   - Decrement n by 1 (to make it 0-based for easier modulo operations).
+   - Find remainder = n % 26.
+   - Map remainder to corresponding character: ('A' + remainder).
+   - Append to result string.
+   - Update n = n / 26.
+2. Finally, reverse the string because we built it backwards.
+
+Dry Run:
+n = 28
+Step 1: n=28-1=27, rem=27%26=1 → 'B' → result="B", n=27/26=1
+Step 2: n=1-1=0, rem=0%26=0 → 'A' → result="BA", n=0
+Reverse → "AB"
+
+Answer = "AB"
+
+Time Complexity: O(log₍26₎n)   // each step divides n by 26
+Space Complexity: O(1)         // only string builder used
+*/
+class Solution {
+    public String convertToTitle(int n) {
+        StringBuilder sb = new StringBuilder();
+
+        while (n > 0) {
+            n = n - 1;  // adjust to 0-based
+            int rem = n % 26;  // remainder gives current character
+            sb.append((char)('A' + rem)); // map 0→A, 25→Z
+            n = n / 26;  // reduce n
+        }
+
+        // reverse because we build from last to first
+        return sb.reverse().toString();
+    }
+}
