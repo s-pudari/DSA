@@ -1,0 +1,90 @@
+/*
+Problem: Given an array of characters sorted in ascending order,
+find the greatest character that is less than the target character.
+
+We handle 2 scenarios:
+1) Target may not be present in the array.
+2) Target is guaranteed to be present in the array.
+*/
+
+class Main {
+    public static void main(String[] args) {
+        char[] arr = {'a', 'c', 'e', 'f', 'g'};
+        char target1 = 'd'; // not present
+        char target2 = 'e'; // present
+
+        System.out.println("Case 1 (not present): " + findGreatestCharNotPresent(arr, target1));
+        System.out.println("Case 2 (present): " + findGreatestCharPresent(arr, target2));
+    }
+
+    /* -----------------------------------------------------------------
+       APPROACH 1: Target may NOT be present in the array
+       -----------------------------------------------------------------
+       Idea:
+       - We want the largest character < target.
+       - Use binary search:
+            * If arr[mid] < target, move right (s = mid+1).
+            * Otherwise (arr[mid] >= target), move left (e = mid-1).
+       - After loop ends, 'e' will point to the greatest char < target.
+
+       Time Complexity: O(log n)
+       Space Complexity: O(1)
+
+       Dry Run:
+       arr = {'a','c','e','f','g'}, target = 'd'
+       s=0,e=4 -> mid=2 -> arr[2]='e' >= 'd' -> e=1
+       s=0,e=1 -> mid=0 -> arr[0]='a' < 'd' -> s=1
+       s=1,e=1 -> mid=1 -> arr[1]='c' < 'd' -> s=2
+       loop ends (s=2,e=1) -> return arr[e]='c'
+    */
+    public static Character findGreatestCharNotPresent(char[] arr, char target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+            if (arr[mid] < target) {
+                s = mid + 1; // move right
+            } else {
+                e = mid - 1; // move left
+            }
+        }
+
+        if (e < 0) return null; // no character less than target
+        return arr[e];
+    }
+
+
+    /* -----------------------------------------------------------------
+       APPROACH 2: Target is GUARANTEED to be present in the array
+       -----------------------------------------------------------------
+       Idea:
+       - First find the exact position of target using binary search.
+       - Once found:
+            * If index > 0, return arr[index-1] (previous element).
+            * If index = 0, there is no smaller character, return null.
+
+       Time Complexity: O(log n)
+       Space Complexity: O(1)
+
+       Dry Run:
+       arr = {'a','c','e','f','g'}, target = 'e'
+       s=0,e=4 -> mid=2 -> arr[2]='e' == target
+       found at index=2 -> return arr[1]='c'
+    */
+    public static Character findGreatestCharPresent(char[] arr, char target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+            if (arr[mid] == target) {
+                return (mid > 0) ? arr[mid - 1] : null;
+            } else if (arr[mid] > target) {
+                e = mid - 1;
+            } else {
+                s = mid + 1;
+            }
+        }
+
+        return null; // unreachable if target guaranteed to exist
+    }
+}
