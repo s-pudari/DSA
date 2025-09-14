@@ -1,0 +1,113 @@
+/*
+Problem: https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/
+
+Given a sorted array of integers `nums` and a target value, 
+find the starting and ending position of the target in the array.
+If the target is not found, return [-1, -1].
+*/
+
+/* 
+---------------------------------------------------------
+APPROACH 1: Brute Force
+---------------------------------------------------------
+- Traverse the array linearly.
+- Record the first and last occurrence of target.
+- If not found, return [-1,-1].
+
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+Dry Run:
+nums = [5,7,7,8,8,10], target=8
+→ first occurrence = index 3
+→ last occurrence = index 4
+→ answer = [3,4]
+*/
+class BruteForceSolution {
+    public int[] searchRange(int[] nums, int target) {
+        int first = -1, last = -1;
+        for (int i = 0; i < nums.length; i++) {
+            if (nums[i] == target) {
+                if (first == -1) first = i;
+                last = i;
+            }
+        }
+        return new int[]{first, last};
+    }
+}
+
+
+/* 
+---------------------------------------------------------
+APPROACH 2: Binary Search (Optimized)
+---------------------------------------------------------
+- Since the array is sorted, we use binary search.
+- Step 1: Find the leftmost occurrence.
+- Step 2: Find the rightmost occurrence.
+- Return [left, right].
+
+Time Complexity: O(log n)
+Space Complexity: O(1)
+
+Dry Run:
+nums = [5,7,7,8,8,10], target=8
+
+Left search:
+s=0,e=5, mid=2 (nums[2]=7 < 8) → s=3
+s=3,e=5, mid=4 (nums[4]=8 >= 8) → e=3
+s=3,e=3, mid=3 (nums[3]=8 >= 8) → e=2
+→ left=3
+
+Right search:
+s=0,e=5, mid=2 (nums[2]=7 <= 8) → s=3
+s=3,e=5, mid=4 (nums[4]=8 <= 8) → s=5
+s=5,e=5, mid=5 (nums[5]=10 > 8) → e=4
+→ right=4
+Answer = [3,4]
+*/
+class Solution {
+    public int[] searchRange(int[] nums, int target) {
+        if (nums.length == 0) return new int[]{-1, -1};
+
+        int left = leftMost(nums, target);
+        int right = rightMost(nums, target);
+
+        return new int[]{left, right};
+    }
+
+    // Helper to find leftmost index of target
+    public int leftMost(int[] arr, int target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (arr[mid] >= target) {
+                e = mid - 1;
+            } else {
+                s = mid + 1;
+            }
+        }
+
+        if (s >= arr.length || arr[s] != target) return -1;
+        return s;
+    }
+
+    // Helper to find rightmost index of target
+    public int rightMost(int[] arr, int target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (arr[mid] <= target) {
+                s = mid + 1;
+            } else {
+                e = mid - 1;
+            }
+        }
+
+        if (e < 0 || arr[e] != target) return -1;
+        return e;
+    }
+}
