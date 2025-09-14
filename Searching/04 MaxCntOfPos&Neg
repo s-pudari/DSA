@@ -1,0 +1,162 @@
+/*
+Problem: Maximum Count of Positive Integer and Negative Integer
+Link: https://leetcode.com/problems/maximum-count-of-positive-integer-and-negative-integer/ (LeetCode 2529)
+
+Problem (in my words):
+--------------------------------
+Given a sorted integer array `nums` (ascending), return the maximum count among:
+  - the number of negative integers in the array, and
+  - the number of positive integers in the array.
+
+Notes:
+- Zeros are neither positive nor negative for this problem.
+- Array is sorted which allows a faster (binary search) solution than scanning.
+
+We present two approaches below (BRUTE FORCE first, then OPTIMIZED).
+Each approach includes:
+  - A brief explanation
+  - Time & space complexity (one line each)
+  - A dry run example
+  - The implementation immediately following the explanation
+All explanatory text is inside the code (multi-line comments) so the file is self-contained.
+*/
+
+class Solution {
+
+    /* =========================================================================
+       APPROACH 1 — BRUTE FORCE (Linear scan)
+       -------------------------------------------------------------------------
+       Explanation (brief):
+       - Since the array is sorted, simplest way is to scan and count negatives
+         and positives in one pass.
+       - Increment negCount when value < 0, increment posCount when value > 0.
+       - Return max(negCount, posCount).
+
+       Time Complexity: O(n) — one pass through the array.
+       Space Complexity: O(1) — constant extra space.
+
+       Dry Run:
+       nums = [-3, -2, -1, 0, 0, 1, 2, 3]
+         iterate:
+           -3 -> negCount=1
+           -2 -> negCount=2
+           -1 -> negCount=3
+            0 -> ignore
+            0 -> ignore
+            1 -> posCount=1
+            2 -> posCount=2
+            3 -> posCount=3
+         return max(3,3) = 3
+    ========================================================================= */
+    public int maximumCountBrute(int[] nums) {
+        /* Use two counters and scan the array once. */
+        int negCount = 0;
+        int posCount = 0;
+
+        for (int x : nums) {
+            /* If number is negative -> increment negCount.
+               If number is positive -> increment posCount.
+               Zeroes are ignored. */
+            if (x < 0) {
+                negCount++;
+            } else if (x > 0) {
+                posCount++;
+            }
+            /* No special-case checks required; we simply tally counts. */
+        }
+
+        /* Return the larger of the two counts. */
+        return Math.max(negCount, posCount);
+    }
+
+
+    /* =========================================================================
+       APPROACH 2 — OPTIMIZED (Binary Search using helper leftMost)
+       -------------------------------------------------------------------------
+       Explanation (brief):
+       - Because `nums` is sorted, we can find boundaries with binary search:
+         * leftMost(nums, 0) gives index of the first element >= 0.
+             -> All indices < that index are negative -> negCount = leftMost(nums,0)
+         * leftMost(nums, 1) gives index of the first element >= 1.
+             -> All indices >= leftMost(nums,1) are >=1 (positive or bigger),
+                so posCount = nums.length - leftMost(nums,1)
+       - Return max(negCount, posCount).
+
+       Time Complexity: O(log n) — two binary searches.
+       Space Complexity: O(1) — constant extra space.
+
+       Why leftMost works:
+       - leftMost(arr, target) implements a lower_bound: smallest index i such that arr[i] >= target.
+       - For target=0: indices [0..i-1] are <0 (i negatives).
+       - For target=1: indices [i..n-1] are >=1 (positives and above), count = n - i.
+
+       Dry Run:
+       nums = [-3, -2, -1, 0, 0, 1, 2, 3]
+         leftMost(nums, 0) -> 3  (arr[3]==0, first >=0 is index 3) => negCount = 3
+         leftMost(nums, 1) -> 5  (arr[5]==1, first >=1 is index 5) => posCount = 8-5 = 3
+         return max(3,3) = 3
+    ========================================================================= */
+
+    /**
+     * Helper: returns the first index `i` such that nums[i] >= target.
+     * This is equivalent to C++ lower_bound.
+     *
+     * Edge cases:
+     *  - If all elements < target, returns nums.length (i.e., insertion at end).
+     *  - If all elements >= target, returns 0.
+     *
+     * Implementation details:
+     *  - Standard binary search (while s <= e).
+     *  - When nums[mid] >= target, move left (e = mid - 1) to find earlier index.
+     *  - Else move right (s = mid + 1).
+     *  - After loop s is the lower_bound index.
+     */
+    private int leftMost(int[] nums, int target) {
+        int s = 0;
+        int e = nums.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            /* If nums[mid] is >= target, a candidate index is mid,
+               but we want the earliest such index — move e to mid-1. */
+            if (nums[mid] >= target) {
+                e = mid - 1;
+            } else {
+                /* nums[mid] < target, so answer must be to the right of mid. */
+                s = mid + 1;
+            }
+        }
+        /* At this point s is the smallest index with nums[s] >= target (or s == nums.length). */
+        return s;
+    }
+
+    /**
+     * Public API (optimized): returns maximum between negatives and positives counts.
+     * Uses two calls to leftMost:
+     *   negCount = leftMost(nums, 0)
+     *   posCount = nums.length - leftMost(nums, 1)
+     */
+    public int maximumCount(int[] nums) {
+        /* If array empty, return 0 directly (no negatives or positives). */
+        if (nums == null || nums.length == 0) return 0;
+
+        /* First index >= 0 => count of negative numbers is that index. */
+        int neg = leftMost(nums, 0);
+
+        /* First index >= 1 => elements from that index to end are positive (>=1). */
+        int firstPosIndex = leftMost(nums, 1);
+        int pos = nums.length - firstPosIndex;
+
+        /* Return the maximum of the two counts. */
+        return Math.max(neg, pos);
+    }
+
+
+    /* =========================================================================
+       NOTE (summary):
+       - Brute-force (maximumCountBrute) is simple and O(n) — fine for many inputs.
+       - Optimized (maximumCount) leverages sorting to run in O(log n) time.
+       - Both implementations are provided above; use the optimized one in production.
+    ========================================================================= */
+}
