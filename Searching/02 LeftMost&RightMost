@@ -1,0 +1,81 @@
+// Problem Statement:
+// Given a sorted array that may contain duplicate elements,
+// write two functions using Binary Search to find:
+// 1. The leftmost (first) occurrence index of a given target
+// 2. The rightmost (last) occurrence index of the same target
+// If the target is not found, the leftmost function should return the index where it could be inserted,
+// and the rightmost function should return the index just before where the target could be inserted.
+
+class Main {
+    public static void main(String[] args) {
+        int[] arr = {1, 2, 2, 2, 2, 3};
+        int target = 2;
+
+        System.out.println("leftmost of 2 : " + leftMost(arr, target));   // Output: 1
+        System.out.println("rightmost of 2 : " + rightMost(arr, target)); // Output: 4
+    }
+
+    /**
+     * Finds the leftmost (first) index of the target element in a sorted array.
+     * If not found, returns the index where it could be inserted.
+     *
+     * Binary Search
+     * Time Complexity: O(log n)
+     * We move 'e' to the left when arr[mid] >= target to narrow toward the first occurrence.
+     *
+     * Dry Run Example:
+     * Input: arr = [1, 2, 2, 2, 2, 3], target = 2
+     * Initial: s = 0, e = 5, mid = 2 -> arr[mid] = 2
+     * arr[mid] >= 2 => move e = mid - 1 => e = 1
+     * s = 0, e = 1, mid = 0 -> arr[mid] = 1 < target => s = mid + 1 => s = 1
+     * s = 1, e = 1, mid = 1 -> arr[mid] = 2 >= target => e = mid - 1 => e = 0
+     * Exit: s = 1, e = 0 → return s = 1 (leftmost index of 2)
+     */
+    public static int leftMost(int[] arr, int target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (arr[mid] >= target) {
+                e = mid - 1; // Keep moving left to find the first occurrence
+            } else {
+                s = mid + 1;
+            }
+        }
+
+        return s; // 's' will land on the first index where arr[s] >= target
+    }
+
+    /**
+     * Finds the rightmost (last) index of the target element in a sorted array.
+     * If not found, returns the index just before where it could be inserted.
+     *
+     * Binary Search
+     * Time Complexity: O(log n)
+     * We move 's' to the right when arr[mid] <= target to narrow toward the last occurrence.
+     *
+     * Dry Run Example:
+     * Input: arr = [1, 2, 2, 2, 2, 3], target = 2
+     * Initial: s = 0, e = 5, mid = 2 -> arr[mid] = 2
+     * arr[mid] <= 2 => move s = mid + 1 => s = 3
+     * s = 3, e = 5, mid = 4 -> arr[mid] = 2 => s = mid + 1 => s = 5
+     * s = 5, e = 5, mid = 5 -> arr[mid] = 3 > target => e = mid - 1 => e = 4
+     * Exit: s = 5, e = 4 → return e = 4 (rightmost index of 2)
+     */
+    public static int rightMost(int[] arr, int target) {
+        int s = 0, e = arr.length - 1;
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (arr[mid] <= target) {
+                s = mid + 1; // Keep moving right to find last occurrence
+            } else {
+                e = mid - 1;
+            }
+        }
+
+        return e; // 'e' will land on the last index where arr[e] <= target
+    }
+}
