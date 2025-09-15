@@ -1,0 +1,178 @@
+/*
+Problem: Maximum Number of Words You Can Type
+Link: https://leetcode.com/problems/maximum-number-of-words-you-can-type/ (LeetCode 1935)
+
+Problem (in my words):
+------------------------------------------------
+You are given a string `text` consisting of words separated by spaces,
+and a string `brokenLetters` containing letters from a broken keyboard.
+Return the number of words in `text` that can be typed without using any
+broken letters.
+
+------------------------------------------------
+We’ll implement three approaches:
+  1. Brute Force (direct scanning without HashSet).
+  2. Optimized (HashSet lookup).
+  3. Bitmasking (super-fast constant-time lookup).
+------------------------------------------------
+*/
+
+
+class Solution {
+
+    /* ================================================================
+       APPROACH 1 — BRUTE FORCE (Direct Scan)
+       ----------------------------------------------------------------
+       Explanation:
+       - Split `text` into words.
+       - For each word, check each character against `brokenLetters` string.
+       - If any character exists in `brokenLetters`, mark word as untypable.
+       - Otherwise, count it as valid.
+
+       Time Complexity: O(W * L * B) 
+         W = number of words, L = average word length, B = length of brokenLetters
+       Space Complexity: O(1).
+
+       Dry Run:
+       text = "hello world", brokenLetters = "ad"
+         words = ["hello","world"]
+         word "hello":
+           check h,e,l,l,o against "ad" → none match → count++
+         word "world":
+           check w,o,r,l,d against "ad" → 'd' matches → skip
+         return count = 1
+    ================================================================ */
+    public int canBeTypedWordsBrute(String text, String brokenLetters) {
+        String[] words = text.split(" ");
+        int count = 0;
+
+        for (String word : words) {
+            boolean canType = true;
+
+            for (int i = 0; i < word.length(); i++) {
+                for (int j = 0; j < brokenLetters.length(); j++) {
+                    if (word.charAt(i) == brokenLetters.charAt(j)) {
+                        canType = false;
+                        break;
+                    }
+                }
+                if (!canType) break;
+            }
+
+            if (canType) count++;
+        }
+        return count;
+    }
+
+
+
+    /* ================================================================
+       APPROACH 2 — OPTIMIZED (HashSet Lookup)
+       ----------------------------------------------------------------
+       Explanation:
+       - Preprocess `brokenLetters` into a HashSet for O(1) lookups.
+       - Split `text` into words.
+       - For each word, check if any character is in the HashSet.
+       - If yes, word is untypable; otherwise, count it.
+
+       Time Complexity: O(W * L)
+       Space Complexity: O(B) (for HashSet)
+
+       Dry Run:
+       text = "leet code", brokenLetters = "lt"
+         brokenSet = {l,t}
+         words = ["leet","code"]
+         word "leet":
+           'l' → in set → reject
+         word "code":
+           c,o,d,e → none in set → count++
+         return count = 1
+    ================================================================ */
+    public int canBeTypedWordsHashSet(String text, String brokenLetters) {
+        String[] words = text.split(" ");
+        int count = 0;
+
+        HashSet<Character> brokenSet = new HashSet<>();
+        for (char ch : brokenLetters.toCharArray()) {
+            brokenSet.add(ch);
+        }
+
+        for (String word : words) {
+            boolean canType = true;
+            for (int i = 0; i < word.length(); i++) {
+                if (brokenSet.contains(word.charAt(i))) {
+                    canType = false;
+                    break;
+                }
+            }
+            if (canType) count++;
+        }
+        return count;
+    }
+
+
+
+    /* ================================================================
+       APPROACH 3 — BITMASKING (Most Optimized)
+       ----------------------------------------------------------------
+       Explanation:
+       - Represent `brokenLetters` as a 26-bit integer (bitmask).
+         Example: brokenLetters = "ad"
+           'a' → bit 0
+           'd' → bit 3
+           mask = (1<<0) | (1<<3) = 0001 | 1000 = 1001 (binary).
+       - For each word:
+           * For each char, check if its bit is set in the mask.
+           * If yes → word rejected.
+           * If no → word counted.
+
+       Time Complexity: O(W * L)
+       Space Complexity: O(1) (just one int mask).
+
+       Dry Run:
+       text = "hello world", brokenLetters = "ad"
+         brokenMask = 1001 (a,d are broken)
+         words = ["hello","world"]
+         word "hello":
+           h → bit 7 → not set
+           e → bit 4 → not set
+           l → bit 11 → not set
+           o → bit 14 → not set
+           → count++
+         word "world":
+           d → bit 3 → set in mask → reject
+         return count = 1
+    ================================================================ */
+    public int canBeTypedWordsBitmask(String text, String brokenLetters) {
+        String[] words = text.split(" ");
+        int count = 0;
+
+        // Step 1: Build mask
+        int brokenMask = 0;
+        for (char ch : brokenLetters.toCharArray()) {
+            brokenMask |= (1 << (ch - 'a'));
+        }
+
+        // Step 2: Check each word
+        for (String word : words) {
+            boolean canType = true;
+            for (int i = 0; i < word.length(); i++) {
+                int bit = (word.charAt(i) - 'a');
+                if ((brokenMask & (1 << bit)) != 0) {
+                    canType = false;
+                    break;
+                }
+            }
+            if (canType) count++;
+        }
+        return count;
+    }
+
+
+    /* ================================================================
+       SUMMARY:
+       - Approach 1 (Brute): O(W * L * B), no extra space.
+       - Approach 2 (HashSet): O(W * L), space O(B).
+       - Approach 3 (Bitmask): O(W * L), space O(1), fastest in practice.
+    ================================================================ */
+}
