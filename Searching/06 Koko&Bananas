@@ -1,0 +1,113 @@
+import java.util.*;
+
+/*
+Problem: Koko Eating Bananas  
+Link: https://leetcode.com/problems/koko-eating-bananas/
+
+Problem (in simple words):
+Koko loves to eat bananas. There are `piles[i]` bananas in the i-th pile.
+She can decide an eating speed `k` (bananas/hour). In each hour, she eats exactly `k` bananas from one pile (if fewer bananas remain, she eats them all and does not continue with another pile in the same hour).  
+We are asked to find the minimum integer `k` such that Koko can eat all bananas within `h` hours.
+
+-------------------------------------------------------
+APPROACH 1 — BRUTE FORCE (linear search)
+-------------------------------------------------------
+/*
+Explanation:
+- The smallest eating speed is 1 (slowest).
+- The largest eating speed can be max(piles) (fastest — clear one pile per hour).
+- For each speed `k` in [1, max(piles)], simulate hours needed:
+  * hours += ceil(piles[i] / k) for each pile.
+- The first `k` that satisfies hours <= h is the answer.
+
+Time Complexity: O(n * max(piles))  
+Space Complexity: O(1)
+
+Dry Run:
+piles = [3,6,7,11], h = 8  
+max(piles) = 11  
+k=1 -> hours = 3+6+7+11 = 27 > 8 (not valid)  
+k=2 -> hours = 2+3+4+6 = 15 > 8 (not valid)  
+k=3 -> hours = 1+2+3+4 = 10 > 8 (not valid)  
+k=4 -> hours = 1+2+2+3 = 8 <= 8 (valid, answer = 4)  
+*/
+class SolutionBrute {
+    public int minEatingSpeedBrute(int[] piles, int h) {
+        // find maximum pile size
+        int maxPile = 0;
+        for (int x : piles) {
+            maxPile = Math.max(maxPile, x);
+        }
+
+        // try all possible eating speeds
+        for (int k = 1; k <= maxPile; k++) {
+            int hours = 0;
+            for (int bananas : piles) {
+                // ceil(bananas / k) using integer math
+                hours += (bananas + k - 1) / k;
+                if (hours > h) break; // early stop
+            }
+            if (hours <= h) return k;
+        }
+        return maxPile; // fallback (shouldn't reach here)
+    }
+}
+
+-------------------------------------------------------
+APPROACH 2 — OPTIMIZED (Binary Search on Answer)
+-------------------------------------------------------
+/*
+Explanation:
+- The answer lies between 1 and max(piles).
+- Use binary search to minimize speed `k`.
+- If `isPossible(piles, h, mid)` is true → try smaller k (move left).
+- If false → need larger k (move right).
+
+Time Complexity: O(n * log(max(piles)))  
+Space Complexity: O(1)
+
+Dry Run:
+piles = [3,6,7,11], h=8  
+s=1, e=1e9  
+mid=5 -> hours = ceil(3/5)+ceil(6/5)+ceil(7/5)+ceil(11/5)=1+2+2+3=8 <= 8 ✔ valid → e=mid-1=4  
+mid=(1+4)/2=2 -> hours=2+3+4+6=15 >8 ✘ → s=3  
+mid=(3+4)/2=3 -> hours=1+2+3+4=10 >8 ✘ → s=4  
+mid=(4+4)/2=4 -> hours=1+2+2+3=8 <=8 ✔ → e=3  
+loop ends (s=4,e=3) → return s=4
+*/
+
+class Solution {
+    public int minEatingSpeed(int[] piles, int h) {
+        int s = 1, e = (int) Math.pow(10, 9);
+
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+
+            if (isPossible(piles, h, mid)) {
+                // mid works, try smaller speed
+                e = mid - 1;
+            } else {
+                // mid too small, increase
+                s = mid + 1;
+            }
+        }
+        return s; // smallest valid speed
+    }
+
+    // Checks if Koko can eat all bananas at speed k within threshold hours
+    public boolean isPossible(int[] nums, int threshold, int k) {
+        for (int i : nums) {
+            int temp = i / k;
+            if (i % k != 0) {
+                temp++;
+            }
+            threshold -= temp;
+
+            // if hours exceeded, not possible
+            if (threshold < 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+}
