@@ -1,125 +1,146 @@
+import java.util.*;
+
 /*
-Problem: Smallest Divisor Given a Threshold
+Problem: Find the Smallest Divisor Given a Threshold
 Link: https://leetcode.com/problems/find-the-smallest-divisor-given-a-threshold/
 
-Problem statement (in my words):
-------------------------------------------------
-We are given an integer array `nums` and an integer `threshold`.
-We need to find the smallest integer `d` such that:
-   sum( ceil(nums[i] / d) ) <= threshold
-Return this divisor.
+Problem (in simple words):
+Given an integer array `nums` and an integer `threshold`, find the smallest positive integer divisor `d`
+such that sum( ceil(nums[i] / d) ) <= threshold for all i.
+(ceil division is used: e.g. ceil(9/5) = 2)
 
-------------------------------------------------
-We’ll solve this using multiple approaches:
-  1. Brute Force Linear Search
-  2. Optimized Binary Search
-------------------------------------------------
+-----------------------------------------------------------------------
+APPROACH 1 — BRUTE FORCE (try every divisor)
+-----------------------------------------------------------------------
+/*
+Explanation (brief):
+- The divisor must lie in [1, max(nums)]. Brute-force tries every divisor `d` in that range.
+- For each `d`, compute the sum of ceil(nums[i] / d). If sum <= threshold, return `d`.
+- Simple and easy to understand but can be slow if max(nums) is large.
+
+Time Complexity: O(n * max(nums))   // n = nums.length
+Space Complexity: O(1)
+
+Dry Run:
+nums = [1,2,5,9], threshold = 6
+max(nums) = 9
+d=1 -> sum = 1+2+5+9 = 17  > 6  (not valid)
+d=2 -> sum = 1+1+3+5 = 10  > 6  (not valid)
+d=3 -> sum = 1+1+2+3 = 7   > 6  (not valid)
+d=4 -> sum = 1+1+2+3 = 7   > 6  (not valid)
+d=5 -> sum = 1+1+1+2 = 5   <=6  (valid) -> answer = 5
 */
-
-
-class Solution {
-
-    /* ================================================================
-       APPROACH 1 — BRUTE FORCE (Linear Search)
-       ----------------------------------------------------------------
-       Explanation:
-       - Try every possible divisor from 1 up to max(nums).
-       - For each divisor, compute sum(ceil(nums[i]/divisor)).
-       - If the sum <= threshold → return that divisor.
-       - This works but is slow for large arrays.
-
-       Time Complexity: O(max(nums) * n)
-       Space Complexity: O(1).
-
-       Dry Run:
-       nums = [1,2,5,9], threshold = 6
-       max(nums) = 9
-       divisor = 1 → sum = 1+2+5+9 = 17 > 6 → not valid
-       divisor = 2 → sum = 1+1+3+5 = 10 > 6
-       divisor = 3 → sum = 1+1+2+3 = 7 > 6
-       divisor = 4 → sum = 1+1+2+3 = 7 > 6
-       divisor = 5 → sum = 1+1+1+2 = 5 ≤ 6 → answer = 5
-    ================================================================ */
+class SolutionBrute {
     public int smallestDivisorBrute(int[] nums, int threshold) {
+        // find maximum value to limit the brute force range
         int maxVal = 0;
-        for (int num : nums) {
-            maxVal = Math.max(maxVal, num);
+        for (int v : nums) {
+            if (v > maxVal) maxVal = v;
         }
 
+        // try every divisor from 1 to maxVal
         for (int d = 1; d <= maxVal; d++) {
             int sum = 0;
-            for (int num : nums) {
-                sum += (num + d - 1) / d; // ceil division
+            // compute sum of ceil(nums[i] / d) for all elements
+            for (int x : nums) {
+                // ceil(x/d) can be computed as (x + d - 1) / d using integer arithmetic
+                sum += (x + d - 1) / d;
+                // early exit if sum already exceeds threshold (optimisation inside brute)
+                if (sum > threshold) break;
             }
             if (sum <= threshold) {
-                return d;
+                return d; // first valid (smallest) divisor
             }
         }
+        // fallback (shouldn't reach here because d = maxVal always works)
         return maxVal;
     }
+}
 
+-----------------------------------------------------------------------
+APPROACH 2 — OPTIMIZED (BINARY SEARCH)  
+-----------------------------------------------------------------------
+/*
+Explanation (brief):
+- The divisor lies in range [1, max(nums)]. Binary search that range to find smallest valid divisor.
+- Let `isPossible(nums, threshold, mid)` check if `mid` produces sum <= threshold.
+  * If true, we can try smaller divisors (move left).
+  * If false, move right (increase divisor).
+- Binary search converges to smallest divisor `s`.
 
+Time Complexity: O(n * log(max(nums)))
+Space Complexity: O(1)
 
-    /* ================================================================
-       APPROACH 2 — OPTIMIZED (Binary Search)
-       ----------------------------------------------------------------
-       Explanation:
-       - The divisor must lie between 1 and max(nums).
-       - Use binary search to minimize divisor:
-         * mid = (low+high)/2
-         * If mid is valid (sum <= threshold) → shrink range (move left).
-         * Else → move right.
-       - At the end, `low` will hold the smallest valid divisor.
+Dry Run (same example):
+nums = [1,2,5,9], threshold = 6
+After Arrays.sort(nums): [1,2,5,9]
+s=1, e=9
+mid=5 -> isPossible -> sum=5 <= 6 => true -> e = mid-1 -> e=4
+mid=(1+4)/2=2 -> isPossible -> sum=10 > 6 => false -> s = mid+1 -> s=3
+mid=(3+4)/2=3 -> isPossible -> sum=7 > 6 => false -> s=4
+mid=(4+4)/2=4 -> isPossible -> sum=7 > 6 => false -> s=5
+loop ends (s=5, e=4) => return s = 5
+*/
 
-       Time Complexity: O(n log(max(nums)))
-       Space Complexity: O(1).
+class Solution {
+    // Optimized binary-search method (method name kept exactly as you provided)
+    public int smallestDivisor(int[] nums, int threshold){
+        // Keep same variable names 's' and 'e' as you provided
+        Arrays.sort(nums);              // sort to easily get max via nums[nums.length-1]
+        int s = 1;
+        int e = nums[nums.length - 1];
 
-       Dry Run:
-       nums = [1,2,5,9], threshold = 6
-       max(nums) = 9
-       low = 1, high = 9
-         mid = 5 → sum = (1/5)+(2/5)+(5/5)+(9/5)=1+1+1+2=5 ≤ 6 → valid, move left
-         low = 1, high = 4
-         mid = 2 → sum = 1+1+3+5=10 > 6 → invalid, move right
-         low = 3, high = 4
-         mid = 3 → sum = 1+1+2+3=7 > 6 → invalid
-         low = 4, high = 4
-         mid = 4 → sum = 1+1+2+3=7 > 6 → invalid
-         low = 5, high = 4 → loop ends
-       Answer = 5
-    ================================================================ */
-    public int smallestDivisor(int[] nums, int threshold) {
-        int maxVal = 0;
-        for (int num : nums) {
-            maxVal = Math.max(maxVal, num);
-        }
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
 
-        int low = 1, high = maxVal;
-        while (low <= high) {
-            int mid = low + (high - low) / 2;
-
-            if (isValid(nums, threshold, mid)) {
-                high = mid - 1; // try smaller divisor
-            } else {
-                low = mid + 1; // need bigger divisor
+            // If mid works (sum <= threshold) we try to minimize (move left)
+            if (isPossible(nums, threshold, mid)) {
+                e = mid - 1;
+            }
+            // Otherwise increase divisor (move right)
+            else {
+                s = mid + 1;
             }
         }
-        return low;
+        // 's' is the smallest divisor that satisfies the condition
+        return s;
     }
 
-    // Helper function: check if divisor `d` satisfies condition
-    private boolean isValid(int[] nums, int threshold, int d) {
+    // isPossible kept with same signature/parameter names as you gave
+    public boolean isPossible(int[] nums, int threshold, int k){
+        boolean ans = false; // kept from your original; not used for logic but preserved
         int sum = 0;
-        for (int num : nums) {
-            sum += (num + d - 1) / d; // ceil division
+
+        // compute sum of ceil(i / k) for each element i in nums
+        for (int i : nums) {
+            // You used Math.ceil((float)i/k) in your original — keeping that for fidelity.
+            // Note: (i + k - 1) / k is an integer-safe alternative to compute ceil.
+            sum += (int) Math.ceil((float) i / k);
+
+            // Small optimization: if sum already exceeds threshold, we can stop early
+            if (sum > threshold) {
+                // No need to keep computing; return false early
+                return false;
+            }
         }
+
         return sum <= threshold;
     }
 
 
-    /* ================================================================
-       SUMMARY:
-       - Approach 1 (Brute Force): O(n * max(nums)), impractical for large input.
-       - Approach 2 (Binary Search): O(n log(max(nums))), best for constraints.
-    ================================================================ */
+    /* 
+      ----------------------------
+      Notes & minor explanations:
+      ----------------------------
+      - We sorted nums only to get the maximum as nums[nums.length-1]; sorting is O(n log n).
+        You can avoid sorting by computing max in a single pass, which would keep the overall
+        complexity dominated by binary-search checks O(n log max). Sorting is fine if you reuse
+        nums sorted later; otherwise you can replace Arrays.sort(nums) with a max scan:
+            int max = 0;
+            for (int v: nums) max = Math.max(max, v);
+            int s = 1, e = max;
+        - Using sorting here preserves your original variable usage and requires no name changes.
+      - isPossible uses Math.ceil((float)i/k) as in your original code; using integer formula
+        (i + k - 1) / k avoids floating point but both are correct.
+    */
 }
