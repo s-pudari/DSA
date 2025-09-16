@@ -1,0 +1,125 @@
+import java.util.*;
+
+/*
+Problem: Replace Non-Coprime Numbers in Array  
+Link: https://leetcode.com/problems/replace-non-coprime-numbers-in-array/
+
+Problem Statement (simplified):  
+We are given an array `nums`. We must repeatedly merge adjacent numbers that are NOT coprime (gcd > 1) into their LCM, until no more merges are possible. Return the final list.
+
+-------------------------------------------------------
+APPROACH 1 — BRUTE FORCE (Repeated Scanning)
+-------------------------------------------------------
+Explanation:
+- Start with the array.
+- Keep scanning from left to right.
+- If two adjacent numbers are non-coprime (gcd > 1), replace them with their LCM.
+- Restart scanning since merging may enable new merges.
+- Repeat until no more merges can be made.
+
+Time Complexity: O(n² * log(max(nums))) in worst case (many repeated scans).  
+Space Complexity: O(n) (we use a list for dynamic updates).
+
+Dry Run Example:  
+nums = [6,4,3]  
+Step 1: [6,4] gcd=2 → merge to 12 → array = [12,3]  
+Step 2: [12,3] gcd=3 → merge to 12 → array = [12]  
+Answer = [12]
+
+-------------------------------------------------------
+APPROACH 2 — STACK SIMULATION WITH GCD + LCM (Optimized)
+-------------------------------------------------------
+Explanation:
+- Use a list as a stack.
+- For each element:
+  * Push it to the stack.
+  * While the last two elements are non-coprime:
+    → remove them, push their lcm.
+- At the end, the stack contains the final array.
+
+Why it works:
+- Merging only depends on the last two numbers, so we don’t need to restart from the beginning each time (like brute force).
+- This reduces unnecessary rescanning.
+
+Time Complexity: O(n * log(max(nums))).  
+Space Complexity: O(n).
+
+Dry Run Example:  
+nums = [6,4,3,2,7,6,2]  
+Step 1: [6]  
+Step 2: push 4 → [6,4] → gcd=2 → merge → [12]  
+Step 3: push 3 → [12,3] → gcd=3 → merge → [12]  
+Step 4: push 2 → [12,2] → gcd=2 → merge → [12]  
+Step 5: push 7 → [12,7] → gcd=1 → stop  
+Step 6: push 6 → [12,7,6] → gcd(7,6)=1 → stop  
+Step 7: push 2 → [12,7,6,2] → gcd(6,2)=2 → merge → [12,7,6]  
+Answer = [12,7,6]
+
+-------------------------------------------------------
+CODE
+-------------------------------------------------------
+*/
+
+class Solution {
+    // --------- APPROACH 1: BRUTE FORCE ----------
+    public List<Integer> replaceNonCoprimesBrute(int[] nums) {
+        List<Integer> li = new ArrayList<>();
+        for (int x : nums) li.add(x);
+
+        boolean merged = true;
+        while (merged) {
+            merged = false;
+            for (int i = 0; i < li.size() - 1; i++) {
+                int a = li.get(i);
+                int b = li.get(i + 1);
+                if (GCD(a, b) > 1) {
+                    int lcm = LCM(a, b);
+
+                    // replace a and b with lcm
+                    li.remove(i + 1);
+                    li.set(i, lcm);
+
+                    merged = true;
+                    break; // restart scanning
+                }
+            }
+        }
+        return li;
+    }
+
+    // --------- APPROACH 2: STACK + GCD + LCM ----------
+    public List<Integer> replaceNonCoprimes(int[] nums) {
+        List<Integer> li = new ArrayList<>();
+        for (int i : nums) {
+            li.add(i); // push element
+
+            // keep merging last two while gcd > 1
+            while (li.size() >= 2) {
+                int a = li.get(li.size() - 2);
+                int b = li.get(li.size() - 1);
+
+                if (GCD(a, b) > 1) {
+                    li.remove(li.size() - 1);
+                    li.remove(li.size() - 1);
+                    li.add(LCM(a, b));
+                } else {
+                    break;
+                }
+            }
+        }
+        return li;
+    }
+
+    // Helper: GCD using Euclidean algorithm
+    public static int GCD(int a, int b) {
+        if (a == 0) return b;
+        return GCD(b % a, a);
+    }
+
+    // Helper: LCM using gcd
+    public static int LCM(int a, int b) {
+        long gcd = GCD(a, b);
+        long lcm = (1L * a / gcd) * b; // prevent overflow
+        return (int) lcm;
+    }
+}
