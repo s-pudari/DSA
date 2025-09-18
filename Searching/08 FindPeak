@@ -1,0 +1,123 @@
+/*
+🔍 Problem: Find Peak Element
+Link: https://leetcode.com/problems/find-peak-element/
+
+Problem Statement:
+------------------
+A peak element is an element that is strictly greater than its neighbors. 
+Given an array `nums`, find a peak element and return its index. 
+If the array contains multiple peaks, return the index of any one of them.
+You may assume that `nums[-1] = nums[n] = -∞`.
+
+*/
+
+/* ================================================================
+   APPROACH 1 — BRUTE FORCE (Linear Scan)
+   ---------------------------------------------------------------
+   Idea:
+   - Iterate through the array and check for each element:
+       nums[i] > nums[i-1] && nums[i] > nums[i+1]
+   - Handle edges separately (first and last elements).
+   - Return the first peak found.
+
+   Time Complexity: O(n)
+   Space Complexity: O(1)
+
+   Dry Run Example:
+   Input: nums = [1,2,1,3,5,6,4]
+   Steps:
+   - i=0: nums[0]=1, compare with nums[1]=2 → not peak
+   - i=1: nums[1]=2, compare (2>1 && 2>1) → peak at index 1
+   Answer = 1
+================================================================ */
+class Solution {
+
+    // Brute force method
+    public int findPeakElementBrute(int[] nums) {
+        int n = nums.length;
+
+        // Edge case: if only one element
+        if (n == 1) return 0;
+
+        // Check first element
+        if (nums[0] > nums[1]) return 0;
+
+        // Check middle elements
+        for (int i = 1; i < n - 1; i++) {
+            if (nums[i] > nums[i - 1] && nums[i] > nums[i + 1]) {
+                return i;
+            }
+        }
+
+        // Check last element
+        if (nums[n - 1] > nums[n - 2]) return n - 1;
+
+        return -1; // not expected as there is always a peak
+    }
+
+    /* ================================================================
+       APPROACH 2 — OPTIMIZED (Binary Search)
+       ---------------------------------------------------------------
+       Idea:
+       - Use binary search to reduce search space.
+       - At mid, check:
+         leftOk = (mid == 0) OR (nums[mid] > nums[mid-1])
+         rightOk = (mid == n-1) OR (nums[mid] > nums[mid+1])
+       - If both conditions true → mid is peak.
+       - Else, move in the direction of a bigger neighbor:
+         if (nums[mid-1] > nums[mid]) → move left (e = mid-1)
+         else → move right (s = mid+1)
+
+       Time Complexity: O(log n)
+       Space Complexity: O(1)
+
+       Dry Run Example:
+       Input: nums = [1,2,1,3,5,6,4]
+       n=7
+       s=0, e=6
+       mid=3 → nums[3]=3, nums[2]=1, nums[4]=5 → not peak, nums[4]>nums[3] → go right
+       s=4, e=6
+       mid=5 → nums[5]=6, nums[4]=5, nums[6]=4 → peak found at index 5
+       Answer = 5
+    ================================================================ */
+
+    // Optimized binary search method (main solution)
+    public int findPeakElement(int[] nums) {
+        int n = nums.length;
+        int s = 0, e = n - 1;
+
+        // Special case: if array has one element
+        if (n == 1) return 0;
+
+        while (s <= e && n > 1) {
+            int mid = s + (e - s) / 2;
+
+            // Check if mid is peak
+            boolean leftOk = (mid == 0) || (nums[mid] > nums[mid - 1]);
+            boolean rightOk = (mid == n - 1) || (nums[mid] > nums[mid + 1]);
+
+            if (leftOk && rightOk) {
+                return mid;
+            }
+            // If left neighbor is bigger → peak lies left
+            else if (mid > 0 && nums[mid - 1] > nums[mid]) {
+                e = mid - 1;
+            }
+            // Else → peak lies right
+            else {
+                s = mid + 1;
+            }
+        }
+        return 0; // fallback
+    }
+
+    /* ==============
+       Quick Test
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int[] nums = {1,2,1,3,5,6,4};
+        System.out.println("Brute: " + sol.findPeakElementBrute(nums)); // 1
+        System.out.println("Optimized: " + sol.findPeakElement(nums)); // 5
+    }
+    ============== */
+}
