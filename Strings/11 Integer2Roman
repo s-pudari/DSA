@@ -1,0 +1,148 @@
+// https://leetcode.com/problems/integer-to-roman/
+/*
+Problem: Integer to Roman
+-------------------------
+Given an integer `num` (1 ≤ num ≤ 3999), convert it to its Roman numeral representation.
+
+Brief explanation (in plain words):
+- Roman numerals are built from symbols representing values (I=1, V=5, X=10, ...).
+- Some values are represented using subtractive notation (4 -> IV, 9 -> IX, 40 -> XL, ...).
+- We will show two approaches:
+  1) Brute-force / place-value mapping (construct each digit's Roman part and concatenate).
+  2) Optimized greedy approach (subtract largest possible Roman values repeatedly).
+
+Note: Everything (explanations, dry-runs and code) is kept inside this file as requested.
+*/
+
+/* ===========================================================
+   APPROACH 1 — Place-value Mapping (Brute-force / Clear mapping)
+   -----------------------------------------------------------
+   Time Complexity: O(1) — loop/work over fixed-size arrays (bounded by 4 places).
+   Space Complexity: O(1) — a few fixed-size string arrays.
+
+   Explanation:
+   - Precompute Roman strings for ones/tens/hundreds/thousands place (0..9 for each place, 0..3 for thousands).
+   - Extract each decimal place from the integer and directly index into these arrays.
+   - Concatenate results to get final Roman numeral.
+   - This is simple, easy to reason about, and constant-time for the given constraints.
+
+   Dry run (num = 1987):
+   - thousands part: 1987/1000 = 1 -> "M"
+   - hundreds part: (1987 % 1000)/100 = 9 -> "CM"
+   - tens part: (1987 % 100)/10 = 8 -> "LXXX"
+   - ones part: 1987 % 10 = 7 -> "VII"
+   - Final: "M" + "CM" + "LXXX" + "VII" = "MCMLXXXVII"
+   =========================================================== */
+
+class Solution {
+
+    /*
+     * Brute-force / Mapping implementation.
+     * Returns Roman numeral for num using direct place-value maps.
+     */
+    public String intToRomanBrute(int num) {
+        /* Predefined arrays for each place
+           Each index corresponds to the digit in that place.
+           Example: ones[4] -> "IV", tens[4] -> "XL", hundreds[4] -> "CD" */
+        String[] thousands = {"", "M", "MM", "MMM"};  /* 0..3 (num <= 3999) */
+        String[] hundreds  = {"", "C", "CC", "CCC", "CD", "D", "DC", "DCC", "DCCC", "CM"};
+        String[] tens      = {"", "X", "XX", "XXX", "XL", "L", "LX", "LXX", "LXXX", "XC"};
+        String[] ones      = {"", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX"};
+
+        /* Extract digits for each place.
+           Explanation of indices:
+           - thousandsIndex = num / 1000
+           - hundredsIndex  = (num % 1000) / 100
+           - tensIndex      = (num % 100) / 10
+           - onesIndex      = num % 10
+           These formulas isolate each decimal digit without loops. */
+        StringBuilder sb = new StringBuilder();
+
+        /* thousandsIndex will be in range [0..3] for valid inputs */
+        sb.append(thousands[num / 1000]);
+
+        /* remainder after removing thousands */
+        int rem = num % 1000;
+
+        /* hundredsIndex in [0..9] */
+        sb.append(hundreds[rem / 100]);
+
+        rem = rem % 100;
+
+        /* tensIndex in [0..9] */
+        sb.append(tens[rem / 10]);
+
+        /* onesIndex in [0..9] */
+        sb.append(ones[rem % 10]);
+
+        return sb.toString();
+    }
+
+
+    /* ===========================================================
+       APPROACH 2 — Greedy (Optimized)
+       -----------------------------------------------------------
+       Time Complexity: O(1) — we iterate over a fixed set of 13 Roman tokens.
+       Space Complexity: O(1) — fixed arrays and resultant string.
+
+       Explanation:
+       - Maintain parallel arrays: values[] (descending numeric values) and romans[] (their symbols).
+       - For each value from largest to smallest:
+           while num >= values[i]:
+               append romans[i]
+               subtract values[i] from num
+       - Repeat until num becomes zero.
+       - This is greedy and mirrors how Roman numerals are usually constructed.
+
+       Dry run (num = 1987):
+       - values[0] = 1000 -> 1987 >= 1000 → append "M", num = 987
+       - values[1] = 900  -> 987 >= 900  → append "CM", num = 87
+       - values[2] = 500  -> 87 < 500   → skip
+       - ...
+       - values[6] = 50   -> 87 >= 50   → append "L", num = 37
+       - values[8] = 10   -> 37 >= 10   → append "X", num = 27 → do thrice → "XXX", num = 7
+       - values[10]=5     -> 7 >= 5     → append "V", num = 2
+       - values[12]=1     -> append "I" twice → "II"
+       - Result: "MCMLXXXVII"
+       =========================================================== */
+
+    public String intToRoman(int num) {
+        /* Values & Romans aligned by index; includes subtractive cases */
+        int[] values =   {1000, 900, 500, 400, 100, 90, 50, 40, 10, 9, 5, 4, 1};
+        String[] romans ={"M",  "CM","D", "CD","C", "XC","L","XL","X","IX","V","IV","I"};
+
+        StringBuilder sb = new StringBuilder();
+
+        /* Iterate over all roman tokens (fixed 13 items).
+           For each token, consume as many of that value as possible (greedy). */
+        for (int i = 0; i < values.length; i++) {
+            /* Explanation:
+               - The while loop appends the same roman symbol multiple times if needed,
+                 e.g., if num = 3000, for 1000 ("M") it will append "M" three times.
+               - This is safe because the arrays are ordered descendingly, so subtracting
+                 larger values first ensures canonical Roman representation. */
+            while (num >= values[i]) {
+                sb.append(romans[i]);   /* add the symbol */
+                num -= values[i];       /* reduce the remaining number */
+            }
+            /* When num becomes 0 we could break early; this is a small optimization */
+            if (num == 0) break;
+        }
+
+        return sb.toString();
+    }
+
+
+    /* =========================
+       Example usage (for local testing only):
+       =========================
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        int[] tests = {3, 4, 9, 58, 1994, 1987, 3999};
+        for (int t : tests) {
+            System.out.println(t + " -> Brute: " + sol.intToRomanBrute(t)
+                                  + "  |  Greedy: " + sol.intToRoman(t));
+        }
+    }
+    ========================= */
+}
