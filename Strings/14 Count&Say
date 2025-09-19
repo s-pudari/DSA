@@ -1,0 +1,161 @@
+/*
+🔥 PROBLEM: Count and Say (LeetCode 38)
+---------------------------------------
+Problem explanation (in my own words):
+- The Count-and-Say sequence is a sequence of strings where each term describes the previous term.
+  Start with "1". To build the next term, read the previous term left-to-right, group consecutive
+  identical digits, and for each group append the count followed by the digit.
+  Example: "21" (read as "one 2, one 1") -> "1211".
+
+Link:
+https://leetcode.com/problems/count-and-say/
+
+=======================================================================
+IMPORTANT: Structure followed below (as requested)
+1) Brute-force approach (explanation, complexity lines, dry-run) → code
+2) Optimized approach (explanation, complexity lines, dry-run) → code
+All explanations, dry runs and code are inside this single file (as comments + methods).
+Inline comments use /* ... */ for multi-line explanations; single-line clarifiers when short.
+=======================================================================
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /* ============================================================
+       APPROACH 1 — BRUTE-FORCE (store all intermediate terms)
+       ------------------------------------------------------------
+       - Brief idea:
+         Build the sequence from term 1 up to term n and store each term in a list.
+         For each new term, read the entire previous string, count consecutive digits and
+         append (count + digit) to form the next term.
+
+       - Time Complexity: O(n * m) where m is the average length of generated strings
+         (building each term requires scanning the previous term; storing all terms increases memory).
+       - Space Complexity: O(n * m) to store all intermediate terms.
+
+       - Dry run for n = 4:
+         sequence[1] = "1"
+         sequence[2] = describe("1") -> "11"          (one '1')
+         sequence[3] = describe("11") -> "21"         (two '1's)
+         sequence[4] = describe("21") -> "1211"       (one '2', one '1')
+         Return "1211"
+    */
+    public String countAndSayBrute(int n) {
+        /* Defensive check: n >= 1 by problem constraints, but handle anyway */
+        if (n <= 0) return "";
+
+        /* List to store each term; sequence.get(0) will be term 1 */
+        List<String> sequence = new ArrayList<>();
+        sequence.add("1"); // term 1
+
+        /* Build terms 2..n inclusive */
+        for (int i = 1; i < n; i++) {
+            String prev = sequence.get(i - 1);
+
+            /* Build current term by scanning prev and counting consecutive digits */
+            StringBuilder current = new StringBuilder();
+
+            /* Start counting from the first character */
+            int count = 1;
+            for (int j = 1; j < prev.length(); j++) {
+                /* If same as previous character, increment count */
+                if (prev.charAt(j) == prev.charAt(j - 1)) {
+                    count++;
+                } else {
+                    /* Different digit encountered: append count and the digit */
+                    current.append(count).append(prev.charAt(j - 1));
+                    /* reset count for new digit */
+                    count = 1;
+                }
+            }
+
+            /* Append last group (always present) */
+            current.append(count).append(prev.charAt(prev.length() - 1));
+
+            /* Add newly built term to the sequence list */
+            sequence.add(current.toString());
+        }
+
+        /* Return nth term (index n-1) */
+        return sequence.get(n - 1);
+    }
+
+    /* ============================================================
+       APPROACH 2 — OPTIMIZED (build only previous term, O(1) extra storage for terms)
+       ------------------------------------------------------------
+       - Brief idea:
+         Keep only the previous term string and iteratively build the next term from it.
+         This saves memory (no storage of all previous terms), and is the common accepted solution.
+
+       - Time Complexity: O(n * m) where m is the average length of the strings processed
+         (same asymptotic as above, but less memory).
+       - Space Complexity: O(m) for the temporary StringBuilder to build each new term.
+
+       - Dry run for n = 4:
+         sb = "1"         // base
+         i=2: read "1" -> temp = "11"
+         i=3: read "11" -> temp = "21"
+         i=4: read "21" -> temp = "1211"
+         return "1211"
+    */
+    public String countAndSay(int n) {
+        /* Base-case: term 1 */
+        if (n <= 0) return "";
+        String prev = "1";
+
+        /* Build up from term 2 to term n */
+        for (int term = 2; term <= n; term++) {
+
+            /* StringBuilder for next term construction */
+            StringBuilder next = new StringBuilder();
+
+            /* We'll scan prev and aggregate counts of consecutive identical chars */
+            int count = 1; // at least one occurrence of current char
+            for (int i = 1; i < prev.length(); i++) {
+                /*
+                 * If current char equals previous, increment group count.
+                 * Else, append the count and the previous character to next,
+                 * and reset count to 1 for the new group.
+                 */
+                if (prev.charAt(i) == prev.charAt(i - 1)) {
+                    count++;
+                } else {
+                    /* Append "count" then the digit (previous char) */
+                    next.append(count).append(prev.charAt(i - 1));
+                    count = 1; // reset for new character
+                }
+            }
+
+            /* Don't forget the final group (last run of identical chars) */
+            next.append(count).append(prev.charAt(prev.length() - 1));
+
+            /* Move to the newly constructed term */
+            prev = next.toString();
+        }
+
+        /* prev now holds the nth term */
+        return prev;
+    }
+
+    /* ============================================================
+       Example main for quick local testing (optional)
+       - This is not required by LeetCode but helps manual verification.
+       - Remove or comment out main when submitting to certain judges.
+    */
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        int[] tests = {1, 2, 3, 4, 5, 6};
+        System.out.println("Brute-force outputs:");
+        for (int t : tests) {
+            System.out.println("n=" + t + " -> " + sol.countAndSayBrute(t));
+        }
+
+        System.out.println("\nOptimized outputs:");
+        for (int t : tests) {
+            System.out.println("n=" + t + " -> " + sol.countAndSay(t));
+        }
+    }
+}
