@@ -9,141 +9,136 @@ Given a string `s`, reverse the order of words in it.
 - Return a string with words in reversed order.
 - Remove any leading, trailing, and multiple intermediate spaces.
 
----
-
-✅ OPTIMIZED APPROACH (Using String.split + Loop)
----------------------------------------------------
-💡 Idea:
-- Use `split("\\s+")` to split the sentence into words.
-  - `\\s+` matches one or more whitespace characters.
-- Iterate from the end of the array of words.
-- Append each word to a `StringBuilder`.
-- Add space between words (except the last one).
-- Trim trailing spaces before returning.
-
-🕒 Time Complexity: O(n)  
-🧠 Space Complexity: O(n)  
-(n = number of characters in the string)
-
----
-
-🔍 DRY RUN EXAMPLE
---------------------
-Input: `"  the   sky   is blue  "`
-
-After split: ["the", "sky", "is", "blue"]
-Reverse order: "blue is sky the"
-
-Output: `"blue is sky the"`
-
+Link: https://leetcode.com/problems/reverse-words-in-a-string/
 */
 
+
 class Solution {
+
+    /* ==========================================================
+       ✅ APPROACH 1 — Using Stack (Beginner Friendly)
+       ----------------------------------------------------------
+       💡 Idea:
+       - Traverse the string and manually build words.
+       - Push each word into a stack.
+       - Pop from stack to reverse order.
+
+       🕒 Time Complexity: O(n)
+       🧠 Space Complexity: O(n) for stack
+
+       🔍 Dry Run Example:
+       Input: " the sky is  blue "
+       Steps:
+       - Traverse → push "the", "sky", "is", "blue" onto stack
+       - Pop → "blue is sky the"
+       Output: "blue is sky the"
+    ========================================================== */
+    public String reverseWordsStack(String s) {
+        Stack<String> st = new Stack<>();
+        String str = "";
+        s = s.trim(); // remove leading and trailing spaces
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.charAt(i) == ' ') {
+                if (!str.isEmpty()) {
+                    st.push(str);
+                    str = "";
+                }
+            } else {
+                str += s.charAt(i);
+            }
+        }
+        if (!str.isEmpty()) {
+            st.push(str); // push last word
+        }
+
+        String ans = "";
+        while (!st.isEmpty()) {
+            ans += st.pop();
+            if (!st.isEmpty()) ans += " ";
+        }
+        return ans;
+    }
+
+
+    /* ==========================================================
+       ✅ APPROACH 2 — Two Pointers from the End
+       ----------------------------------------------------------
+       💡 Idea:
+       - Start from the end of the string.
+       - Skip spaces, extract each word, and append to result.
+       - Efficient, avoids splitting into arrays.
+
+       🕒 Time Complexity: O(n)
+       🧠 Space Complexity: O(n)
+
+       🔍 Dry Run Example:
+       Input: "  hello   world  "
+       Steps:
+       - Start at r=12 → skip spaces → r=9
+       - l moves to 6 → extract "world"
+       - Append → "world "
+       - Next word → "hello"
+       Final → "world hello"
+    ========================================================== */
+    public String reverseWordsTwoPointers(String s) {
+        StringBuilder ans = new StringBuilder();
+        int l, r = s.length() - 1;
+
+        while (r >= 0) {
+            while (r >= 0 && s.charAt(r) == ' ') r--; // skip spaces
+            if (r < 0) break;
+
+            l = r;
+            while (l >= 0 && s.charAt(l) != ' ') l--; // find word start
+
+            for (int i = l + 1; i <= r; i++) {
+                ans.append(s.charAt(i));
+            }
+            ans.append(' ');
+
+            r = l - 1;
+        }
+        return ans.toString().trim(); // remove last space
+    }
+
+
+    /* ==========================================================
+       ✅ APPROACH 3 — Optimized Using split() + Loop
+       ----------------------------------------------------------
+       💡 Idea:
+       - Use `split("\\s+")` to handle multiple spaces.
+       - Traverse words in reverse order and build result.
+
+       🕒 Time Complexity: O(n)
+       🧠 Space Complexity: O(n)
+
+       🔍 Dry Run Example:
+       Input: "  the   sky   is blue  "
+       After split: ["the","sky","is","blue"]
+       Reverse order: "blue is sky the"
+    ========================================================== */
     public String reverseWords(String s) {
-
-        // Split the string by one or more spaces using regex
         String[] words = s.trim().split("\\s+");
-
         StringBuilder res = new StringBuilder();
 
-        // Append words in reverse order
         for (int i = words.length - 1; i >= 0; i--) {
-            res.append(words[i]); // Append the word
-
-            // Add space between words but not after the last one
-            if (i != 0) {
-                res.append(" ");
-            }
+            res.append(words[i]);
+            if (i != 0) res.append(" ");
         }
-
-        return res.toString(); // No need to trim, already handled
+        return res.toString();
     }
 
-    /*
-    🧠 APPROACH 2: Two Pointers from the End (Efficient with Less Space)
-    ---------------------------------------------------------------------
-    💡 Idea:
-    - Walk from the end of the string, skip trailing spaces.
-    - Identify each word and add it to the result.
-    - Skip extra spaces in between.
 
-    Time: O(n)
-    Space: O(n)
+    /* ==========================================================
+       QUICK TEST
+    ========================================================== */
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        String s = "  the   sky   is blue  ";
 
-    Code: */
-
-    StringBuilder ans = new StringBuilder();
-    int l, r = s.length() - 1;
-
-    while (r >= 0) {
-        // Skip trailing spaces
-        while (r >= 0 && s.charAt(r) == ' ') {
-            r--;
-        }
-
-        if (r < 0) break;
-
-        l = r;
-
-        // Move l to the beginning of the word
-        while (l >= 0 && s.charAt(l) != ' ') {
-            l--;
-        }
-
-        // Append the word [l+1 to r]
-        for (int i = l + 1; i <= r; i++) {
-            ans.append(s.charAt(i));
-        }
-
-        ans.append(' '); // Add space after each word
-        r = l - 1;       // Move to the previous word
+        System.out.println("Approach 1 (Stack): " + sol.reverseWordsStack(s));
+        System.out.println("Approach 2 (Two Pointers): " + sol.reverseWordsTwoPointers(s));
+        System.out.println("Approach 3 (split): " + sol.reverseWords(s));
     }
-
-    return ans.toString().trim(); // Remove last space
-
-    
-
-    /*
-    🧠 APPROACH 1: Using Stack (Classic Beginner Way)
-    --------------------------------------------------
-    💡 Idea:
-    - Traverse and build words manually.
-    - Push each word to a stack.
-    - Pop from stack to get reversed order.
-
-    Time: O(n)
-    Space: O(n) for stack
-
-    Code: */
-
-    Stack<String> st = new Stack<>();
-    String str = "";
-    s = s.trim();
-
-    for (int i = 0; i < s.length(); i++) {
-        if (s.charAt(i) == ' ') {
-            if (!str.isEmpty()) {
-                st.push(str);
-                str = "";
-            }
-        } else {
-            str += s.charAt(i);
-        }
-    }
-
-    if (!str.isEmpty()) {
-        st.push(str); // Push the last word
-    }
-
-    String ans = "";
-
-    while (!st.isEmpty()) {
-        ans += st.pop(); // Append the word
-        if (!st.isEmpty()) {
-            ans += " "; // Add space except after last word
-        }
-    }
-
-    return ans;
-    
 }
