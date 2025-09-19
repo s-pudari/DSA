@@ -1,0 +1,112 @@
+/*
+🔥 PROBLEM: Longest Palindromic Substring 🔥
+--------------------------------------------
+Link: https://leetcode.com/problems/longest-palindromic-substring/
+
+Given a string `s`, return the longest substring of `s` that is a palindrome.
+
+📌 Palindrome:
+A string that reads the same forward and backward.
+Examples: "madam", "racecar"
+
+---
+
+🔎 BRUTE-FORCE APPROACH
+------------------------
+💡 Idea:
+- Generate all substrings of `s`
+- Check if each substring is a palindrome
+- Track the longest one
+
+🕒 Time Complexity: O(n³)  
+🧠 Space Complexity: O(1)
+
+🔍 Dry Run (s = "babad"):
+- Substrings like "b", "ba", "bab", "baba", "babad"
+- Palindromes found: "bab", "aba"
+- Longest = "bab" (or "aba")
+
+Code:
+-------
+public String longestPalindrome(String s) {
+    String res = "";
+    int maxLen = 0;
+
+    for (int i = 0; i < s.length(); i++) {
+        for (int j = i; j < s.length(); j++) {
+            String sub = s.substring(i, j + 1);
+            if (isPalindrome(sub) && sub.length() > maxLen) {
+                res = sub;
+                maxLen = sub.length();
+            }
+        }
+    }
+    return res;
+}
+
+private boolean isPalindrome(String str) {
+    int l = 0, r = str.length() - 1;
+    while (l < r) {
+        if (str.charAt(l) != str.charAt(r)) return false;
+        l++;
+        r--;
+    }
+    return true;
+}
+----------------------------------------------
+
+✅ OPTIMIZED APPROACH: Expand Around Center
+--------------------------------------------
+💡 Idea:
+- A palindrome mirrors around its center
+- There are `2n - 1` possible centers:
+  - Each character (odd-length palindromes)
+  - Each gap between characters (even-length palindromes)
+- Expand around each center while characters match
+- Keep track of longest palindrome
+
+🕒 Time Complexity: O(n²)  
+🧠 Space Complexity: O(1)
+
+🔍 Dry Run (s = "babad"):
+- i = 0 → expand at "b" → longest = "b"
+- i = 1 → expand at "a" → longest = "bab"
+- i = 2 → expand at "b" → longest = "aba"
+- Final Answer = "bab" (or "aba")
+
+Code:
+-------
+class Solution {
+    public String longestPalindrome(String s) {
+        String res = "";
+        int resLen = 0;
+
+        for (int i = 0; i < s.length(); i++) {
+            
+            // Odd length palindrome
+            int l = i, r = i;
+            while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
+                if (r - l + 1 > resLen) {
+                    res = s.substring(l, r + 1);
+                    resLen = r - l + 1;
+                }
+                l--;
+                r++;
+            }
+
+            // Even length palindrome
+            l = i;
+            r = i + 1;
+            while (l >= 0 && r < s.length() && s.charAt(l) == s.charAt(r)) {
+                if (r - l + 1 > resLen) {
+                    res = s.substring(l, r + 1);
+                    resLen = r - l + 1;
+                }
+                l--;
+                r++;
+            }
+        }
+
+        return res;
+    }
+}
