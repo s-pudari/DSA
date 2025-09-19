@@ -1,0 +1,185 @@
+// https://leetcode.com/problems/longest-common-prefix/
+/*
+Problem: Longest Common Prefix
+------------------------------
+Given an array of strings `strs`, find the longest common prefix string amongst them.
+If there is no common prefix, return an empty string "".
+
+Brief explanation (in plain words):
+- We want the longest starting substring that is identical in every string.
+- We'll provide **two approaches** (Brute-force first, then Optimized):
+  1) Brute-force: Try every possible prefix (from longest to shortest) of the first string
+     and check whether all strings start with that prefix.
+  2) Optimized (horizontal scanning): Keep a running common prefix and shorten it while
+     comparing with each next string — this avoids unnecessary repeated checks.
+
+Notes:
+- All explanations, dry-runs and code are kept inside this single file as requested.
+- For complexity notation below: let N = number of strings, M = length of the shortest string.
+*/
+
+/* ===========================================================
+   APPROACH 1 — Brute-Force (Try all prefixes of the first string)
+   -----------------------------------------------------------
+   Time Complexity: O(N * M^2)  // try up to M prefix lengths, each `startsWith` may cost O(M) across N strings
+   Space Complexity: O(1) (excluding the output string)
+
+   Explanation:
+   - Compute the maximum possible prefix length (min length among strings).
+   - For len = minLen down to 0:
+       - Take prefix = strs[0].substring(0, len)
+       - Check every other string: if any doesn't start with prefix, try shorter prefix.
+   - Return the first prefix that matches all strings.
+
+   Dry run (strs = ["flower","flow","flight"]):
+   - minLen = 4 (length of "flow")
+   - len = 4: prefix = "flow" -> "flower".startsWith("flow") true, "flow".startsWith("flow") true, "flight".startsWith("flow") false -> fail
+   - len = 3: prefix = "flo"  -> "flight".startsWith("flo") false -> fail
+   - len = 2: prefix = "fl"   -> all three start with "fl" -> success -> return "fl"
+   =========================================================== */
+
+class Solution {
+
+    /*
+     * Brute-force implementation.
+     * Tries all possible prefixes of the first string starting from the longest.
+     */
+    public String longestCommonPrefixBrute(String[] strs) {
+        /* Edge-case: null or empty array */
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+
+        /* Find the length of the shortest string (M) to bound prefix lengths */
+        int minLen = Integer.MAX_VALUE;
+        for (String s : strs) {
+            if (s == null) return ""; /* defensive: if any element null, treat as no prefix */
+            if (s.length() < minLen) minLen = s.length();
+        }
+
+        /* Try prefixes from longest (minLen) down to 0 */
+        for (int len = minLen; len >= 0; len--) {
+            /* Build the candidate prefix from the first string.
+               Note: substring(0, len) returns an empty string when len == 0. */
+            String prefix = strs[0].substring(0, len);
+
+            boolean allMatch = true;
+
+            /* Check this prefix against every string */
+            for (int i = 1; i < strs.length; i++) {
+                /*
+                 * startsWith performs a character-by-character check
+                 * If any string doesn't start with prefix, this prefix is invalid.
+                 */
+                if (!strs[i].startsWith(prefix)) {
+                    allMatch = false;
+                    break; /* early exit for this prefix */
+                }
+            }
+
+            /* If all strings matched this prefix, return it immediately */
+            if (allMatch) {
+                return prefix;
+            }
+        }
+
+        /* If no non-empty prefix matched, return empty string */
+        return "";
+    }
+
+
+    /* ===========================================================
+       APPROACH 2 — Optimized (Horizontal scanning)
+       -----------------------------------------------------------
+       Time Complexity: O(N * M)   // compare prefix with each string, shortening prefix at most M times
+       Space Complexity: O(1) (excluding output)
+
+       Explanation:
+       - Start with the first string as the current prefix.
+       - For each subsequent string, shrink the prefix by removing characters
+         from the end until the prefix matches the start of that string.
+       - If prefix becomes empty at any time, return "" early.
+
+       Dry run (strs = ["flower","flow","flight"]):
+       - ans = "flower"
+       - compare with "flow": shorten ans -> "flow" (because "flower".startsWith("flow") false, shrink until it does)
+       - compare with "flight": shorten ans -> "fl" (now "flight".startsWith("fl") true)
+       - result = "fl"
+       =========================================================== */
+
+    /*
+     * Optimized implementation — this is the main method expected by callers.
+     * It keeps the brute method available above for reference.
+     */
+    public String longestCommonPrefix(String[] strs) {
+        /* Edge-case checks */
+        if (strs == null || strs.length == 0) {
+            return "";
+        }
+
+        /* Start with the first string as a mutable prefix */
+        StringBuilder ans = new StringBuilder(strs[0]);
+
+        /* Compare the running prefix with every next string and shrink if necessary */
+        for (int i = 1; i < strs.length; i++) {
+            /*
+             * While current prefix is not a prefix of strs[i], shorten it by one character.
+             * We convert ans to String for startsWith checks (startsWith needs a String).
+             */
+            while (ans.length() > 0 && !strs[i].startsWith(ans.toString())) {
+                /*
+                 * Remove the last character from ans.
+                 * /* This is done because if the current ans is not a prefix of strs[i],
+                 *    then a longer ans won't be either. By shrinking we move towards the
+                 *    maximum possible common prefix. */
+                ans.deleteCharAt(ans.length() - 1);
+            }
+
+            /* If prefix became empty, there's no common prefix at all */
+            if (ans.length() == 0) {
+                return "";
+            }
+        }
+
+        /* After processing all strings, ans contains the longest common prefix */
+        return ans.toString();
+    }
+
+    /* -------------------------
+       Helper (alternative) - not necessary but educational:
+       This helper returns the common prefix of two strings.
+       Left here for clarity; not used in the main optimized method above.
+       ------------------------- */
+    public StringBuilder helper(String s1, String s2) {
+        StringBuilder temp = new StringBuilder();
+        int i = 0, j = 0;
+
+        /* Compare characters until mismatch or end of one string */
+        while (i < s1.length() && j < s2.length()) {
+            if (s1.charAt(i) == s2.charAt(j)) {
+                temp.append(s1.charAt(i));
+                i++;
+                j++;
+            } else {
+                break; /* mismatch: stop extending the prefix */
+            }
+        }
+        return temp;
+    }
+
+
+    /* =========================
+       Example local test harness (commented out)
+       =========================
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        String[] arr1 = {"flower", "flow", "flight"};
+        String[] arr2 = {"dog","racecar","car"};
+        System.out.println("Brute (arr1): " + sol.longestCommonPrefixBrute(arr1));
+        System.out.println("Optimized (arr1): " + sol.longestCommonPrefix(arr1));
+        System.out.println("Optimized (arr2): " + sol.longestCommonPrefix(arr2));
+    }
+    ========================= */
+}
+
+
