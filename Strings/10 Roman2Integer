@@ -1,0 +1,165 @@
+// https://leetcode.com/problems/roman-to-integer/
+
+/*
+🔥 PROBLEM: Roman to Integer
+-----------------------------
+Given a Roman numeral string `s`, convert it to its integer value.
+
+Roman basics (symbols and values):
+ I = 1,  V = 5,  X = 10,  L = 50,  C = 100,  D = 500,  M = 1000
+
+There are special subtractive pairs:
+ IV = 4, IX = 9, XL = 40, XC = 90, CD = 400, CM = 900
+
+---------------------------------------------------------
+Below are two approaches (Brute Force first, then Optimized).
+Each approach contains:
+ - One-line Time & Space complexity
+ - Short explanation
+ - A dry-run example
+ - The implementation with detailed inline comments (/* ... */ style)
+---------------------------------------------------------
+*/
+
+/* ============================================================
+Approach 1 — Brute Force (explicit pair checking)
+-------------------------------------------------------------
+Time Complexity: O(n)  — single pass, comparing at most two chars at a time.
+Space Complexity: O(1) — constant extra space.
+
+Idea:
+- Walk the string left-to-right using index i.
+- For each position, check if a subtractive pair exists (i+1 < n and current+next form one of IV, IX, XL, XC, CD, CM).
+  - If yes, add the pair's value (e.g., "CM" -> 900) and advance i by 2.
+  - Otherwise, add the single symbol's value and advance i by 1.
+
+Dry Run (s = "MCMXCIV"):
+- i=0: 'M' & next 'C' -> not a subtractive pair => add 1000, i -> 1
+- i=1: 'C' & next 'M' -> "CM" => add 900, i -> 3
+- i=3: 'X' & next 'C' -> "XC" => add 90, i -> 5
+- i=5: 'I' & next 'V' -> "IV" => add 4, i -> 7 (end)
+Total = 1000 + 900 + 90 + 4 = 1994
+============================================================ */
+
+class Solution {
+
+    /* Helper used by brute-force: map single Roman char to value.
+       Using a switch is fast and avoids creating structures at runtime. */
+    private int value(char ch) {
+        switch (ch) {
+            case 'I': return 1;
+            case 'V': return 5;
+            case 'X': return 10;
+            case 'L': return 50;
+            case 'C': return 100;
+            case 'D': return 500;
+            case 'M': return 1000;
+        }
+        return 0;
+    }
+
+    /* Brute-force explicit pair-check implementation.
+       This method demonstrates the pair-checking logic clearly and is easy to reason about. */
+    public int romanToIntBrute(String s) {
+        /* Convert to char array for slightly faster access than repeated charAt calls */
+        char[] arr = s.toCharArray();
+        int i = 0;
+        int n = arr.length;
+        int total = 0;
+
+        /* Iterate through the string while checking two-character pairs when possible */
+        while (i < n) {
+            /* If there is at least one more character, check pair possibilities explicitly */
+            if (i + 1 < n) {
+                char c1 = arr[i];
+                char c2 = arr[i + 1];
+
+                /* Check the six subtractive pairs directly. If matched, add pair value and skip two chars.
+                   We prefer explicit checks to make the brute-force logic crystal-clear. */
+                if (c1 == 'I' && c2 == 'V') { total += 4; i += 2; continue; }
+                if (c1 == 'I' && c2 == 'X') { total += 9; i += 2; continue; }
+                if (c1 == 'X' && c2 == 'L') { total += 40; i += 2; continue; }
+                if (c1 == 'X' && c2 == 'C') { total += 90; i += 2; continue; }
+                if (c1 == 'C' && c2 == 'D') { total += 400; i += 2; continue; }
+                if (c1 == 'C' && c2 == 'M') { total += 900; i += 2; continue; }
+            }
+
+            /* If no subtractive pair, add the single-character value and move one step.
+               Note: The check `i+1 < n` above is necessary to avoid out-of-bounds access
+               when reading the next character. */
+            total += value(arr[i]);
+            i++;
+        }
+
+        return total;
+    }
+
+
+    /* ============================================================
+       Approach 2 — Optimized (Greedy subtraction logic)
+       -------------------------------------------------------------
+       Time Complexity: O(n)  — single pass.
+       Space Complexity: O(1) — constant extra space (HashMap of fixed size 7).
+
+       Idea:
+       - Build a mapping of single Roman characters to values.
+       - Traverse left-to-right. For each char:
+         - If current value < next value → subtract current (handles subtractive pairs).
+         - Else → add current.
+       - This is compact and elegant: it treats subtractive cases uniformly.
+       
+       Dry Run (s = "MCMXCIV"):
+       - i=0 'M' (1000) next 'C' (100) → 1000 >= 100 → add 1000  => total 1000
+       - i=1 'C' (100) next 'M' (1000) → 100 < 1000 → subtract 100 => total 900
+       - i=2 'M' (1000) next 'X' (10) → add 1000 => total 1900
+       - i=3 'X' (10) next 'C' (100) → subtract 10 => total 1890
+       - i=4 'C' (100) next 'I' (1) → add 100 => total 1990
+       - i=5 'I' (1) next 'V' (5) → subtract 1 => total 1989
+       - i=6 'V' (5) last → add 5 => total 1994
+    ============================================================ */
+
+    public int romanToInt(String s) {
+        /* Build a small fixed mapping for roman characters. Using a HashMap makes lookups explicit
+           and matches the "optimized" narrative in explanations; the map is constant-size. */
+        java.util.Map<Character, Integer> map = new java.util.HashMap<>(7);
+        map.put('I', 1);
+        map.put('V', 5);
+        map.put('X', 10);
+        map.put('L', 50);
+        map.put('C', 100);
+        map.put('D', 500);
+        map.put('M', 1000);
+
+        int total = 0;
+        int n = s.length();
+
+        /* Traverse each character; use lookahead (i+1) to decide add vs subtract.
+           We must check i+1 < n before accessing the next character to avoid OOB errors. */
+        for (int i = 0; i < n; i++) {
+            int curr = map.get(s.charAt(i));
+
+            /* If there is a next character and its value is greater than current,
+               that means current is part of a subtractive pair (e.g., I before V/X).
+               In that case, subtract current; otherwise add current. */
+            if (i + 1 < n && curr < map.get(s.charAt(i + 1))) {
+                total -= curr; // subtract current because it's a prefix of a larger numeral
+            } else {
+                total += curr; // normal add
+            }
+        }
+
+        return total;
+    }
+
+
+    /* ===========================
+       Quick internal test (not run on LeetCode; for local testing only)
+       ===========================
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+        String s = "MCMXCIV";
+        System.out.println("Brute: " + sol.romanToIntBrute(s));   // 1994
+        System.out.println("Optmz: " + sol.romanToInt(s));        // 1994
+    }
+    =========================== */
+}
