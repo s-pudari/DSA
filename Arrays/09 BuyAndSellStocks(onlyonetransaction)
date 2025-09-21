@@ -16,7 +16,40 @@
  * Output: 0
  * ✅ Explanation: No transaction is done; profit = 0.
  *
- * ---------------------------------------------------------------------
+     *
+     * ---------------------------------------------------------------------
+     * ✅ APPROACH 1: BRUTE-FORCE (Commented below)
+     * ---------------------------------------------------------------------
+     * IDEA:
+     * Try all possible pairs (i < j) and calculate prices[j] - prices[i].
+     * Track the maximum of all such profits.
+     *
+     * ✅ TIME COMPLEXITY: O(n²)
+     * ✅ SPACE COMPLEXITY: O(1)
+     *
+     * 🚫 Not suitable for large inputs.
+     */
+
+    public int maximumProfit(int[] prices) {
+        int maxProfit = 0;
+
+        // Loop through every possible buy day
+        for (int i = 0; i < prices.length - 1; i++) {
+            // Loop through every possible sell day after i
+            for (int j = i + 1; j < prices.length; j++) {
+                int profit = prices[j] - prices[i];  // Profit if buy at i, sell at j
+
+                if (profit > maxProfit) {
+                    maxProfit = profit;  // Update max if better profit found
+                }
+            }
+        }
+
+        return maxProfit;
+    }
+
+/*
+* ---------------------------------------------------------------------
  * ✅ APPROACH 2: OPTIMIZED (Kadane-style logic for stock problem)
  * ---------------------------------------------------------------------
  * IDEA:
@@ -57,36 +90,5 @@ class Solution {
         return res;  // Maximum achievable profit
     }
 
-    /*
-     * ---------------------------------------------------------------------
-     * ✅ APPROACH 1: BRUTE-FORCE (Commented below)
-     * ---------------------------------------------------------------------
-     * IDEA:
-     * Try all possible pairs (i < j) and calculate prices[j] - prices[i].
-     * Track the maximum of all such profits.
-     *
-     * ✅ TIME COMPLEXITY: O(n²)
-     * ✅ SPACE COMPLEXITY: O(1)
-     *
-     * 🚫 Not suitable for large inputs.
-     */
-
-    public int maximumProfit(int[] prices) {
-        int maxProfit = 0;
-
-        // Loop through every possible buy day
-        for (int i = 0; i < prices.length - 1; i++) {
-            // Loop through every possible sell day after i
-            for (int j = i + 1; j < prices.length; j++) {
-                int profit = prices[j] - prices[i];  // Profit if buy at i, sell at j
-
-                if (profit > maxProfit) {
-                    maxProfit = profit;  // Update max if better profit found
-                }
-            }
-        }
-
-        return maxProfit;
-    }
     
 }
