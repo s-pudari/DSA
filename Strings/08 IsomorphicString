@@ -1,0 +1,129 @@
+// https://leetcode.com/problems/isomorphic-strings/
+
+/*
+🔥 Problem: Isomorphic Strings
+------------------------------------
+Two strings s and t are isomorphic if the characters in s can be replaced to get t.
+- Every occurrence of a character must be replaced with another character consistently.
+- No two characters may map to the same character, but a character can map to itself.
+
+Example:
+Input: s = "egg", t = "add"
+Output: true
+Explanation: 'e' -> 'a', 'g' -> 'd'
+
+Input: s = "foo", t = "bar"
+Output: false
+Explanation: 'o' maps to both 'a' and 'r', invalid.
+*/
+
+/*---------------------------------------------------------
+Approach 1: Brute Force (Check mapping every time)
+Time Complexity: O(n^2)   (containsValue check takes O(n) in each iteration)
+Space Complexity: O(n)
+
+Explanation:
+- Use a HashMap to map characters from s → t.
+- For each character:
+   - If already mapped, check consistency.
+   - If not, ensure that the target character is not already mapped by another.
+- The containsValue check is costly here (O(n)).
+
+Dry Run:
+s="egg", t="add"
+map = {}
+i=0: s[0]='e', t[0]='a' → not in map → map.put('e','a')
+i=1: s[1]='g', t[1]='d' → not in map → map.put('g','d')
+i=2: s[2]='g', t[2]='d' → already mapped correctly → continue
+Return true ✅
+*/
+
+class SolutionBrute {
+    public boolean isIsomorphic(String s, String t) {
+        if (s.length() != t.length()) return false;
+
+        HashMap<Character, Character> map = new HashMap<>();
+        for (int i = 0; i < s.length(); i++) {
+            char sc = s.charAt(i);
+            char tc = t.charAt(i);
+
+            if (map.containsKey(sc)) {
+                if (map.get(sc) != tc) return false;
+            } else if (map.containsValue(tc)) { // costly O(n) check
+                return false;
+            } else {
+                map.put(sc, tc);
+            }
+        }
+        return true;
+    }
+}
+
+/*---------------------------------------------------------
+Approach 2: Optimized (Using Two HashMaps or Arrays)
+Time Complexity: O(n)
+Space Complexity: O(1) [since only 256 chars possible]
+
+Explanation:
+- Maintain two mappings:
+   1. s → t
+   2. t → s
+- This avoids scanning containsValue and ensures a bijection directly.
+- If conflict arises in mapping, return false.
+
+Dry Run:
+s="paper", t="title"
+mapST = {}, mapTS = {}
+i=0: 'p'->'t' valid
+i=1: 'a'->'i' valid
+i=2: 'p' already mapped to 't' → matches ✅
+i=3: 'e'->'l' valid
+i=4: 'r'->'e' valid
+Return true ✅
+*/
+
+class SolutionOptimized {
+    public boolean isIsomorphic(String s, String t) {
+        if (s.length() != t.length()) return false;
+
+        HashMap<Character, Character> mapST = new HashMap<>();
+        HashMap<Character, Character> mapTS = new HashMap<>();
+
+        for (int i = 0; i < s.length(); i++) {
+            char sc = s.charAt(i);
+            char tc = t.charAt(i);
+
+            if ((mapST.containsKey(sc) && mapST.get(sc) != tc) ||
+                (mapTS.containsKey(tc) && mapTS.get(tc) != sc)) {
+                return false;
+            }
+
+            mapST.put(sc, tc);
+            mapTS.put(tc, sc);
+        }
+        return true;
+    }
+}
+
+/*---------------------------------------------------------
+Driver Code (for testing)
+---------------------------------------------------------
+public class Main {
+    public static void main(String[] args) {
+        SolutionBrute brute = new SolutionBrute();
+        SolutionOptimized opt = new SolutionOptimized();
+
+        String s1 = "egg", t1 = "add";
+        String s2 = "foo", t2 = "bar";
+        String s3 = "paper", t3 = "title";
+
+        System.out.println("Brute Force:");
+        System.out.println(s1+" & "+t1+" → " + brute.isIsomorphic(s1, t1)); // true
+        System.out.println(s2+" & "+t2+" → " + brute.isIsomorphic(s2, t2)); // false
+
+        System.out.println("\nOptimized:");
+        System.out.println(s1+" & "+t1+" → " + opt.isIsomorphic(s1, t1));   // true
+        System.out.println(s3+" & "+t3+" → " + opt.isIsomorphic(s3, t3));   // true
+    }
+}
+*/
