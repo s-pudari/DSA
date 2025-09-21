@@ -1,0 +1,132 @@
+// https://leetcode.com/problems/spiral-matrix/
+/*
+🔥 PROBLEM: Spiral Matrix (LeetCode 54)
+---------------------------------------
+Given an m x n matrix, return all elements of the matrix in spiral order.
+
+🧠 Explanation in my own words:
+We have to traverse the matrix in a spiral fashion → first row left→right,
+then last column top→bottom, then last row right→left, then first column bottom→top,
+then move inward and repeat until all elements are covered.
+
+=======================================================================
+STRUCTURE (as per your requirement):
+1️⃣ Brute-force approach (explanation, dry run, code)
+2️⃣ Optimized approach (explanation, dry run, code)
+=======================================================================
+*/
+
+import java.util.*;
+
+class Solution {
+
+    /* ============================================================
+       1️⃣ BRUTE-FORCE APPROACH
+       ------------------------------------------------------------
+       💡 Idea:
+       - Maintain a visited matrix (boolean) of same size as input.
+       - Move in four directions (right, down, left, up) cyclically.
+       - At each step, mark cell visited and append to result.
+       - When next move is invalid or already visited, turn clockwise.
+       
+       🕒 Time Complexity: O(n*m)
+       🧠 Space Complexity: O(n*m) (for visited matrix)
+       
+       Dry run (matrix = [[1,2,3],[4,5,6],[7,8,9]]):
+       Start (0,0) → 1 → 2 → 3 → turn down → 6 → 9 → turn left → 8 → 7 →
+       turn up → 4 → turn right → 5
+       Output = [1,2,3,6,9,8,7,4,5]
+    */
+    public List<Integer> spiralOrderBrute(int[][] matrix) {
+        int n = matrix.length, m = matrix[0].length;
+        boolean[][] visited = new boolean[n][m];
+        List<Integer> ans = new ArrayList<>();
+        
+        /* Directions: right, down, left, up */
+        int[][] dirs = {{0,1},{1,0},{0,-1},{-1,0}};
+        int dir = 0; // start moving right
+        int i = 0, j = 0;
+        
+        for (int k = 0; k < n*m; k++) {
+            ans.add(matrix[i][j]);
+            visited[i][j] = true;
+            
+            int ni = i + dirs[dir][0];
+            int nj = j + dirs[dir][1];
+            
+            /* If next cell is out of bounds or visited, turn clockwise */
+            if (ni < 0 || nj < 0 || ni >= n || nj >= m || visited[ni][nj]) {
+                dir = (dir + 1) % 4; // change direction
+                ni = i + dirs[dir][0];
+                nj = j + dirs[dir][1];
+            }
+            i = ni;
+            j = nj;
+        }
+        return ans;
+    }
+
+    /* ============================================================
+       2️⃣ OPTIMIZED BOUNDARY APPROACH
+       ------------------------------------------------------------
+       💡 Idea:
+       - Use 4 pointers: top, bottom, left, right.
+       - Traverse in layers: 
+         → left→right across top row, increment top
+         → top→bottom along right col, decrement right
+         → right→left across bottom row (if top<=bottom), decrement bottom
+         → bottom→top along left col (if left<=right), increment left
+       - Repeat until boundaries cross.
+
+       🕒 Time Complexity: O(n*m)
+       🧠 Space Complexity: O(1) extra (besides result list)
+       
+       Dry run (matrix = [[1,2,3],[4,5,6],[7,8,9]]):
+       top=0,bottom=2,left=0,right=2
+       → [1,2,3]
+       → [6,9]
+       → [8,7]
+       → [4]
+       → [5]
+       Output = [1,2,3,6,9,8,7,4,5]
+    */
+    public List<Integer> spiralOrder(int[][] matrix) {
+        int n = matrix.length, m = matrix[0].length;
+        List<Integer> ans = new ArrayList<>();
+        
+        int top = 0, bottom = n-1, left = 0, right = m-1;
+        
+        while (top <= bottom && left <= right) {
+            
+            /* Traverse top row left→right */
+            for (int i = left; i <= right; i++) {
+                ans.add(matrix[top][i]);
+            }
+            top++;
+            
+            /* Traverse right column top→bottom */
+            for (int i = top; i <= bottom; i++) {
+                ans.add(matrix[i][right]);
+            }
+            right--;
+            
+            /* Traverse bottom row right→left if still valid */
+            if (top <= bottom) {
+                for (int i = right; i >= left; i--) {
+                    ans.add(matrix[bottom][i]);
+                }
+                bottom--;
+            }
+            
+            /* Traverse left column bottom→top if still valid */
+            if (left <= right) {
+                for (int i = bottom; i >= top; i--) {
+                    ans.add(matrix[i][left]);
+                }
+                left++;
+            }
+        }
+        
+        return ans;
+    }
+}
