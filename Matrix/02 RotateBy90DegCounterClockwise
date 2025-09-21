@@ -1,0 +1,161 @@
+// https://www.geeksforgeeks.org/problems/rotate-by-90-degree-1587115621
+/*
+🔥 PROBLEM: Rotate Matrix by 90 Degrees (Anti-Clockwise) 🔥
+----------------------------------------------------------
+Given an `n x n` matrix, rotate it 90 degrees in the **anti-clockwise** direction **in-place**.
+
+📌 Example:
+Input:
+mat = [
+  [1, 2, 3],
+  [4, 5, 6],
+  [7, 8, 9]
+]
+
+Output (90° Anti-Clockwise):
+mat = [
+  [3, 6, 9],
+  [2, 5, 8],
+  [1, 4, 7]
+]
+
+----------------------------------------------------------
+*/
+
+
+// ✅ APPROACH 1 (Brute Force Using Extra Matrix)
+/*
+💡 Idea:
+- Create a new matrix of same size.
+- Place each element from old matrix into its rotated anti-clockwise position.
+- Copy back rotated into original matrix.
+
+🕒 Time Complexity: O(n^2)
+🧠 Space Complexity: O(n^2)
+
+📌 Dry Run:
+mat = [
+ [1, 2, 3],
+ [4, 5, 6],
+ [7, 8, 9]
+]
+
+rotated[n-j-1][i] = mat[i][j]
+
+→ rotated[2][0] = 1
+→ rotated[1][0] = 2
+→ rotated[0][0] = 3
+→ ...
+Final Rotated = [
+ [3, 6, 9],
+ [2, 5, 8],
+ [1, 4, 7]
+]
+*/
+class SolutionBrute {
+    public void rotateMatrix(int[][] mat) {
+        int n = mat.length;
+        int[][] rotated = new int[n][n];
+
+        // Step 1: Fill rotated anti-clockwise
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                rotated[n - j - 1][i] = mat[i][j];
+            }
+        }
+
+        // Step 2: Copy back into mat
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                mat[i][j] = rotated[i][j];
+            }
+        }
+    }
+}
+
+
+
+// ✅ APPROACH 2 (Optimized In-place: Reverse Rows + Transpose)
+/*
+💡 Idea (Anti-Clockwise):
+- Step 1: Reverse each row (horizontal reverse).
+- Step 2: Take transpose of the matrix.
+
+🕒 Time Complexity: O(n^2)
+🧠 Space Complexity: O(1)
+
+📌 Dry Run:
+mat = [
+ [1, 2, 3],
+ [4, 5, 6],
+ [7, 8, 9]
+]
+
+Step 1 → Reverse rows:
+[
+ [3, 2, 1],
+ [6, 5, 4],
+ [9, 8, 7]
+]
+
+Step 2 → Transpose:
+[
+ [3, 6, 9],
+ [2, 5, 8],
+ [1, 4, 7]
+]
+✅ Correct Anti-Clockwise rotation
+*/
+class SolutionOptimized {
+    public void rotateMatrix(int[][] mat) {
+        int n = mat.length;
+
+        // Step 1: Reverse each row
+        for (int i = 0; i < n; i++) {
+            int s = 0, e = n - 1;
+            while (s < e) {
+                int temp = mat[i][s];
+                mat[i][s] = mat[i][e];
+                mat[i][e] = temp;
+                s++;
+                e--;
+            }
+        }
+
+        // Step 2: Transpose
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int temp = mat[i][j];
+                mat[i][j] = mat[j][i];
+                mat[j][i] = temp;
+            }
+        }
+    }
+}
+
+
+/*
+----------------------------------------------------------
+📌 DRIVER CODE (For Testing)
+----------------------------------------------------------
+public class Main {
+    public static void main(String[] args) {
+        SolutionOptimized sol = new SolutionOptimized();
+
+        int[][] mat = {
+            {1, 2, 3},
+            {4, 5, 6},
+            {7, 8, 9}
+        };
+
+        sol.rotateMatrix(mat);
+
+        for (int[] row : mat) {
+            for (int val : row) {
+                System.out.print(val + " ");
+            }
+            System.out.println();
+        }
+    }
+}
+*/
