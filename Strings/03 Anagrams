@@ -1,0 +1,124 @@
+// https://www.geeksforgeeks.org/batch/gfg-160-problems/track/string-gfg-160/problem/anagram-1587115620
+
+/*
+🔥 PROBLEM: Check if Two Strings are Anagrams 🔥
+------------------------------------------------
+Two strings are called **anagrams** if they contain the same characters with the same frequencies, 
+but possibly in a different order.
+
+------------------------------------------------
+Example 1:
+Input: s1 = "listen", s2 = "silent"
+Output: true ✅
+
+Example 2:
+Input: s1 = "hello", s2 = "world"
+Output: false ❌
+*/
+
+
+/* ==========================================================
+   BRUTE FORCE APPROACH (Sorting)
+   ----------------------------------------------------------
+   Idea:
+   - Convert both strings into char arrays.
+   - Sort both arrays.
+   - If sorted arrays are identical → they are anagrams.
+
+   Dry Run:
+   s1 = "listen" → sort → "eilnst"
+   s2 = "silent" → sort → "eilnst"
+   Both match → true ✅
+
+   Time Complexity: O(n log n + m log m)
+   Space Complexity: O(n + m)
+   ========================================================== */
+
+import java.util.*;
+
+class SolutionBrute {
+    public static boolean areAnagrams(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+
+        char[] arr1 = s1.toCharArray();
+        char[] arr2 = s2.toCharArray();
+
+        Arrays.sort(arr1);
+        Arrays.sort(arr2);
+
+        return Arrays.equals(arr1, arr2);
+    }
+}
+
+
+/* ==========================================================
+   OPTIMIZED APPROACH (HashMap Frequency Count)
+   ----------------------------------------------------------
+   Idea:
+   - Count frequency of each character in both strings using HashMap.
+   - Compare both frequency maps.
+   - If they match → strings are anagrams.
+
+   Dry Run:
+   s1 = "anagram", s2 = "nagaram"
+
+   hm1 = {a=3, n=1, g=1, r=1, m=1}
+   hm2 = {n=1, a=3, g=1, r=1, m=1}
+
+   hm1.equals(hm2) → true ✅
+
+   Time Complexity: O(n)
+   Space Complexity: O(k), where k = distinct characters (≤ 26 for lowercase)
+   ========================================================== */
+
+class SolutionOptimized {
+    public static boolean areAnagrams(String s1, String s2) {
+        if (s1.length() != s2.length()) return false;
+
+        HashMap<Character, Integer> hm1 = new HashMap<>();
+        HashMap<Character, Integer> hm2 = new HashMap<>();
+
+        for (int i = 0; i < s1.length(); i++) {
+            char ch1 = s1.charAt(i);
+            char ch2 = s2.charAt(i);
+
+            hm1.put(ch1, hm1.getOrDefault(ch1, 0) + 1);
+            hm2.put(ch2, hm2.getOrDefault(ch2, 0) + 1);
+        }
+
+        return hm1.equals(hm2);
+    }
+}
+
+
+/* ==========================================================
+   SAMPLE INPUT/OUTPUT
+   ----------------------------------------------------------
+   Input:  s1 = "listen", s2 = "silent"
+   Output: true
+
+   Input:  s1 = "hello", s2 = "world"
+   Output: false
+   ========================================================== */
+
+
+/* ==========================================================
+   DRIVER CODE
+   ==========================================================
+
+public class Main {
+    public static void main(String[] args) {
+        String s1 = "listen", s2 = "silent";
+        String s3 = "hello", s4 = "world";
+
+        System.out.println("Brute Force:");
+        System.out.println(SolutionBrute.areAnagrams(s1, s2)); // true
+        System.out.println(SolutionBrute.areAnagrams(s3, s4)); // false
+
+        System.out.println("\nOptimized:");
+        System.out.println(SolutionOptimized.areAnagrams(s1, s2)); // true
+        System.out.println(SolutionOptimized.areAnagrams(s3, s4)); // false
+    }
+}
+*/
+
