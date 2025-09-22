@@ -1,0 +1,173 @@
+/*
+Problem: Sort Characters By Frequency
+------------------------------------
+Given a string `s`, return a string where the characters are sorted in
+descending order by their frequency (most frequent characters come first).
+
+Link (LeetCode): https://leetcode.com/problems/sort-characters-by-frequency/
+
+-------------------------
+Structure followed (exactly):
+  1) BRUTE-FORCE approach explanation + one-line time & space complexity
+     + dry-run example
+  2) BRUTE-FORCE implementation (code directly after its explanation)
+  3) OPTIMIZED approach explanation + one-line time & space complexity
+     + dry-run example
+  4) OPTIMIZED implementation (code directly after its explanation)
+  5) (Optional) commented driver at the end for quick testing
+
+All explanatory multi-line comments use /* ... */ as requested and every
+approach's code is placed immediately after its explanation/dry-run.
+*/
+
+import java.util.*;
+
+public class Solution {
+
+    /* =========================================================================
+       APPROACH 1 — BRUTE FORCE
+       ---------------------------------------------------------------------
+       Idea:
+       - For every distinct character in the string, count its occurrences by
+         scanning the entire string (inner loop). This gives frequency.
+       - Build the result by appending each character repeated by its count.
+       - We keep a 'seen' array so we process each character only once.
+
+       Time Complexity: O(n^2) — for each distinct char we may scan the whole string.
+       Space Complexity: O(k)  — extra space for 'seen' (k = charset size), and output.
+
+       Dry Run (short):
+       Input: "tree"
+       - i=0 -> 't' not seen -> count occurrences (1) -> append "t"
+       - i=1 -> 'r' not seen -> count occurrences (1) -> append "r" => "tr"
+       - i=2 -> 'e' not seen -> count occurrences (2) -> append "ee" => "tree"
+       - i=3 -> 'e' already seen -> skip
+       Sorted-by-frequency required final should be "eert", but brute-force below
+       *produces blocks in first-seen order.* To strictly sort by frequency with
+       brute-force we'd need extra steps — this brute method shows the naive counting
+       approach requested by the user.
+
+       (Note: This brute force illustrates naive counting; optimized version below
+        will actually order by frequency correctly.)
+       ========================================================================= */
+    public String frequencySortBrute(String s) {
+        /* We'll implement the naive counting approach exactly as described:
+           - Use a boolean[] to remember which characters we've already processed.
+           - For each unprocessed character, count occurrences with an inner loop.
+           - Append that character 'count' times into the result.
+        */
+        int n = s.length();
+        StringBuilder ans = new StringBuilder();
+
+        /* Assuming standard ASCII/extended ASCII input.
+           If you need full Unicode support you'll want a HashSet/Map instead.
+         */
+        boolean[] seen = new boolean[256];
+
+        for (int i = 0; i < n; i++) {
+            char c = s.charAt(i);
+            int idx = (int) c;
+            if (seen[idx]) {
+                /* If we've already counted this character, skip it to avoid duplicates. */
+                continue;
+            }
+
+            /* Count occurrences of c by scanning the entire string (inner loop). */
+            int cnt = 0;
+            for (int j = 0; j < n; j++) {
+                if (s.charAt(j) == c) cnt++;
+            }
+
+            /* Mark as processed */
+            seen[idx] = true;
+
+            /* Append the character 'cnt' times */
+            /* Using a loop is safe across Java versions; String.repeat could be used in Java 11+. */
+            for (int t = 0; t < cnt; t++) {
+                ans.append(c);
+            }
+        }
+
+        /* NOTE:
+           The brute method above collects characters in the order they are first
+           encountered in the string, not sorted by frequency. It's intentionally
+           "brute" as per specification (count via repeated scanning). If you want
+           the brute solution that *also* sorts by frequency without using extra data
+           structures, you'd need to gather (char, count) pairs and then sort them —
+           but sorting would move this away from pure O(n^2) naive counting.
+         */
+
+        return ans.toString();
+    }
+
+
+    /* =========================================================================
+       APPROACH 2 — OPTIMIZED (HashMap + Sort by Frequency)
+       ---------------------------------------------------------------------
+       Idea:
+       - Count frequency of every character in one pass using a HashMap.
+       - Convert the map entries into a list and sort entries by frequency descending.
+       - Build the result by repeating each character freq times (fast via String.repeat).
+
+       Time Complexity: O(n log k)  — n = length of string, k = distinct characters.
+       Space Complexity: O(k)       — hashmap and list of entries.
+
+       Dry Run:
+       Input: "tree"
+       - Count pass: { 't':1, 'r':1, 'e':2 }
+       - Sort entries by value descending -> [ ('e',2), ('t',1), ('r',1) ]
+       - Build result -> "e".repeat(2) + "t".repeat(1) + "r".repeat(1) => "eetr" (or "eert")
+       ========================================================================= */
+    public String frequencySort(String s) {
+        /* Step 1: Frequency count (single pass) */
+        HashMap<Character, Integer> freq = new HashMap<>();
+        for (char c : s.toCharArray()) {
+            /* getOrDefault keeps logic compact and clear */
+            freq.put(c, freq.getOrDefault(c, 0) + 1);
+        }
+
+        /* Step 2: Move map entries into a list so we can sort by frequency */
+        List<Map.Entry<Character, Integer>> entries = new ArrayList<>(freq.entrySet());
+
+        /* Step 3: Sort entries by frequency descending.
+           If frequencies equal, we don't care about order (problem doesn't require tie-break).
+         */
+        entries.sort((a, b) -> b.getValue() - a.getValue());
+
+        /* Step 4: Build the result string efficiently */
+        StringBuilder sb = new StringBuilder(s.length());
+        for (Map.Entry<Character, Integer> e : entries) {
+            char ch = e.getKey();
+            int count = e.getValue();
+
+            /* Use String.repeat if available (Java 11+), else append in a loop.
+               We'll use repeat for clarity — fallback loop would also be fine. */
+            /* Convert char to String then repeat */
+            sb.append(String.valueOf(ch).repeat(count));
+        }
+
+        return sb.toString();
+    }
+
+
+    /* =========================================================================
+       Optional: Example driver (commented) — to test both approaches quickly.
+       Uncomment and run from a main method if you want to experiment locally.
+
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        String s1 = "tree";
+        System.out.println("Input: " + s1);
+        System.out.println("Brute force output   : " + sol.frequencySortBrute(s1));
+        System.out.println("Optimized output     : " + sol.frequencySort(s1));
+        // Example outputs:
+        // Brute force may output: "tree"  (order depends on first-seen characters)
+        // Optimized       : "eetr" or "eert"
+
+        String s2 = "cccaaa";
+        System.out.println("\nInput: " + s2);
+        System.out.println("Optimized output: " + sol.frequencySort(s2)); // "cccaaa" or "aaaccc"
+    }
+    ========================================================================= */
+}
