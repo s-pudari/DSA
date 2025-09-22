@@ -1,0 +1,101 @@
+// https://leetcode.com/problems/rotate-string/
+
+/*
+🔥 Problem: Rotate String
+------------------------------------
+Given two strings s and goal, return true if and only if s can become goal after some number of rotations on s.
+
+👉 A rotation means moving the first character of s to the end.
+
+Example:
+Input: s = "abcde", goal = "cdeab"
+Output: true
+Explanation: Rotate "abcde" → "bcdea" → "cdeab" ✅
+
+Input: s = "abcde", goal = "abced"
+Output: false
+*/
+
+/*---------------------------------------------------------
+Approach 1: Brute Force (Rotate One by One)
+Time Complexity: O(n^2)  (each rotation builds new string O(n), repeated n times)
+Space Complexity: O(n)   (string concatenations)
+
+Explanation:
+- Try all possible rotations of s.
+- At each step, move the first character to the end.
+- If at any point s equals goal, return true.
+
+Dry Run:
+s="abcde", goal="cdeab"
+Step1: "bcdea" ≠ goal
+Step2: "cdeab" = goal ✅ → return true
+*/
+
+class SolutionBrute {
+    public boolean rotateString(String s, String goal) {
+        if (s.length() != goal.length()) return false;
+
+        for (int i = 0; i < s.length(); i++) {
+            if (s.equals(goal)) return true;
+            s = s.substring(1) + s.charAt(0); // rotate left by 1
+        }
+        return false;
+    }
+}
+
+/*---------------------------------------------------------
+Approach 2: Optimized (Concatenation Trick)
+Time Complexity: O(n)
+Space Complexity: O(2n) = O(n)
+
+Explanation:
+- If s is a rotation of goal, then s must be a substring of goal+goal.
+- Example: goal="cdeab", goal+goal="cdeabcdeab"
+- Check if (goal+goal).contains(s).
+
+Dry Run:
+s="abcde", goal="cdeab"
+concat="cdeabcdeab"
+Check "cdeabcdeab".contains("abcde") → true ✅
+*/
+
+class SolutionOptimized {
+    public boolean rotateString(String s, String goal) {
+        if (s.length() != goal.length()) return false;
+        String concat = goal + goal;
+        return concat.contains(s);
+    }
+}
+
+/*---------------------------------------------------------
+Sample Input/Output
+---------------------------------------------------------
+Input:  s = "abcde", goal = "cdeab"
+Output: true
+
+Input:  s = "abcde", goal = "abced"
+Output: false
+*/
+
+/*---------------------------------------------------------
+Driver Code
+---------------------------------------------------------
+public class Main {
+    public static void main(String[] args) {
+        SolutionBrute brute = new SolutionBrute();
+        SolutionOptimized opt = new SolutionOptimized();
+
+        String s1 = "abcde", g1 = "cdeab";
+        String s2 = "abcde", g2 = "abced";
+
+        System.out.println("Brute Force:");
+        System.out.println(brute.rotateString(s1, g1)); // true
+        System.out.println(brute.rotateString(s2, g2)); // false
+
+        System.out.println("\nOptimized:");
+        System.out.println(opt.rotateString(s1, g1));   // true
+        System.out.println(opt.rotateString(s2, g2));   // false
+    }
+}
+*/
