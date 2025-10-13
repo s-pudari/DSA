@@ -1,0 +1,252 @@
+/*
+🔥 MULTIPLE SORTING ALGORITHMS & BINARY SEARCH 🔥
+-------------------------------------------------
+This file demonstrates the working of:
+1️⃣ Insertion Sort
+2️⃣ Selection Sort
+3️⃣ Bubble Sort
+4️⃣ Cycle Sort
+5️⃣ Merge Sort
+6️⃣ Binary Search
+
+Each sorting algorithm arranges an integer array in ascending order.
+Binary search helps find an element efficiently in a sorted array.
+
+All algorithms are explained below with dry runs and step-by-step logic.
+-------------------------------------------------
+*/
+
+import java.util.*;
+
+class Main {
+
+    /* -----------------------------------------------------------
+       🧩 INSERTION SORT
+       -----------------------------------------------------------
+       📘 Idea:
+       - Treat the array as divided into a "sorted" and "unsorted" part.
+       - Pick an element from unsorted part and insert it in the correct position
+         in the sorted part.
+
+       🕒 Time Complexity: O(N²)
+       🧠 Space Complexity: O(1)
+
+       🧮 Dry Run:
+       arr = [3, 1, 2]
+       i = 0 → no action
+       i = 1 → compare 1 with 3 → swap → [1, 3, 2]
+       i = 2 → compare 2 with 3 → swap → [1, 2, 3]
+    ----------------------------------------------------------- */
+    public static void insertionSort(int[] arr) {
+        for (int i = 0; i < arr.length - 1; i++) {
+            for (int j = i + 1; j > 0; j--) {
+                if (arr[j] < arr[j - 1]) {
+                    // swap arr[j] and arr[j-1]
+                    int temp = arr[j];
+                    arr[j] = arr[j - 1];
+                    arr[j - 1] = temp;
+                } else {
+                    // If already sorted, stop inner loop early
+                    break;
+                }
+            }
+        }
+    }
+
+    /* -----------------------------------------------------------
+       🧩 SELECTION SORT
+       -----------------------------------------------------------
+       📘 Idea:
+       - Find the smallest element from the unsorted part and place it
+         at the beginning of the sorted part.
+
+       🕒 Time Complexity: O(N²)
+       🧠 Space Complexity: O(1)
+
+       🧮 Dry Run:
+       arr = [3, 1, 2]
+       i = 0 → min = 1 → swap(3,1) → [1,3,2]
+       i = 1 → min = 2 → swap(3,2) → [1,2,3]
+    ----------------------------------------------------------- */
+    public static void selectionSort(int[] arr) {
+        for (int i = 0; i < arr.length; i++) {
+            int mini = i;
+            for (int j = i + 1; j < arr.length; j++) {
+                if (arr[j] < arr[mini]) {
+                    mini = j;
+                }
+            }
+            // Swap the minimum element to the correct position
+            int temp = arr[mini];
+            arr[mini] = arr[i];
+            arr[i] = temp;
+        }
+    }
+
+    /* -----------------------------------------------------------
+       🧩 BUBBLE SORT
+       -----------------------------------------------------------
+       📘 Idea:
+       - Repeatedly swap adjacent elements if they are in the wrong order.
+       - After each pass, the largest element moves to the end.
+
+       🕒 Time Complexity: O(N²)
+       🧠 Space Complexity: O(1)
+
+       🧮 Dry Run:
+       arr = [3, 1, 2]
+       Pass 1 → [1, 2, 3]
+       Pass 2 → already sorted, no swaps
+    ----------------------------------------------------------- */
+    public static void bubbleSort(int[] arr) {
+        boolean swapped;
+        for (int i = 0; i < arr.length; i++) {
+            swapped = false;
+            for (int j = 1; j < arr.length - i; j++) {
+                if (arr[j] < arr[j - 1]) {
+                    // swap arr[j] and arr[j-1]
+                    int temp = arr[j];
+                    arr[j] = arr[j - 1];
+                    arr[j - 1] = temp;
+                    swapped = true;
+                }
+            }
+            if (!swapped)
+                break; // optimization: stop if array already sorted
+        }
+    }
+
+    /* -----------------------------------------------------------
+       🧩 CYCLE SORT
+       -----------------------------------------------------------
+       📘 Idea:
+       - Used when elements are in the range 0 to N-1 or 1 to N.
+       - Place each element at its correct index by swapping.
+
+       🕒 Time Complexity: O(N)
+       🧠 Space Complexity: O(1)
+
+       🧮 Dry Run (0-based):
+       arr = [2, 0, 1]
+       i = 0 → correct index = 2 → swap(arr[0], arr[2]) → [1,0,2]
+       i = 0 → correct index = 1 → swap(arr[0], arr[1]) → [0,1,2]
+       Sorted ✅
+    ----------------------------------------------------------- */
+    public static void cycleSort(int[] arr) {
+        int i = 0;
+        while (i < arr.length) {
+            int correctIndex = arr[i];
+            if (i < arr.length && arr[i] != arr[correctIndex]) {
+                int temp = arr[i];
+                arr[i] = arr[correctIndex];
+                arr[correctIndex] = temp;
+            } else {
+                i++;
+            }
+        }
+    }
+
+    /* -----------------------------------------------------------
+       🧩 MERGE SORT
+       -----------------------------------------------------------
+       📘 Idea:
+       - Divide array into two halves, sort each half, then merge them.
+       - Based on divide and conquer paradigm.
+
+       🕒 Time Complexity: O(N log N)
+       🧠 Space Complexity: O(N)
+
+       🧮 Dry Run:
+       arr = [3, 1, 2]
+       Split into [3] and [1,2]
+       Merge [1,2] → [1,2]
+       Merge [3] + [1,2] → [1,2,3]
+    ----------------------------------------------------------- */
+    public static void mergeSort(int[] arr, int l, int r) {
+        if (l < r) {
+            int mid = l + (r - l) / 2;
+            mergeSort(arr, l, mid);
+            mergeSort(arr, mid + 1, r);
+            merge(arr, l, mid, r);
+        }
+    }
+
+    public static void merge(int[] arr, int l, int mid, int r) {
+        int n1 = mid - l + 1;
+        int n2 = r - mid;
+
+        int[] left = new int[n1];
+        int[] right = new int[n2];
+
+        for (int a = 0; a < n1; a++) left[a] = arr[l + a];
+        for (int a = 0; a < n2; a++) right[a] = arr[mid + 1 + a];
+
+        int i = 0, j = 0, k = l;
+        while (i < n1 && j < n2) {
+            if (left[i] <= right[j]) {
+                arr[k++] = left[i++];
+            } else {
+                arr[k++] = right[j++];
+            }
+        }
+
+        while (i < n1) arr[k++] = left[i++];
+        while (j < n2) arr[k++] = right[j++];
+    }
+
+    /* -----------------------------------------------------------
+       🧩 BINARY SEARCH
+       -----------------------------------------------------------
+       📘 Idea:
+       - Works only on sorted arrays.
+       - Compare middle element with target:
+         - If equal → found
+         - If smaller → search right half
+         - If greater → search left half
+
+       🕒 Time Complexity: O(log N)
+       🧠 Space Complexity: O(1)
+
+       🧮 Dry Run:
+       arr = [1, 2, 3, 4], k = 3
+       mid = 1 → arr[mid]=2 < 3 → move right
+       mid = 2 → arr[mid]=3 ✅ found
+    ----------------------------------------------------------- */
+    public static boolean binarySearch(int[] arr, int k) {
+        int s = 0, e = arr.length - 1;
+        while (s <= e) {
+            int mid = s + (e - s) / 2;
+            if (arr[mid] == k) {
+                return true;
+            } else if (arr[mid] > k) {
+                e = mid - 1;
+            } else {
+                s = mid + 1;
+            }
+        }
+        return false;
+    }
+
+    /* -----------------------------------------------------------
+       🧪 DRIVER CODE
+       -----------------------------------------------------------
+       Input:
+       arr = [2, 3, 1, 0, 4]
+       ----------------------------------------------------------- */
+    public static void main(String[] args) {
+        int arr[] = {2, 3, 1, 0, 4};
+        System.out.println("Original Array: " + Arrays.toString(arr));
+
+        // Uncomment one sorting method at a time to test
+        // mergeSort(arr, 0, arr.length - 1);
+        // cycleSort(arr);
+        // bubbleSort(arr);
+        // selectionSort(arr);
+        insertionSort(arr);
+
+        System.out.println("Sorted Array: " + Arrays.toString(arr));
+
+        // Example Binary Search
+        System.out.println("Is 1 present? " + binarySearch(arr, 1));
+    }
+}
