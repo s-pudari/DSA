@@ -1,0 +1,163 @@
+// Problem: Remove Nth Node From End of List
+// Link: https://leetcode.com/problems/remove-nth-node-from-end-of-list/
+
+/*
+================================================================================
+APPROACH 1 — BRUTE FORCE (Two-pass)
+--------------------------------------------------------------------------------
+Explanation:
+1. First pass: walk the list to count total nodes -> count.
+2. Compute index to remove from start: target = count - n.
+3. Second pass: walk to node just before target and update links to remove it.
+
+Time Complexity: O(N)   // two passes over the list
+Space Complexity: O(1)  // constant extra space
+
+Dry Run (Example):
+Input:  1 -> 2 -> 3 -> 4 -> 5 , n = 2
+- First pass: count = 5
+- target = 5 - 2 = 3  (0-based from head, so node with value 4)
+- Second pass: advance to node index 2 (value 3), then do: node.next = node.next.next
+Result: 1 -> 2 -> 3 -> 5
+--------------------------------------------------------------------------------
+*/
+
+class Solution {
+
+    // Brute-force implementation (two-pass)
+    public ListNode removeNthFromEndBrute(ListNode head, int n) {
+        // create dummy to simplify edge cases (removing head)
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        // first pass: count nodes
+        int count = 0;
+        ListNode temp = head;
+        while (temp != null) {
+            count++;
+            temp = temp.next;
+        }
+
+        // find node before the one we must delete
+        int target = count - n; // number of moves from dummy to reach node-before-delete
+        temp = dummy;
+        for (int i = 0; i < target; i++) {
+            temp = temp.next;
+        }
+
+        // delete
+        temp.next = temp.next.next;
+
+        return dummy.next;
+    }
+
+
+    /*
+    ====================================================================================
+    APPROACH 2 — OPTIMIZED (One-pass using two pointers: fast & slow)
+    ------------------------------------------------------------------------------------
+    Explanation:
+    1. Use a dummy node preceding head to handle removals at head cleanly.
+    2. Move 'first' pointer n steps ahead from dummy.
+    3. Move 'first' and 'second' together until first.next == null (first at last node).
+       Then 'second' will be just before the node to remove.
+    4. Update links: second.next = second.next.next
+
+    Time Complexity: O(N)   // single pass
+    Space Complexity: O(1)
+
+    Dry Run (Example):
+    Input: 1 -> 2 -> 3 -> 4 -> 5, n = 2
+    - dummy -> 1 -> 2 -> 3 -> 4 -> 5
+    - move first n steps: first at node 2
+    - move both until first.next == null:
+        first walks to 5, second walks to 3
+    - remove second.next (4): second.next = 5
+    Result: 1 -> 2 -> 3 -> 5
+    ------------------------------------------------------------------------------------
+    */
+
+    // Optimized implementation (one-pass)
+    public ListNode removeNthFromEnd(ListNode head, int n) {
+        // dummy simplifies edge-cases (like removing first real node)
+        ListNode dummy = new ListNode(0);
+        dummy.next = head;
+
+        ListNode first = dummy;
+        ListNode second = dummy;
+
+        // move first n steps ahead
+        for (int i = 1; i <= n; i++) {
+            first = first.next;
+        }
+
+        // move both until first reaches the last node (first.next == null)
+        while (first.next != null) {
+            first = first.next;
+            second = second.next;
+        }
+
+        // second.next is the node to be removed
+        second.next = second.next.next;
+
+        return dummy.next;
+    }
+
+
+    /*
+    ====================================================================================
+    DRIVER CODE (Commented - use for local testing)
+    ====================================================================================
+    // helper to print list
+    public static void printList(ListNode head) {
+        ListNode t = head;
+        while (t != null) {
+            System.out.print(t.val + (t.next != null ? " -> " : ""));
+            t = t.next;
+        }
+        System.out.println();
+    }
+
+    public static void main(String[] args) {
+        // Build example: 1 -> 2 -> 3 -> 4 -> 5
+        ListNode head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+        head.next.next.next.next = new ListNode(5);
+
+        Solution sol = new Solution();
+
+        System.out.print("Original: ");
+        printList(head);
+
+        // Test brute-force removal (remove 2nd from end)
+        ListNode resBrute = sol.removeNthFromEndBrute(head, 2);
+        System.out.print("After removeNthFromEndBrute(head,2): ");
+        printList(resBrute);
+
+        // Rebuild list to test optimized (since previous call mutated it)
+        head = new ListNode(1);
+        head.next = new ListNode(2);
+        head.next.next = new ListNode(3);
+        head.next.next.next = new ListNode(4);
+        head.next.next.next.next = new ListNode(5);
+
+        // Test optimized removal
+        ListNode resOpt = sol.removeNthFromEnd(head, 2);
+        System.out.print("After removeNthFromEnd(head,2): ");
+        printList(resOpt);
+    }
+    ====================================================================================
+    */
+}
+
+// Minimal ListNode definition used by LeetCode / standard problems:
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int x) { val = x; }
+    ListNode(int x, ListNode next) { val = x; this.next = next; }
+}
+
