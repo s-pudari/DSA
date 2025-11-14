@@ -1,0 +1,184 @@
+// Problem: Merge two sorted linked lists
+// Link: https://www.geeksforgeeks.org/merge-two-sorted-linked-lists/
+
+/*
+===========================
+Overview (What is asked)
+===========================
+Given two sorted linked lists (head1 and head2), merge them into one sorted linked list and return its head.
+
+Requirements from your preferred structure:
+- Brute-force approach first, then optimized approach.
+- For each approach include:
+  - Short explanation
+  - Time & Space complexity (single-line each)
+  - Dry run example immediately after explanation
+  - Implementation code (inside the same file/class)
+- Use /* ... */ for multi-line explanations and inline comments for clarity.
+- Provide commented driver code at the end (sample input & output).
+*/
+
+class Node {
+    int data;
+    Node next;
+    Node(int d) { data = d; next = null; }
+}
+
+class Solution {
+
+    /* ---------------------------------------------------------
+       BRUTE FORCE APPROACH (Approach 1)
+       ---------------------------------------------------------
+       Idea:
+       1. Traverse both lists and collect all values into a list.
+       2. Sort the collected values.
+       3. Reconstruct a new sorted linked list from sorted values.
+
+       Time Complexity: O((N + M) log(N + M))  // sorting dominates
+       Space Complexity: O(N + M)              // for storing values
+
+       Dry Run:
+       head1: 1 -> 4 -> 6
+       head2: 2 -> 3 -> 5
+       Step 1: collect -> [1,4,6,2,3,5]
+       Step 2: sort    -> [1,2,3,4,5,6]
+       Step 3: build   -> 1 -> 2 -> 3 -> 4 -> 5 -> 6  (return head)
+    --------------------------------------------------------- */
+    public Node sortedMergeBrute(Node head1, Node head2) {
+        // collect values
+        java.util.List<Integer> list = new java.util.ArrayList<>();
+        Node temp = head1;
+        while (temp != null) {
+            list.add(temp.data);
+            temp = temp.next;
+        }
+        temp = head2;
+        while (temp != null) {
+            list.add(temp.data);
+            temp = temp.next;
+        }
+
+        // sort values
+        java.util.Collections.sort(list);
+
+        // reconstruct linked list from sorted values
+        Node dummy = new Node(-1);
+        Node curr = dummy;
+        for (int val : list) {
+            curr.next = new Node(val);
+            curr = curr.next;
+        }
+
+        return dummy.next;
+    }
+
+    /* ---------------------------------------------------------
+       OPTIMIZED APPROACH (Approach 2) - TWO POINTER MERGE
+       ---------------------------------------------------------
+       Idea:
+       - Use a dummy node and a pointer 'temp'.
+       - Maintain two pointers temp1 and temp2 on the two input lists.
+       - Repeatedly link the smaller node to temp.next and advance pointers.
+       - At the end attach the non-null remainder (if any).
+
+       Time Complexity: O(N + M)  // single pass through both lists
+       Space Complexity: O(1)     // in-place pointers, only constant extra space
+
+       Dry Run:
+       head1: 1 -> 4 -> 6
+       head2: 2 -> 3 -> 5
+
+       temp -> dummy(-1)
+       Compare 1 and 2 -> pick 1 => temp.next = node(1), advance temp1 and temp
+       Compare 4 and 2 -> pick 2 => temp.next = node(2), advance temp2 and temp
+       Compare 4 and 3 -> pick 3 => ...
+       Continue => final merged: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+    --------------------------------------------------------- */
+    public Node sortedMerge(Node head1, Node head2) {
+        Node dummy = new Node(-1);  // dummy head for result list
+        Node temp = dummy;
+
+        Node temp1 = head1;
+        Node temp2 = head2;
+
+        // merge until one list gets exhausted
+        while (temp1 != null && temp2 != null) {
+            if (temp1.data < temp2.data) {
+                temp.next = temp1;     // link smaller node
+                temp = temp1;          // advance result pointer
+                temp1 = temp1.next;    // advance list1 pointer
+            } else {
+                temp.next = temp2;
+                temp = temp2;
+                temp2 = temp2.next;
+            }
+        }
+
+        // attach the remainder (only one of these will be non-null)
+        if (temp1 != null) {
+            temp.next = temp1;
+        } else {
+            temp.next = temp2;
+        }
+
+        return dummy.next;
+    }
+
+    /* ---------------------------------------------------------
+       (Optional) Helper: Convert array to linked list (for testing)
+       Returns head of created linked list
+    --------------------------------------------------------- */
+    public static Node fromArray(int[] arr) {
+        Node dummy = new Node(-1);
+        Node cur = dummy;
+        for (int v : arr) {
+            cur.next = new Node(v);
+            cur = cur.next;
+        }
+        return dummy.next;
+    }
+
+    /* ---------------------------------------------------------
+       (Optional) Helper: Print linked list values (for testing)
+    --------------------------------------------------------- */
+    public static void printList(Node head) {
+        Node t = head;
+        StringBuilder sb = new StringBuilder();
+        while (t != null) {
+            sb.append(t.data);
+            if (t.next != null) sb.append(" -> ");
+            t = t.next;
+        }
+        System.out.println(sb.toString());
+    }
+
+    /*
+    -------------------------------------------------------------
+    DRIVER CODE (Sample) - uncomment to run locally
+    -------------------------------------------------------------
+    public static void main(String[] args) {
+        Solution sol = new Solution();
+
+        // Sample Input:
+        Node head1 = fromArray(new int[]{1, 4, 6});
+        Node head2 = fromArray(new int[]{2, 3, 5});
+
+        // Using Brute Force approach:
+        Node mergedBrute = sol.sortedMergeBrute(head1, head2);
+        System.out.print("Brute merged: ");
+        printList(mergedBrute);
+        // Expected Output: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+
+        // Re-create lists (since previous lists may have been reused by brute)
+        head1 = fromArray(new int[]{1, 4, 6});
+        head2 = fromArray(new int[]{2, 3, 5});
+
+        // Using Optimized two-pointer merge:
+        Node mergedOpt = sol.sortedMerge(head1, head2);
+        System.out.print("Optimized merged: ");
+        printList(mergedOpt);
+        // Expected Output: 1 -> 2 -> 3 -> 4 -> 5 -> 6
+    }
+    -------------------------------------------------------------
+    */
+}
