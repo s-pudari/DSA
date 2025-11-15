@@ -1,0 +1,159 @@
+/*
+====================================================================================
+PROBLEM: Intersection of Two Linked Lists
+Link: https://leetcode.com/problems/intersection-of-two-linked-lists/
+
+SHORT EXPLANATION:
+-------------------
+Given heads of two singly linked lists, return the **node where both lists intersect**.
+If no intersection → return null.
+
+Nodes intersect by **reference**, not by value.
+
+====================================================================================
+APPROACH 1 — BRUTE FORCE (Using HashSet)
+====================================================================================
+
+Explanation:
+------------
+1. Traverse List A and store every node reference in a HashSet.
+2. Traverse List B and check if any node already exists in the set.
+3. First such node is the intersection.
+
+Time Complexity: O(N + M)  
+Space Complexity: O(N)  
+
+------------------------------------------------------------------------------------
+DRY RUN:
+A: 4 → 1 → 8 → 4 → 5  
+B: 5 → 0 → 1 ↘  
+              8 → 4 → 5
+
+HashSet after scanning A = {4,1,8,4,5}
+
+Scan B:
+- 5 not in set  
+- 0 not in set  
+- 1 not in set  
+- 8 found → intersection found
+
+------------------------------------------------------------------------------------
+BRUTE FORCE CODE:
+*/
+
+class Solution {
+    public ListNode getIntersectionNode_Brute(ListNode headA, ListNode headB) {
+
+        HashSet<ListNode> set = new HashSet<>();
+
+        // Store all nodes of List A
+        ListNode temp = headA;
+        while (temp != null) {
+            set.add(temp);
+            temp = temp.next;
+        }
+
+        // Check nodes of List B
+        temp = headB;
+        while (temp != null) {
+            if (set.contains(temp)) {  // Found intersection
+                return temp;
+            }
+            temp = temp.next;
+        }
+
+        return null; // No intersection
+    }
+}
+
+
+
+/*
+====================================================================================
+APPROACH 2 — OPTIMIZED (Two Pointer Swapping Trick)
+====================================================================================
+
+Explanation:
+------------
+Use two pointers i and j:
+- Move i along A, j along B.
+- When any pointer reaches the end, redirect it to the head of the other list.
+- If lists intersect, the pointers eventually meet at the intersection node.
+- If not, both reach null simultaneously.
+
+Time Complexity: O(N + M)  
+Space Complexity: O(1)  
+
+------------------------------------------------------------------------------------
+DRY RUN:
+A: 4 → 1 → 8 → 4 → 5  
+B: 5 → 0 → 1 ↘  
+              8 → 4 → 5
+
+Pointer movement:
+i: A → B  
+j: B → A  
+
+They align lengths and meet at node 8.
+
+------------------------------------------------------------------------------------
+OPTIMIZED CODE:
+*/
+
+class Solution {
+    public ListNode getIntersectionNode(ListNode headA, ListNode headB) {
+
+        ListNode i = headA;
+        ListNode j = headB;
+
+        // Loop until they either meet or both reach null
+        while (i != j) {
+            i = (i == null) ? headB : i.next;  // Switch to B after finishing A
+            j = (j == null) ? headA : j.next;  // Switch to A after finishing B
+        }
+        return j; // Either intersection node or null
+    }
+}
+
+
+
+/*
+====================================================================================
+DRIVER CODE (COMMENTED)
+====================================================================================
+
+public static void main(String[] args) {
+
+    // List A: 4 → 1 ↘
+    //                  8 → 4 → 5
+    // List B:    5 → 0 → 1 ↗
+
+    ListNode common = new ListNode(8);
+    common.next = new ListNode(4);
+    common.next.next = new ListNode(5);
+
+    ListNode headA = new ListNode(4);
+    headA.next = new ListNode(1);
+    headA.next.next = common;
+
+    ListNode headB = new ListNode(5);
+    headB.next = new ListNode(0);
+    headB.next.next = new ListNode(1);
+    headB.next.next.next = common;
+
+    Solution sol = new Solution();
+    ListNode ans = sol.getIntersectionNode(headA, headB);
+
+    System.out.println(ans != null ? ans.val : "No Intersection");
+}
+
+====================================================================================
+*/
+
+
+// ListNode class (standard)
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode(int v) { val = v; }
+}
