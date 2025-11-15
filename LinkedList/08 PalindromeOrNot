@@ -1,0 +1,193 @@
+/*
+====================================================================================
+PROBLEM: Palindrome Linked List
+Link: https://leetcode.com/problems/palindrome-linked-list/
+
+SHORT EXPLANATION:
+-------------------
+Given the head of a singly linked list, determine if the linked list is a palindrome.
+A linked list is a palindrome if the sequence of node values reads the same forwards and backwards.
+
+====================================================================================
+APPROACH 1 — BRUTE FORCE (Using a Stack)
+====================================================================================
+
+Idea (brief):
+- Traverse the list and push each node's value onto a stack.
+- Traverse the list again and compare each node's value with the top of the stack (pop as you go).
+- If all values match, it's a palindrome.
+
+Time Complexity: O(N)  
+Space Complexity: O(N) — stack stores all node values
+
+Dry Run:
+List: 1 -> 2 -> 2 -> 1
+- Push phase: stack = [1,2,2,1] (top = rightmost 1)
+- Compare phase:
+  - node 1 vs pop() 1 -> ok
+  - node 2 vs pop() 2 -> ok
+  - node 2 vs pop() 2 -> ok
+  - node 1 vs pop() 1 -> ok
+-> All matched -> palindrome
+
+------------------------------------------------------------------------------------
+APPROACH 1 CODE:
+*/
+public class Solution {
+
+    /* 
+     * Brute force using a stack.
+     * Returns true if the list is palindrome, false otherwise.
+     */
+    public boolean isPalindrome_bruteforce(ListNode head) {
+        if (head == null) return true; // empty list is a palindrome
+
+        java.util.Stack<Integer> st = new java.util.Stack<>();
+        ListNode temp = head;
+
+        // Push all node values to stack
+        while (temp != null) {
+            st.push(temp.val);
+            temp = temp.next;
+        }
+
+        // Compare while popping
+        temp = head;
+        while (temp != null && !st.isEmpty()) {
+            /* 
+             * If any value differs from the popped value, it's not a palindrome.
+             * We use Integer comparison (primitive int) - safe here.
+             */
+            if (st.pop() != temp.val) {
+                return false;
+            }
+            temp = temp.next;
+        }
+
+        return true; // All matched
+    }
+
+
+
+/*
+====================================================================================
+APPROACH 2 — OPTIMIZED (Reverse second half in-place)
+====================================================================================
+
+Idea (brief):
+1. Use slow & fast pointers to find the middle of the list:
+   - slow moves 1 step, fast moves 2 steps.
+   - When fast reaches end, slow is at midpoint.
+2. Reverse the second half of the list starting from slow.next.
+3. Compare the first half and the reversed second half node-by-node.
+4. (Optional but recommended) Restore the list by reversing the second half again.
+5. Return true if all corresponding nodes match.
+
+Time Complexity: O(N)  
+Space Complexity: O(1) — only a few pointers used
+
+Dry Run:
+List: 1 -> 2 -> 2 -> 1
+- After finding middle: slow points to first 2 (index 1)
+- Reverse second half (slow.next): second half 2->1 becomes 1->2
+- Compare:
+  first half: 1 -> 2
+  reversed second: 1 -> 2
+  -> all match -> palindrome
+- Restore optional: reverse back to original
+
+------------------------------------------------------------------------------------
+APPROACH 2 CODE:
+*/
+
+    /*
+     * Optimized method: find middle, reverse second half, compare, restore.
+     * Returns true if the list is palindrome, false otherwise.
+     */
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) return true; // empty or single node -> palindrome
+
+        // 1) Find middle (end of first half)
+        ListNode slow = head;
+        ListNode fast = head;
+        while (fast.next != null && fast.next.next != null) {
+            slow = slow.next;         // moves 1 step
+            fast = fast.next.next;    // moves 2 steps
+        }
+        // slow is now at the end of first half for even/odd length handling
+
+        // 2) Reverse second half
+        ListNode secondHalfStart = reverseList(slow.next);
+
+        // 3) Compare first half and reversed second half
+        ListNode p1 = head;
+        ListNode p2 = secondHalfStart;
+        boolean palindrome = true;
+        while (p2 != null) { // only need to compare length of second half
+            if (p1.val != p2.val) {
+                palindrome = false;
+                break;
+            }
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+
+        // 4) Restore the list (reverse second half back) - good practice
+        slow.next = reverseList(secondHalfStart);
+
+        return palindrome;
+    }
+
+    /*
+     * Helper: Reverse a singly linked list and return new head.
+     * Uses iterative in-place reversal.
+     */
+    private ListNode reverseList(ListNode head) {
+        ListNode prev = null;
+        ListNode curr = head;
+        while (curr != null) {
+            ListNode nextNode = curr.next;
+            curr.next = prev;
+            prev = curr;
+            curr = nextNode;
+        }
+        return prev; // new head of reversed list
+    }
+}
+
+
+/*
+====================================================================================
+DRIVER CODE (COMMENTED) - Example usage
+====================================================================================
+
+public class Main {
+    public static void main(String[] args) {
+        // Example 1: Palindrome
+        ListNode n1 = new ListNode(1);
+        n1.next = new ListNode(2);
+        n1.next.next = new ListNode(2);
+        n1.next.next.next = new ListNode(1);
+
+        Solution sol = new Solution();
+        System.out.println(sol.isPalindrome(n1)); // true
+
+        // Example 2: Not a palindrome
+        ListNode m1 = new ListNode(1);
+        m1.next = new ListNode(2);
+        System.out.println(sol.isPalindrome(m1)); // false
+
+        // Example 3: Empty list
+        System.out.println(sol.isPalindrome(null)); // true
+    }
+}
+
+====================================================================================
+*/
+
+/* 
+Note:
+ - All explanations, dry-runs and both approach implementations are included above inside the code file.
+ - The brute-force method keeps a stack (extra memory) but is simple to understand.
+ - The optimized approach uses O(1) extra memory and is preferred for interviews.
+*/
