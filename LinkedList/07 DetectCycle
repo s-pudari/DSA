@@ -1,0 +1,149 @@
+/*
+====================================================================================
+PROBLEM: Linked List Cycle
+Link: https://leetcode.com/problems/linked-list-cycle/
+
+SHORT EXPLANATION:
+-------------------
+Given the head of a linked list, determine whether the list contains a **cycle**.
+
+A cycle exists if some node’s `next` pointer points back to a previous node.
+
+====================================================================================
+APPROACH 1 — BRUTE FORCE (Using HashMap / HashSet)
+====================================================================================
+
+Explanation:
+------------
+- Traverse the list.
+- Store each visited node in a HashMap / HashSet.
+- If a node is visited again → cycle detected.
+
+Time Complexity: O(N)  
+Space Complexity: O(N)
+
+------------------------------------------------------------------------------------
+DRY RUN:
+List: 3 → 2 → 0 → -4  
+                 ↑    |
+                 |____|
+
+Visited nodes:
+- Visit 3 → store
+- Visit 2 → store
+- Visit 0 → store
+- Visit -4 → store
+- Next is 2 again → already in map → cycle found
+
+------------------------------------------------------------------------------------
+BRUTE FORCE CODE:
+*/
+
+public class Solution {
+
+    public boolean hasCycle_bruteforce(ListNode head) {
+
+        if (head == null) return false;
+
+        HashSet<ListNode> hs = new HashSet<>();
+
+        while (head != null) {
+            if (hs.contains(head)) {  
+                return true;         // Cycle detected
+            }
+            hs.add(head);            // Mark as visited
+            head = head.next;
+        }
+
+        return false; // No cycle
+    }
+
+
+
+
+/*
+====================================================================================
+APPROACH 2 — OPTIMIZED (Floyd’s Tortoise & Hare Algorithm)
+====================================================================================
+
+Explanation:
+------------
+Use two pointers:
+- `slow` moves 1 step at a time
+- `fast` moves 2 steps at a time
+
+If they ever meet → cycle exists.  
+If `fast` reaches null → no cycle.
+
+Time Complexity: O(N)  
+Space Complexity: O(1)
+
+------------------------------------------------------------------------------------
+DRY RUN:
+List with cycle:
+1 → 2 → 3 → 4 → 5  
+        ↑         |
+        |_________|
+
+Step animation:
+slow = 1, fast = 1  
+slow = 2, fast = 3  
+slow = 3, fast = 5  
+slow = 4, fast = 3  
+slow = 5, fast = 5 → meets → cycle exists
+
+------------------------------------------------------------------------------------
+OPTIMIZED CODE:
+*/
+
+    public boolean hasCycle(ListNode head) {
+
+        if (head == null) return false;
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        // Move pointers
+        while (fast != null && fast.next != null) {
+            slow = slow.next;         // 1 step
+            fast = fast.next.next;    // 2 steps
+
+            if (slow == fast) {       // cycle found
+                return true;
+            }
+        }
+
+        return false; // No cycle
+    }
+}
+
+
+
+/*
+====================================================================================
+DRIVER CODE (COMMENTED)
+====================================================================================
+
+public static void main(String[] args) {
+
+    // Example:
+    // 3 → 2 → 0 → -4  
+    //      ↑         |
+    //      |_________|
+
+    ListNode head = new ListNode(3);
+    head.next = new ListNode(2);
+    head.next.next = new ListNode(0);
+    head.next.next.next = new ListNode(-4);
+
+    // creating cycle manually (tail -> node 2)
+    head.next.next.next.next = head.next;
+
+    Solution sol = new Solution();
+    boolean ans = sol.hasCycle(head);
+
+    System.out.println(ans); // true
+}
+
+====================================================================================
+*/
