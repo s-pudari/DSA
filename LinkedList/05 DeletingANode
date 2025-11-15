@@ -1,0 +1,134 @@
+/*
+====================================================================================
+PROBLEM: Delete Node in a Linked List
+Link: https://leetcode.com/problems/delete-node-in-a-linked-list/
+
+SHORT EXPLANATION:
+-------------------
+You are given ONLY the node to delete — NOT the head of the list.
+So you CANNOT access the previous node.
+
+Trick:
+------
+Copy the next node’s value into the current node,
+then delete the next node. This effectively removes "node" from the list.
+
+====================================================================================
+APPROACH 1 — BRUTE FORCE (NOT POSSIBLE)
+====================================================================================
+
+Explanation:
+------------
+Normally, to delete a node in a singly linked list we must:
+1. Traverse from head to find the previous node.
+2. Connect previous.next = node.next.
+
+But here we are NOT given the head → only the node to delete.
+Therefore brute-force cannot be applied.
+
+Time Complexity: ❌ Not applicable  
+Space Complexity: ❌ Not applicable
+
+------------------------------------------------------------------------------------
+BRUTE FORCE (COMMENTED - NOT POSSIBLE):
+
+// Cannot traverse without head
+// Cannot find previous node
+// Hence brute-force deletion is impossible for this problem.
+
+------------------------------------------------------------------------------------
+====================================================================================
+
+
+
+====================================================================================
+APPROACH 2 — OPTIMIZED (Copy-next-value Trick)
+====================================================================================
+
+Explanation:
+------------
+Since we cannot access previous node, we do:
+1. node.val = node.next.val
+2. node.next = node.next.next
+
+This overwrites current node with next node’s data → effectively deleting "node".
+
+Time Complexity: O(1)  
+Space Complexity: O(1)  
+
+------------------------------------------------------------------------------------
+DRY RUN:
+Given list: 4 → 5 → 1 → 9  
+Given node = 5 (pointer to node with value 5)
+
+Step 1: node.val = node.next.val
+        node.val = 1  
+List becomes: 4 → 1 → 1 → 9
+
+Step 2: node.next = node.next.next  
+List becomes: 4 → 1 → 9
+
+Node 5 is effectively removed.
+------------------------------------------------------------------------------------
+*/
+
+// OPTIMIZED IMPLEMENTATION
+class Solution {
+    public void deleteNode(ListNode node) {
+
+        if (node == null) return;
+
+        // Step 1: Copy next node's value
+        node.val = node.next.val;
+
+        // Step 2: Bypass next node
+        node.next = node.next.next;
+    }
+}
+
+
+
+/*
+====================================================================================
+DRIVER CODE (For Local Testing) — COMMENTED
+------------------------------------------------------------------------------------
+
+// Helper function to print linked list
+public static void printList(ListNode head) {
+    while (head != null) {
+        System.out.print(head.val + " ");
+        head = head.next;
+    }
+    System.out.println();
+}
+
+public static void main(String[] args) {
+
+    // Creating list: 4 → 5 → 1 → 9
+    ListNode head = new ListNode(4);
+    head.next = new ListNode(5);
+    head.next.next = new ListNode(1);
+    head.next.next.next = new ListNode(9);
+
+    // Node to delete (we pass pointer to node 5)
+    ListNode nodeToDelete = head.next;
+
+    Solution sol = new Solution();
+    sol.deleteNode(nodeToDelete);
+
+    // Expected: 4 → 1 → 9
+    printList(head);
+}
+====================================================================================
+*/
+
+
+// Node definition (LeetCode standard)
+class ListNode {
+    int val;
+    ListNode next;
+    ListNode() {}
+    ListNode(int v) { val = v; }
+    ListNode(int v, ListNode n) { val = v; next = n; }
+}
+
