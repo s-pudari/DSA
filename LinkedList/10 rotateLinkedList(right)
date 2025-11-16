@@ -1,0 +1,84 @@
+/*
+LeetCode 61 — Rotate List
+Link: https://leetcode.com/problems/rotate-list/
+
+-----------------------------------------------------------
+🔍 PROBLEM EXPLANATION (BEGINNER-FRIENDLY)
+-----------------------------------------------------------
+You are given a linked list and an integer k.  
+You must rotate the list to the right by k positions.
+
+Example:
+List: 1 → 2 → 3 → 4 → 5,  k = 2  
+After rotation: 4 → 5 → 1 → 2 → 3
+
+Rotation means:
+- Last k nodes move to the front
+- Order must remain the same
+
+-----------------------------------------------------------
+APPROACH (Optimized)
+-----------------------------------------------------------
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+🧠 IDEA:
+1. Find length of list.
+2. Make the list circular by connecting tail → head.
+3. Effective rotations = k % length
+4. Move (length – k) steps to find new tail.
+5. New head = newTail.next
+6. Break the cycle by setting newTail.next = null
+
+-----------------------------------------------------------
+DRY RUN
+-----------------------------------------------------------
+List: 1 → 2 → 3 → 4 → 5, k = 2  
+Length = 5  
+Make circular: 1→2→3→4→5→(back to 1)
+
+k % 5 = 2  
+Steps to new tail = 5 – 2 = 3
+
+Move 3 steps → new tail = node 3  
+New head = node 4  
+Break link → result: 4 → 5 → 1 → 2 → 3
+*/
+
+class Solution {
+    public ListNode rotateRight(ListNode head, int k) {
+
+        /* Edge cases: empty list, single node, or zero rotation */
+        if (head == null || head.next == null || k == 0) 
+            return head;
+
+        /* Step 1: Find length and last node (tail) */
+        ListNode temp = head;
+        int len = 1;
+
+        while (temp.next != null) {
+            len++;
+            temp = temp.next;
+        }
+
+        /* Step 2: Make the list circular by connecting tail → head */
+        temp.next = head;
+
+        /* Step 3: Compute effective rotations */
+        k = k % len;
+        int stepsToNewTail = len - k;
+
+        /* Step 4: Move to the new tail */
+        temp = head;
+        while (stepsToNewTail-- > 1) {
+            temp = temp.next;
+        }
+
+        /* Step 5 & 6: Set new head and break the circle */
+        head = temp.next;
+        temp.next = null;
+
+        /* Final rotated list head */
+        return head;
+    }
+}
