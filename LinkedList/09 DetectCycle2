@@ -1,0 +1,143 @@
+/*
+LeetCode 142 — Linked List Cycle II
+Link: https://leetcode.com/problems/linked-list-cycle-ii/
+
+-----------------------------------------------------------
+🔍 PROBLEM EXPLANATION (BEGINNER-FRIENDLY)
+-----------------------------------------------------------
+You are given the head of a linked list. Some part of the list
+may form a cycle (a loop). Your job is to return the node where
+the cycle begins. If no cycle exists, return null.
+
+A cycle happens when a node's "next" pointer points back to some
+previous node in the list — causing infinite traversal.
+
+Example:
+1 → 2 → 3 → 4 → 5
+          ↑     ↓
+          ←──────
+
+Cycle starts at node with value 3.
+
+-----------------------------------------------------------
+APPROACH 1: BRUTE FORCE (Using HashSet)
+-----------------------------------------------------------
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+🧠 IDEA:
+We keep a HashSet and traverse the linked list. If a node repeats,
+that means the cycle begins at that repeated node.
+
+-----------------------------------------------------------
+DRY RUN:
+List: 3 → 2 → 0 → -4
+              ↑    ↓
+              ←─────
+
+Visited:
+Step 1: visit 3   → add
+Step 2: visit 2   → add
+Step 3: visit 0   → add
+Step 4: visit -4  → add
+Step 5: next is 2 → already in set → cycle starts at 2
+*/
+
+class SolutionBruteForce {
+    public ListNode detectCycle(ListNode head) {
+
+        /* HashSet stores visited nodes */
+        HashSet<ListNode> visited = new HashSet<>();
+
+        ListNode temp = head;
+
+        while (temp != null) {
+
+            /* If node already visited → cycle start found */
+            if (visited.contains(temp)) {
+                return temp;
+            }
+
+            visited.add(temp);
+            temp = temp.next;
+        }
+
+        /* No cycle found */
+        return null;
+    }
+}
+
+
+
+ /*
+-----------------------------------------------------------
+APPROACH 2: OPTIMIZED (Floyd’s Tortoise & Hare Algorithm)
+-----------------------------------------------------------
+Time Complexity: O(n)
+Space Complexity: O(1)
+
+🧠 IDEA:
+Two pointers slow (1 step) and fast (2 steps).
+If they meet → cycle exists.
+
+To find cycle start:
+Reset slow to head.
+Move both slow and fast 1 step each.
+The node where they meet again is the START of the cycle.
+
+-----------------------------------------------------------
+WHY THIS WORKS (INTUITIVE):
+When slow and fast meet, fast has done 2x steps.
+Using mathematical reasoning, the point where they meet again
+once slow starts from head = start of the loop.
+
+-----------------------------------------------------------
+DRY RUN:
+List: 3 → 2 → 0 → -4
+              ↑    ↓
+              ←─────
+
+Phase 1: Detect cycle  
+Slow = 3,2,0,-4,2  
+Fast = 3,0,2,2 → they meet at node 2.
+
+Phase 2: Move slow to head  
+slow=head(3), fast=2
+
+Move both 1 step  
+slow=2, fast=2 → meet → cycle starts at 2
+*/
+
+public class Solution {
+    public ListNode detectCycle(ListNode head) {
+
+        /* Edge case: empty or single node cannot form cycle */
+        if (head == null || head.next == null) return null;
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        /* Phase 1 → Detect if cycle exists */
+        while (fast != null && fast.next != null) {
+            slow = slow.next;          // moves 1 step
+            fast = fast.next.next;     // moves 2 steps
+
+            /* Cycle detected */
+            if (slow == fast) {
+
+                /* Phase 2 → Find cycle start */
+                slow = head;
+
+                /* Both move 1 step; meeting point = cycle start */
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+
+                return slow;  // Start of cycle
+            }
+        }
+
+        return null; // No cycle
+    }
+}
