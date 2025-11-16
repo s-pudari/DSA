@@ -1,0 +1,75 @@
+/*
+LeetCode (variant) — Left Rotate Linked List by k
+(Adapted from LeetCode 61 — Rotate List, but performing LEFT rotation)
+
+-----------------------------------------------------------
+PROBLEM EXPLANATION (BEGINNER-FRIENDLY)
+-----------------------------------------------------------
+Given the head of a singly linked list and an integer k,
+rotate the list to the LEFT by k positions and return the new head.
+
+Left rotation example:
+List: 1 → 2 → 3 → 4 → 5, k = 2
+After left rotation: 3 → 4 → 5 → 1 → 2
+
+-----------------------------------------------------------
+APPROACH (O(n) time, O(1) space)
+-----------------------------------------------------------
+1. Handle edge cases: empty list, single node, or k == 0.
+2. Traverse to find length and tail.
+3. Make the list circular by connecting tail.next = head.
+4. Reduce k modulo len (k = k % len).
+   - If k == 0 after modulo, break circle and return original head.
+5. For LEFT rotation by k, the new tail is the k-th node (1-based).
+   Move a pointer (temp) k-1 steps from head to reach that new tail.
+6. new head = newTail.next. Break the circle by setting newTail.next = null.
+7. return new head.
+
+-----------------------------------------------------------
+DRY RUN
+-----------------------------------------------------------
+List: 1 → 2 → 3 → 4 → 5, k = 2
+len = 5, make circular: 1→2→3→4→5→(back to 1)
+k = k % 5 = 2
+Move temp from head 1 step (k-1 = 1) → temp at node 2 (new tail)
+head = temp.next → node 3
+temp.next = null → break circle
+Result: 3 → 4 → 5 → 1 → 2
+-----------------------------------------------------------
+All variable names preserved from your original code: head, k, temp, len.
+*/
+
+class Solution {
+    public ListNode rotateLeft(ListNode head, int k) {
+       if(head==null || head.next==null || k==0) return head;
+
+       /* find tail and length */
+       ListNode temp=head;
+       int len=1;
+       while(temp.next!=null){
+        len++;
+        temp=temp.next;
+       }
+
+       /* make circular */
+       temp.next = head;
+
+       /* effective left rotations */
+       k = k % len;
+       if(k==0){
+         /* no rotation needed — break the circle and return head */
+         temp.next = null;
+         return head;
+       }
+
+      /* move temp to new tail: the k-th node (1-based) */
+      temp = head;
+      while(k-->1) temp = temp.next;  // move (k-1) times
+
+      /* set new head and break the circle */
+      head = temp.next;
+      temp.next = null;
+
+      return head;
+    }
+}
