@@ -1,0 +1,111 @@
+/*
+🔥 PROBLEM: Length of Longest Substring Without Repeating Characters 🔥
+--------------------------------------------------------------------
+Link: https://leetcode.com/problems/longest-substring-without-repeating-characters/
+
+Given a string s, return the length of the longest substring
+that contains no repeating characters.
+
+Example:
+s = "abcabcbb" → answer = 3 ("abc")
+s = "bbbbb"    → answer = 1 ("b")
+s = "pwwkew"   → answer = 3 ("wke")
+
+---
+
+🔎 BRUTE-FORCE APPROACH
+------------------------
+💡 Idea:
+- For each start index i, expand j to the right and keep a HashSet of visited
+  characters until a duplicate is found. Track the maximum window size.
+- Time Complexity: O(n²)
+- Space Complexity: O(min(n, charset))
+
+🔍 Dry Run (s = "abba"):
+i = 0 → visit 'a','b' ; next 'b' is duplicate → window size 2
+i = 1 → visit 'b' ; next 'b' duplicate → window size 1
+i = 2 → visit 'b','a' → window size 2
+Max = 2
+
+Code (brute-force):
+-------
+public int lengthOfLongestSubstringBruteForce(String s) {
+    if (s == null || s.length() == 0) return 0;
+    if (s.length() == 1) return 1;
+
+    int ans = 0;
+    int n = s.length();
+
+    for (int i = 0; i < n; i++) {
+        HashSet<Character> hs = new HashSet<>();
+        for (int j = i; j < n; j++) {
+            char ch = s.charAt(j);
+            if (!hs.contains(ch)) {
+                hs.add(ch);
+            } else {
+                break;
+            }
+        }
+        ans = Math.max(ans, hs.size());
+    }
+    return ans;
+}
+
+---
+
+✅ OPTIMIZED APPROACH: Sliding Window (Two Pointers + HashSet)
+--------------------------------------------------------------
+💡 Idea:
+- Use two pointers l (left) and r (right) to define a sliding window [l..r].
+- Expand r while s[r] is not in the HashSet (no repeats), adding chars to set.
+- If s[r] is already in set (duplicate), remove s[l] and move l forward until
+  the duplicate is removed from the set. Then add s[r].
+- Keep updating the maximum window length (ans).
+- Time Complexity: O(n) (each char is added/removed at most once)
+- Space Complexity: O(min(n, charset))
+
+🔍 Dry Run (s = "abcabcbb"):
+l=0,r expands to 2 → window "abc" size 3
+r meets duplicate 'a' at r=3 → remove from left until duplicate removed,
+then continue expanding. Final answer = 3
+
+Code (optimized, final implementation):
+-------
+*/
+class Solution {
+    public int lengthOfLongestSubstring(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+
+        if (s.length() == 1) {
+            return 1;
+        }
+
+        // Approach 2: Sliding window
+        int l = 0, r = 0;
+        int ans = 0;
+        int n = s.length();
+        HashSet<Character> hs = new HashSet<>();
+
+        while (r < n) {
+            char ch = s.charAt(r);
+
+            if (!hs.contains(ch)) {
+                // No duplicate — expand window to include s[r]
+                hs.add(ch);
+            } else {
+                // Duplicate found — shrink window from left until duplicate removed
+                while (hs.contains(s.charAt(r))) {
+                    hs.remove(s.charAt(l));
+                    l++;
+                }
+                 hs.remove(s.charAt(l));
+            }
+                ans = Math.max(ans, r - l + 1);
+                r++;
+        }
+
+        return ans;
+    }
+}
