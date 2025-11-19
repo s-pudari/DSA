@@ -1,65 +1,70 @@
 /*
-🔥 PROBLEM: Trapping Rain Water  
+🔥 PROBLEM: Trapping Rain Water 🔥
 ---------------------------------
 Link: https://leetcode.com/problems/trapping-rain-water/
 
-Given an array `arr` representing elevation heights, compute how much
-rainwater can be trapped between the bars.
+Given an array `arr` representing heights of bars, return how much
+rainwater can be trapped between them.
 
-A bar can trap water only if there are taller bars on both sides.
-Water at index i = min(maxLeft, maxRight) - arr[i]
+Water trapped at index i depends on:
+min(max height to the left, max height to the right) - arr[i]
 
 ---
 
-🔎 BRUTE-FORCE APPROACH  
-------------------------
+🔎 APPROACH 1: Prefix & Suffix Max Arrays
+------------------------------------------
 💡 Idea:
-- For every index i:
-  - Scan left to find left max (lmax)
-  - Scan right to find right max (rmax)
-- Add min(lmax, rmax) - arr[i] to total (if positive)
+- Create prefixMax[i] = max height from 0 → i
+- Create suffixMax[i] = max height from n-1 → i
+- Water at i = min(prefixMax[i], suffixMax[i]) - arr[i]
+- Add for all i
 
-🕒 Time Complexity: O(n²)  
-🧠 Space Complexity: O(1)
+🕒 Time Complexity: O(n)  
+🧠 Space Complexity: O(n)
 
 🔍 Dry Run (arr = [0,1,0,2]):
-i = 2 → arr[2] = 0  
-lmax = 1 (from left), rmax = 2 (from right)  
-Water = min(1,2) - 0 = 1  
+prefixMax → [0,1,1,2]  
+suffixMax → [2,2,2,2]
+
+i=2 → arr[2]=0  
+water = min(1,2)-0 = 1
 
 Code:
--------*/
-public int trapBruteForce(int[] arr) {
+-------
+public int trapPrefixSuffix(int[] arr) {
     int n = arr.length;
-    if (n < 3) return 0;
+    int[] prefixMax = new int[n];
+
+    prefixMax[0] = arr[0];
+    for (int i = 1; i < n; i++) {
+        prefixMax[i] = Math.max(prefixMax[i - 1], arr[i]);
+    }
+
+    int[] suffixMax = new int[n];
+    suffixMax[n - 1] = arr[n - 1];
+
+    for (int i = n - 2; i >= 0; i--) {  // fixed small bug: should go till i>=0
+        suffixMax[i] = Math.max(suffixMax[i + 1], arr[i]);
+    }
+
     int total = 0;
 
     for (int i = 0; i < n; i++) {
-        int lmax = 0, rmax = 0;
-
-        for (int l = 0; l <= i; l++) {
-            if (arr[l] > lmax) lmax = arr[l];
-        }
-
-        for (int r = i; r < n; r++) {
-            if (arr[r] > rmax) rmax = arr[r];
-        }
-
-        total += Math.min(lmax, rmax) - arr[i];
+        total += Math.min(prefixMax[i], suffixMax[i]) - arr[i];
     }
 
     return total;
 }
 
-/*----------------------------------------------
+----------------------------------------------
 
-✅ OPTIMIZED APPROACH: Two-Pointer  
-----------------------------------
+✅ APPROACH 2: Two-Pointer (Optimized)
+--------------------------------------
 💡 Idea:
-- Maintain two pointers: `l` from left, `r` from right.
+- Maintain two pointers `l` and `r`.
 - Maintain `lmax` and `rmax`.
-- Always move the side with the smaller height.
-- Accumulate trapped water directly.
+- Water can be trapped from the side with the smaller boundary.
+- Move pointers inward while accumulating trapped water.
 
 🕒 Time Complexity: O(n)  
 🧠 Space Complexity: O(1)
@@ -67,15 +72,13 @@ public int trapBruteForce(int[] arr) {
 🔍 Dry Run (arr = [0,1,0,2]):
 l=0,r=3 → arr[l]=0 <= arr[r]=2 → update lmax=0  
 l=1 → arr[l]=1 <= 2 → update lmax=1  
-l=2 → arr[l]=0 <= 2 → water += 1  
-Final total = 1
+l=2 → arr[l]=0 <= 2 → total += 1  
+Final answer = 1
 
 Code:
--------*/
+-------
 class Solution {
     public int trap(int[] arr) {
-        if (arr.length < 3) return 0;
-
         int l = 0, r = arr.length - 1;
         int lmax = 0, rmax = 0, total = 0;
 
@@ -99,4 +102,4 @@ class Solution {
         return total;
     }
 }
-
+*/
