@@ -1,0 +1,107 @@
+/*
+🔥 PROBLEM: Max Consecutive Ones III 🔥
+---------------------------------------
+Link: https://leetcode.com/problems/max-consecutive-ones-iii/
+
+You are given a binary array `nums` and an integer `k`.
+You may flip at most `k` zeros into ones.
+
+Return the **maximum length of a subarray** that contains only 1s
+after flipping at most k zeros.
+
+---
+
+🔎 BRUTE-FORCE APPROACH
+------------------------
+💡 Idea:
+- Check all subarrays nums[i..j].
+- Count zeros inside the window.
+- If zeros ≤ k → it's a valid window.
+- Update maximum window length.
+
+🕒 Time Complexity: O(n²)  
+🧠 Space Complexity: O(1)
+
+🔍 Dry Run (nums = [1,0,1], k = 1):
+i=0 → [1,0,1] → zeros = 1 → len = 3  
+i=1 → [0,1]   → zeros = 1 → len = 2  
+i=2 → [1]     → zeros = 0 → len = 1  
+Answer = 3
+
+Code (Brute-force) with inline comments:
+*/
+
+public int longestOnesBruteForce(int[] nums, int k) {
+    int n = nums.length;
+    int ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        int zeros = 0; // count zeros in current window
+
+        for (int j = i; j < n; j++) {
+
+            if (nums[j] == 0) zeros++; // include nums[j] and update zero count
+
+            if (zeros <= k) {
+                ans = Math.max(ans, j - i + 1); // valid window → update answer
+            } else {
+                break; // too many zeros → no need to extend this window
+            }
+        }
+    }
+
+    return ans;
+}
+
+/*
+--------------------------------------------------------------
+
+✅ OPTIMIZED APPROACH: Sliding Window  
+--------------------------------------
+💡 Idea:
+- Use a window [l..r].
+- Expand r forward.
+- Count zeros inside the window.
+- If zeros exceed k, shrink from left (increment l).
+- Always maintain a valid window with ≤ k zeros.
+- Track maximum window length.
+
+🕒 Time Complexity: O(n)  
+🧠 Space Complexity: O(1)
+
+🔍 Dry Run (nums = [1,1,0,0,1], k = 1):
+Window grows → zeros increase → when zeros > 1, move l until valid again.
+
+Code (Optimized) with inline comments:
+*/
+
+class Solution {
+    public int longestOnes(int[] nums, int k) {
+
+        int l = 0, r = 0;    // sliding window boundaries
+        int ans = 0;         // maximum window size
+        int zeros = 0;       // count of zeros in the current window
+        int n = nums.length;
+
+        while (r < n) {
+
+            // include nums[r] into the window
+            if (nums[r] == 0) zeros++;
+
+            // if zeros exceed k, shrink window from the left
+            while (zeros > k) {
+                if (nums[l] == 0) {
+                    zeros--; // removing a zero from the window
+                }
+                l++; // move left pointer forward
+            }
+
+            // window [l..r] is valid → update maximum length
+            ans = Math.max(ans, r - l + 1);
+
+            r++; // expand window from the right
+        }
+
+        return ans;
+    }
+}
