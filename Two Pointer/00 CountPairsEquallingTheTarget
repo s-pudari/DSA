@@ -3,125 +3,125 @@
 🧠 Problem: Count Pairs with Given Sum (Two Sum with duplicates)
 🔗 GFG Link: https://www.geeksforgeeks.org/problems/count-pairs-with-given-sum5022/1
 
-📌 Problem Statement:
-You're given a sorted array (with possible duplicates) and a target sum.
-You need to count the number of unique pairs (i, j) such that:
-  - i < j
-  - arr[i] + arr[j] == target
-
-💡 Example:
-Input: arr[] = {1, 1, 2, 2, 3, 3, 4}, target = 4
-Output: 4
-Explanation:
-Valid pairs are:
-(1, 3), (1, 3), (2, 2), (1, 3) — total 4 pairs.
-=====================================================================
-*/
-
-/* --------------------------------------------
-🔸 Brute-Force Approach: Check all pairs
-🔸 Time Complexity: O(N^2)
-🔸 Space Complexity: O(1)
--------------------------------------------- */
-
 /*
-💭 Explanation:
-Loop through every possible pair (i, j) with i < j.
-For each pair, if arr[i] + arr[j] == target, increment the count.
-This checks every possible pair without using any extra data structures.
-*/
+🔥 PROBLEM: Find All Pairs With Sum = 0 🔥
+-------------------------------------------
+(Variation of the 2-Sum / Two-Pointer pattern)
 
-class BruteForceSolution {
+Given an integer array `arr`, return all **unique pairs**
+[arr[i], arr[j]] such that:
 
-    int countPairs(int[] arr, int target) {
-        int count = 0;
+        arr[i] + arr[j] = 0  
+        i < j  
+        No duplicate pairs allowed  
 
-        // Traverse each pair only once
-        for (int i = 0; i < arr.length; i++) {
-            for (int j = i + 1; j < arr.length; j++) {
-                if (arr[i] + arr[j] == target) {
-                    count++;
-                }
+Example:
+arr = [3, -3, 1, -1, 2]  
+Pairs = [-3,3], [-1,1]
+
+---
+
+🔎 BRUTE-FORCE APPROACH
+------------------------
+💡 Idea:
+- For every index i, pair it with j > i.
+- Check if arr[i] + arr[j] == 0.
+- Add the pair if valid.
+- Use a set or sorting inside the loop to prevent duplicates.
+
+🕒 Time Complexity: O(n²)  
+🧠 Space Complexity: O(1) or O(n) depending on duplicate handling
+
+🔍 Dry Run (arr = [1, -1, 2, -2]):
+(i=0,j=1) → 1 + (-1) = 0 → add  
+(i=2,j=3) → 2 + (-2) = 0 → add  
+
+Brute-force Code:
+------- */
+public static ArrayList<ArrayList<Integer>> getPairsBrute(int[] arr) {
+    ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+
+    for (int i = 0; i < arr.length; i++) {
+        for (int j = i + 1; j < arr.length; j++) {
+
+            if (arr[i] + arr[j] == 0) {
+                ArrayList<Integer> li = new ArrayList<>();
+                li.add(arr[i]);
+                li.add(arr[j]);
+
+                ans.add(li);
             }
         }
-        return count;
     }
+
+    return ans;
 }
 
-/* --------------------------------------------
-🔹 Optimized Approach: Two Pointer with Duplicates
-🔹 Time Complexity: O(N)
-🔹 Space Complexity: O(1)
--------------------------------------------- */
+----------------------------------------------
 
-/*
-💭 Explanation:
-- Since the array is sorted, use two pointers: one at the start (l), one at the end (r).
-- Move them based on the sum:
-   🔹 If arr[l] + arr[r] < target → move l forward (increase sum)
-   🔹 If arr[l] + arr[r] > target → move r backward (decrease sum)
-   🔹 If sum == target:
-       - Count how many times arr[l] repeats (c1), and how many times arr[r] repeats (c2).
-       - If arr[l] == arr[r], then we're picking the same number twice (like [2,2,2] for target 4)
-         → number of pairs = (c1 * (c1 - 1)) / 2
-       - Else → total pairs = c1 * c2
-       - Move both pointers accordingly
-*/
+✅ OPTIMIZED APPROACH: Sorting + Two Pointers
+----------------------------------------------
+💡 Idea:
+- Sort the array.
+- Use pointers `i` (left) and `j` (right).
+- If arr[i] + arr[j] < 0 → move i++  
+- If arr[i] + arr[j] > 0 → move j--  
+- If equal to 0 → record pair  
+- Skip duplicates to avoid repeating the same pair.
 
-/*
-🧪 Dry Run:
-Input: arr[] = {1, 1, 2, 2, 3, 3, 4}, target = 4
-Steps:
-l = 0, r = 6 → arr[0] + arr[6] = 1 + 4 = 5 > 4 → r--
-l = 0, r = 5 → 1 + 3 = 4 ✔️ → count c1=2 (1s), c2=2 (3s) → add 2*2 = 4 → l=2, r=3
-l = 2, r = 3 → 2 + 2 = 4 ✔️ → c1=2, c2=0 → add 1 pair (2C2 = 1) → done
+🕒 Time Complexity: O(n log n)  
+🧠 Space Complexity: O(1) (ignoring answer list)
+
+🔍 Dry Run (arr = [2, -2, 1, -1]):
+Sorted = [-2, -1, 1, 2]  
+i=0,j=3 → -2+2 = 0 → add  
+i=1,j=2 → -1+1 = 0 → add  
+i=2,j=1 → stop  
+
+Code (Optimized):
+-------
 */
 
 class Solution {
+    public static ArrayList<ArrayList<Integer>> getPairs(int[] arr) {
 
-    int countPairs(int arr[], int target) {
-        int l = 0, r = arr.length - 1;
-        int cnt = 0;
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        Arrays.sort(arr);                    // sort array for two-pointer
+        int n = arr.length;
+        int i = 0, j = n - 1;
 
-        while (l < r) {
-            int sum = arr[l] + arr[r];
+        while (i < j) {
 
-            if (sum > target) {
-                // If sum is too big, move right pointer left
-                r--;
-            } else if (sum < target) {
-                // If sum is too small, move left pointer right
-                l++;
-            } else {
-                // sum == target → count how many times arr[l] and arr[r] repeat
-                int c1 = 0, c2 = 0;
-                int ele1 = arr[l], ele2 = arr[r];
+            int sum = arr[i] + arr[j];
 
-                // Count duplicates from the left
-                while (l <= r && arr[l] == ele1) {
-                    l++;
-                    c1++;
+            if (sum < 0) {                   // need bigger number
+                i++;
+            }
+            else if (sum > 0) {              // need smaller number
+                j--;
+            }
+            else {                            // found a valid pair
+                ArrayList<Integer> li = new ArrayList<>();
+                li.add(arr[i]);
+                li.add(arr[j]);
+
+                ans.add(li);
+
+                i++;
+                j--;
+
+                // skip duplicates on left
+                while (i < n && arr[i] == arr[i - 1]) {
+                    i++;
                 }
 
-                // Count duplicates from the right
-                while (l <= r && arr[r] == ele2) {
-                    r--;
-                    c2++;
-                }
-
-                if (ele1 == ele2) {
-                    /*
-                    When both elements are the same (like 2,2), we choose 2 from c1 duplicates
-                    → Use combination formula (c1 * (c1 - 1)) / 2
-                    */
-                    cnt += (c1 * (c1 - 1)) / 2;
-                } else {
-                    // Otherwise, multiply occurrences
-                    cnt += c1 * c2;
+                // skip duplicates on right
+                while (j >= 0 && arr[j] == arr[j + 1]) {
+                    j--;
                 }
             }
         }
 
-        return cnt;
+        return ans;
     }
 }
