@@ -1,0 +1,118 @@
+/*
+🔥 PROBLEM: Fruit Into Baskets (Max Fruits in 2 Types) 🔥
+---------------------------------------------------------
+Link: https://leetcode.com/problems/fruit-into-baskets/
+
+Given an integer array `fruits` where `fruits[i]` is the type of fruit
+on the i-th tree, you want to collect fruits in baskets. Each basket
+can only hold one type of fruit and you have only **two** baskets.
+Return the maximum number of fruits you can collect in total by
+choosing a contiguous subarray that contains at most two different types.
+
+Example:
+fruits = [1,2,1] → answer = 3 (take whole array)
+fruits = [0,1,2,2] → answer = 3 (take [2,2] or [1,2,2])
+
+---
+
+🔎 BRUTE-FORCE APPROACH
+------------------------
+💡 Idea:
+- For each start index i, expand j to the right and track distinct fruit types
+  (with a HashSet). Stop expanding when distinct types > 2.
+- Track the longest valid window length found.
+- Simple and easy to reason about, but O(n²) in worst-case.
+
+🕒 Time Complexity: O(n²)  
+🧠 Space Complexity: O(n) for HashSet (worst-case)
+
+🔍 Dry Run (fruits = [1,2,1,2,3]):
+i=0:
+ - j=0 → set={1} → len=1
+ - j=1 → set={1,2} → len=2
+ - j=2 → set={1,2} → len=3
+ - j=3 → set={1,2} → len=4
+ - j=4 → set={1,2,3} -> stop
+max so far = 4
+
+Code (Brute-force):
+-------*/
+public int totalFruitBruteForce(int[] fruits) {
+    int n = fruits.length;
+    int ans = 0;
+
+    for (int i = 0; i < n; i++) {
+        HashSet<Integer> hs = new HashSet<>(); // distinct fruit types in window
+        for (int j = i; j < n; j++) {
+            hs.add(fruits[j]); // include fruit at j
+            if (hs.size() <= 2) {
+                ans = Math.max(ans, j - i + 1); // valid window
+            } else {
+                break; // more than 2 types → no need to extend this i
+            }
+        }
+    }
+    return ans;
+}
+
+/*----------------------------------------------
+
+✅ OPTIMIZED APPROACH: Sliding Window (HashMap)
+-----------------------------------------------
+💡 Idea:
+- Use sliding window [l..r] and a HashMap `hm` that maps fruit type → count in window.
+- Expand `r` and increment count of fruits[r].
+- While `hm.size() > 2` (more than 2 types), shrink window from left:
+    - decrement count of fruits[l], remove from map if count becomes 0, then l++.
+- At each step update `ans = max(ans, r - l + 1)`.
+- Each index is processed at most twice → O(n) time.
+
+🕒 Time Complexity: O(n)  
+🧠 Space Complexity: O(1) (map size ≤ 3 actually; practically O(1)), or O(min(n, distinct types))
+
+🔍 Dry Run (fruits = [1,2,1,2,3]):
+Start: l=0,r=0,hm={}
+r=0 → add 1 → hm={1:1} → ans=1
+r=1 → add 2 → hm={1:1,2:1} → ans=2
+r=2 → add 1 → hm={1:2,2:1} → ans=3
+r=3 → add 2 → hm={1:2,2:2} → ans=4
+r=4 → add 3 → hm={1:2,2:2,3:1} → hm.size()>2 → shrink:
+    l=0 remove 1 → hm={1:1,2:2,3:1} → still size 3 → l=1
+    l=1 remove 2 → hm={1:1,2:1,3:1} → still size 3 → l=2
+    l=2 remove 1 → hm={2:1,3:1} → size 2 → stop
+Window now [l=3..r=4] length=2 → ans remains 4
+End → answer = 4
+
+Code (Optimized):
+-------*/
+class Solution {
+    public int totalFruit(int[] fruits) {
+        int l = 0, r = 0;                // sliding window boundaries
+        int n = fruits.length;
+        int ans = 0;                     // maximum fruits collected
+        HashMap<Integer, Integer> hm = new HashMap<>(); // fruitType -> count in window
+
+        while (r < n) {
+            // include fruits[r] into the window and update count
+            hm.put(fruits[r], hm.getOrDefault(fruits[r], 0) + 1);
+
+            // if more than 2 distinct fruit types, shrink from left
+            while (hm.size() > 2) {
+                int lval = fruits[l];            // fruit type at left
+                hm.put(lval, hm.get(lval) - 1);  // decrement its count
+                if (hm.get(lval) == 0) {
+                    hm.remove(lval);             // remove type if count becomes 0
+                }
+                l++;                             // shrink window from left
+            }
+
+            // current window [l..r] is valid (<= 2 types) → update answer
+            ans = Math.max(ans, r - l + 1);
+
+            r++; // expand window to the right
+        }
+
+        return ans;
+    }
+}
+
